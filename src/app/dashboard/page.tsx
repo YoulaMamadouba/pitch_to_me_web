@@ -284,21 +284,53 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Current Module */}
-            <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 border border-yellow-400/30 mb-6">
-              <div className="flex flex-col h-full">
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-900 mb-1">Continuer l'apprentissage</h3>
-                  <h4 className="text-gray-900 font-semibold">{currentModule.title}: {currentModule.subtitle}</h4>
-                  <p className="text-gray-800 text-sm mt-1">Maîtrisez la communication non verbale</p>
-                </div>
-                <div className="mt-4 flex justify-between items-center">
-                  <span className="text-xs bg-black/10 text-gray-900 px-2 py-1 rounded-full">En cours</span>
-                  <button className="bg-black/10 hover:bg-black/20 text-gray-900 font-medium px-4 py-2 rounded-lg transition-colors">
-                    Continuer
-                  </button>
+            {/* Current Module and VR Access */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              {/* Current Module Card */}
+              <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 border border-yellow-400/30 h-full">
+                <div className="flex flex-col h-full">
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-gray-900 mb-1">Continuer l'apprentissage</h3>
+                    <h4 className="text-gray-900 font-semibold">{currentModule.title}: {currentModule.subtitle}</h4>
+                    <p className="text-gray-800 text-sm mt-1">Maîtrisez la communication non verbale</p>
+                  </div>
+                  <div className="mt-4 flex justify-between items-center">
+                    <span className="text-xs bg-black/10 text-gray-900 px-2 py-1 rounded-full">En cours</span>
+                    <button className="bg-black/10 hover:bg-black/20 text-gray-900 font-medium px-4 py-2 rounded-lg transition-colors">
+                      Continuer
+                    </button>
+                  </div>
                 </div>
               </div>
+              
+              {/* VR Scenes Access Card */}
+              <Link href="/vr-scenes" className="group">
+                <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all transform group-hover:-translate-y-0.5 border border-purple-400/30 h-full">
+                  <div className="flex flex-col h-full">
+                    <div className="flex-1">
+                      <div className="flex items-center mb-2">
+                        <div className="p-2 bg-white/20 rounded-lg mr-3">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <h3 className="text-xl font-bold text-white">S'entraîner en VR</h3>
+                      </div>
+                      <h4 className="text-white/90 font-medium">Environnements immersifs</h4>
+                      <p className="text-white/80 text-sm mt-1">Pratiquez dans des scénarios réalistes</p>
+                    </div>
+                    <div className="mt-4 flex justify-between items-center">
+                      <span className="text-xs bg-white/20 text-white px-2 py-1 rounded-full">Nouveau</span>
+                      <div className="flex items-center text-white/90 group-hover:text-white transition-colors">
+                        <span className="font-medium mr-1">Découvrir</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
             </div>
             
             {/* Module Progress */}
