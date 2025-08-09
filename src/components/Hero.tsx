@@ -105,12 +105,12 @@ export default function Hero() {
               </motion.div>
             </div>
 
-            {/* Enhanced Scroll Indicator - Moved up */}
+            {/* Enhanced Scroll Indicator - Right after buttons */}
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.2 }}
-              className="mt-8 mb-4"
+              className="mt-4"
             >
               <div className="relative w-6 h-12 mx-auto">
                 <motion.div
