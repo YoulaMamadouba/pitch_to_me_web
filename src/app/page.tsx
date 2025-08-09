@@ -1,7 +1,7 @@
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import Features from '@/components/Features';
-import Image from 'next/image';
+import { Mic } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -20,13 +20,7 @@ export default function Home() {
             <div className="space-y-4">
               <div className="flex items-center space-x-2 group">
                 <div className="w-8 h-8 relative">
-                  <Image 
-                    src="/microphone-simple-icon.svg" 
-                    alt="Pitch to Me Logo" 
-                    width={32} 
-                    height={32}
-                    className="group-hover:scale-110 transition-transform"
-                  />
+                  <Mic className="w-full h-full text-yellow-400 group-hover:scale-110 transition-transform" />
                 </div>
                 <span className="text-xl font-bold text-white group-hover:text-yellow-400 transition-colors">Pitch to Me</span>
               </div>
