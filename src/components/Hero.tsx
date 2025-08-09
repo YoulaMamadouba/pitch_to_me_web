@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 
 export default function Hero() {
   return (
-    <section className="relative h-screen overflow-hidden">
+    <section className="relative h-screen overflow-hidden flex flex-col">
       {/* Background Video/Image */}
       <div className="absolute inset-0">
         <div className="relative w-full h-full" style={{ top: '-40%', height: '140%' }}>
@@ -21,21 +21,21 @@ export default function Hero() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 h-full flex flex-col justify-start items-center text-center px-4 pt-32">
+      <div className="relative z-10 flex-1 flex flex-col justify-center items-center text-center px-4 py-12">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           className="max-w-4xl mx-auto"
         >
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
             Transform Your Voice Into{' '}
             <span className="bg-gradient-to-r from-yellow-400 to-yellow-500 bg-clip-text text-transparent">
               Power
             </span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
             Master the art of persuasion with AI-powered training, VR experiences, and a global community of speakers.
           </p>
 
