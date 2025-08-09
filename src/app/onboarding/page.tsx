@@ -1,160 +1,175 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { Check, Play, User, Target, Zap, Award, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Check, Play, Volume2, BookOpen, Award } from 'lucide-react';
+import AuthPageHeader from '@/components/ui/AuthPageHeader';
 
 export default function OnboardingPage() {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [completedSteps, setCompletedSteps] = useState<number[]>([]);
-
-  const steps = [
-    {
-      id: 0,
-      title: 'Bienvenue sur Pitch to Me',
-      description: 'Je suis Alex, votre coach IA personnel. Je vais vous accompagner dans votre parcours de formation.',
-      icon: User,
-      color: 'from-blue-400 to-blue-500'
-    },
-    {
-      id: 1,
-      title: 'Définir vos objectifs',
-      description: 'Quel type de prise de parole souhaitez-vous maîtriser ?',
-      icon: Target,
-      color: 'from-green-400 to-green-500'
-    },
-    {
-      id: 2,
-      title: 'Évaluer votre niveau',
-      description: 'Passons un petit test pour adapter votre parcours de formation.',
-      icon: Zap,
-      color: 'from-yellow-400 to-yellow-500'
-    },
-    {
-      id: 3,
-      title: 'Planifier votre formation',
-      description: 'Créons ensemble votre plan d\'apprentissage personnalisé.',
-      icon: Award,
-      color: 'from-purple-400 to-purple-500'
-    }
-  ];
-
-  const handleStepComplete = (stepId: number) => {
-    if (!completedSteps.includes(stepId)) {
-      setCompletedSteps([...completedSteps, stepId]);
-    }
-    if (stepId < steps.length - 1) {
-      setCurrentStep(stepId + 1);
-    } else {
-      // Rediriger vers le dashboard après completion
-      window.location.href = '/dashboard';
-    }
-  };
-
-  const currentStepData = steps[currentStep];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 flex flex-col">
-      {/* Fixed Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center p-4 bg-black bg-opacity-20 backdrop-blur-sm border-b border-gray-700">
-        <div className="text-lg font-bold text-white">Onboarding</div>
-        <div className="bg-yellow-600 text-black text-xs px-2 py-1 rounded font-bold">
-          STEP {currentStep + 1}
+      {/* Header */}
+      <AuthPageHeader pageTitle="Onboarding" />
+      
+      <div className="flex-1 overflow-y-auto pt-10 pb-4">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full">
+          <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-3xl overflow-hidden border border-gray-700/50 mt-6">
+            {/* Header with progress */}
+            <div className="flex justify-between items-center p-6 border-b border-gray-700 pt-12">
+              <div className="flex space-x-2">
+                {[1, 2, 3, 4].map((step) => (
+                  <div 
+                    key={step}
+                    className={`w-2 h-2 rounded-full ${step <= 2 ? 'bg-yellow-400' : 'bg-gray-600'}`}
+                  />
+                ))}
+              </div>
+              <div className="text-sm text-gray-400">Étape 2 sur 4</div>
+              <button className="text-sm text-gray-400 hover:text-white">Passer</button>
+            </div>
+
+            <div className="p-6 md:p-8">
+              {/* AI Avatar Welcome */}
+              <div className="text-center max-w-md mx-auto">
+                <div className="relative inline-block mb-6">
+                  <div className="relative w-32 h-32 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <img 
+                      src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face"
+                      alt="Coach IA"
+                      className="w-28 h-28 rounded-full object-cover border-4 border-white"
+                    />
+                    <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-green-400 rounded-full flex items-center justify-center border-2 border-gray-900">
+                      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">Bienvenue sur votre parcours !</h2>
+                <p className="text-gray-300 text-sm md:text-base mb-6 leading-relaxed">
+                  Je suis Alex, votre coach de prise de parole en public IA. Je vais vous guider à travers 12 modules pour maîtriser l'art de la persuasion.
+                </p>
+
+                {/* Video Message */}
+                <div className="bg-gray-700/50 rounded-xl p-4 mb-8 hover:bg-gray-700/70 transition-colors cursor-pointer">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full flex-shrink-0 flex items-center justify-center">
+                      <Play className="w-4 h-4 text-black ml-0.5" fill="currentColor" />
+                    </div>
+                    <div className="text-left flex-1 min-w-0">
+                      <h3 className="text-white font-medium truncate">Message de bienvenue personnalisé</h3>
+                      <p className="text-gray-400 text-xs">2:30 min • Cliquez pour lire</p>
+                    </div>
+                  </div>
+                  <div className="w-full bg-gray-600 rounded-full h-1">
+                    <div className="bg-yellow-400 h-1 rounded-full w-1/3"></div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Checklist */}
+              <div className="max-w-2xl mx-auto">
+                <h3 className="text-lg font-semibold text-white mb-4">Commençons</h3>
+                
+                <div className="space-y-3 mb-8">
+                  {/* Completed Item */}
+                  <div className="bg-gray-800/50 border border-green-500/30 rounded-xl p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-6 h-6 bg-green-500 rounded-full flex-shrink-0 flex items-center justify-center">
+                          <Check className="w-3 h-3 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="text-white font-medium">Compte créé</h4>
+                          <p className="text-gray-400 text-xs">Profil complété</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Current Item */}
+                  <div className="bg-yellow-900/20 border border-yellow-500/50 rounded-xl p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-6 h-6 bg-yellow-500 rounded-full flex-shrink-0 flex items-center justify-center">
+                          <Volume2 className="w-3 h-3 text-black" />
+                        </div>
+                        <div>
+                          <h4 className="text-white font-medium">Enregistrer une vidéo de motivation</h4>
+                          <p className="text-gray-300 text-xs">Partagez-nous vos objectifs</p>
+                        </div>
+                      </div>
+                      <button className="bg-yellow-500 hover:bg-yellow-400 text-black text-sm font-medium px-3 py-1 rounded-lg transition-colors">
+                        Enregistrer
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Pending Items */}
+                  <div className="bg-gray-800/30 border border-gray-700 rounded-xl p-4 opacity-70">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-6 h-6 bg-gray-700 rounded-full flex-shrink-0 flex items-center justify-center">
+                          <Check className="w-3 h-3 text-gray-400" />
+                        </div>
+                        <div>
+                          <h4 className="text-gray-400 font-medium">Accepter les CGU</h4>
+                          <p className="text-gray-500 text-xs">Lisez nos conditions</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-800/30 border border-gray-700 rounded-xl p-4 opacity-70">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-6 h-6 bg-gray-700 rounded-full flex-shrink-0 flex items-center justify-center">
+                          <BookOpen className="w-3 h-3 text-gray-400" />
+                        </div>
+                        <div>
+                          <h4 className="text-gray-400 font-medium">Commencer le Module 1</h4>
+                          <p className="text-gray-500 text-xs">Débutez votre apprentissage</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Key Features */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-semibold text-white mb-4">Ce que vous allez maîtriser</h3>
+                  <div className="grid grid-cols-3 gap-3">
+                    {[
+                      { icon: <Volume2 className="w-4 h-4" />, title: 'Voix', color: 'from-yellow-400 to-amber-500' },
+                      { icon: <Award className="w-4 h-4" />, title: 'Confiance', color: 'from-cyan-400 to-cyan-500' },
+                      { icon: <Check className="w-4 h-4" />, title: 'Persuasion', color: 'from-purple-400 to-purple-500' }
+                    ].map((feature, index) => (
+                      <div key={index} className="bg-gray-800/50 rounded-lg p-3 text-center hover:bg-gray-700/50 transition-colors">
+                        <div className={`w-8 h-8 bg-gradient-to-r ${feature.color} rounded-lg mx-auto mb-2 flex items-center justify-center`}>
+                          {feature.icon}
+                        </div>
+                        <p className="text-white text-xs font-medium">{feature.title}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* CTA Button */}
+                <div className="text-center">
+                  <button className="w-full max-w-xs mx-auto bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-black font-semibold py-3 px-6 rounded-xl transition-all transform hover:scale-[1.02] active:scale-95">
+                    Continuer la configuration
+                  </button>
+                  <p className="text-gray-400 text-xs mt-2">Moins de 2 minutes</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center px-4 pt-20 pb-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="w-full max-w-2xl"
-        >
-          {/* Onboarding Card */}
-          <div className="bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-2xl p-8 border border-gray-600 shadow-2xl">
-            {/* Progress Bar */}
-            <div className="mb-8">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-white">Onboarding</h2>
-                <span className="text-gray-400">{currentStep + 1} / {steps.length}</span>
-              </div>
-              <div className="w-full bg-gray-700 rounded-full h-2">
-                <div 
-                  className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-2 rounded-full transition-all duration-500"
-                  style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
-                ></div>
-              </div>
-            </div>
-
-            {/* Steps Indicator */}
-            <div className="flex justify-center mb-8">
-              <div className="flex space-x-4">
-                {steps.map((step, index) => (
-                  <div key={step.id} className="flex items-center">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      completedSteps.includes(step.id)
-                        ? 'bg-gradient-to-r from-green-400 to-green-500'
-                        : currentStep === step.id
-                        ? 'bg-gradient-to-r from-yellow-400 to-yellow-500'
-                        : 'bg-gray-700'
-                    }`}>
-                      {completedSteps.includes(step.id) ? (
-                        <Check className="w-5 h-5 text-black" />
-                      ) : (
-                        <step.icon className="w-5 h-5 text-white" />
-                      )}
-                    </div>
-                    {index < steps.length - 1 && (
-                      <div className={`w-8 h-0.5 mx-2 ${
-                        completedSteps.includes(step.id) ? 'bg-green-400' : 'bg-gray-700'
-                      }`}></div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Current Step Content */}
-            <motion.div
-              key={currentStep}
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              className="text-center mb-8"
-            >
-              <div className={`w-24 h-24 bg-gradient-to-r ${currentStepData.color} rounded-full mx-auto mb-6 flex items-center justify-center`}>
-                <currentStepData.icon className="w-12 h-12 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-4">{currentStepData.title}</h3>
-              <p className="text-gray-300 text-lg">{currentStepData.description}</p>
-            </motion.div>
-
-            {/* Action Buttons */}
-            <div className="flex justify-center space-x-4">
-              {currentStep < steps.length - 1 ? (
-                <button
-                  onClick={() => handleStepComplete(currentStep)}
-                  className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-semibold py-3 px-8 rounded-xl hover:from-yellow-300 hover:to-yellow-400 transition-all duration-300 flex items-center space-x-2"
-                >
-                  <span>Continuer</span>
-                  <ArrowRight className="w-5 h-5" />
-                </button>
-              ) : (
-                <Link
-                  href="/dashboard"
-                  className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-semibold py-3 px-8 rounded-xl hover:from-yellow-300 hover:to-yellow-400 transition-all duration-300 flex items-center space-x-2"
-                >
-                  <span>Commencer l'apprentissage</span>
-                  <ArrowRight className="w-5 h-5" />
-                </Link>
-              )}
-            </div>
-          </div>
-        </motion.div>
+      {/* Background elements */}
+      <div className="fixed inset-0 -z-10 overflow-hidden">
+        <div className="absolute top-0 left-1/4 w-72 h-72 bg-yellow-400/10 rounded-full filter blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-blue-400/10 rounded-full filter blur-3xl"></div>
       </div>
     </div>
   );
 }
-
