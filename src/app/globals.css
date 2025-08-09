@@ -42,6 +42,17 @@
   animation: gradientFlow 4s ease-in-out infinite;
 }
 
+/* Progress Ring Styles */
+.progress-ring {
+  transform: rotate(-90deg);
+}
+
+.progress-ring-circle {
+  transition: stroke-dashoffset 0.5s;
+  transform: rotate(0deg);
+  transform-origin: 50% 50%;
+}
+
 :root {
   --foreground-rgb: 255, 255, 255;
   --background-start-rgb: 15, 28, 46;

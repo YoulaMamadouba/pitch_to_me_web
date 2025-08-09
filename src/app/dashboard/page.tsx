@@ -1,30 +1,139 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { 
   Home, 
   BookOpen, 
   Users, 
-  User, 
-  BarChart3, 
-  Play, 
+  User,
+  Settings,
+  Bell,
+  Menu,
+  X,
+  ChevronDown,
+  ChevronRight,
+  Play,
+  Check,
+  Lock,
+  BarChart3,
   Trophy,
-  TrendingUp,
   Target,
   Calendar,
-  ArrowRight
+  ArrowRight,
+  TrendingUp,
+
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+
+
+type NavigationItem = {
+  id: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  active?: boolean;
+};
+
+type Module = {
+  id: number;
+  title: string;
+  subtitle: string;
+  progress: number;
+  locked: boolean;
+  current: boolean;
+};
+
+type Activity = {
+  type: string;
+  title: string;
+  time: string;
+  icon: React.ComponentType<{ className?: string }>;
+};
+
+interface ProgressRingProps {
+  progress: number;
+  size?: number;
+  stroke?: number;
+}
+
+const ProgressRing = ({ progress, size = 60, stroke = 6 }: ProgressRingProps) => {
+  const radius = (size - stroke) / 2;
+  const circumference = radius * 2 * Math.PI;
+  const offset = circumference - (progress / 100) * circumference;
+
+  return (
+    <div className="relative inline-flex items-center justify-center">
+      <svg className="progress-ring w-16 h-16" viewBox="0 0 80 80">
+        <circle 
+          cx="40" 
+          cy="40" 
+          r="36" 
+          stroke="#374151" 
+          strokeWidth="8" 
+          fill="transparent"
+        />
+        <circle 
+          className="progress-ring-circle" 
+          cx="40" 
+          cy="40" 
+          r="36" 
+          stroke="#F4C056" 
+          strokeWidth="8" 
+          fill="transparent"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+        />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-white font-bold text-sm">{progress}%</span>
+      </div>
+    </div>
+  );
+};
 
 export default function DashboardPage() {
-  const [activeTab, setActiveTab] = useState('home');
+  const [mounted, setMounted] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
-  const navigation = [
-    { id: 'home', label: 'Accueil', icon: Home },
-    { id: 'modules', label: 'Modules', icon: BookOpen },
-    { id: 'community', label: 'Communauté', icon: Users },
-    { id: 'profile', label: 'Profil', icon: User }
+  useEffect(() => {
+    setMounted(true);
+    
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [activeModule, setActiveModule] = useState<number>(5); // Module 6 est actif (index 5)
+  const [activeTab, setActiveTab] = useState<string>('home');
+
+
+  const navigation: NavigationItem[] = [
+    { id: 'home', label: 'Tableau de bord', icon: Home, active: activeTab === 'home' },
+    { id: 'modules', label: 'Mes Modules', icon: BookOpen, active: activeTab === 'modules' },
+    { id: 'community', label: 'Communauté', icon: Users, active: activeTab === 'community' },
+    { id: 'profile', label: 'Mon Profil', icon: User, active: activeTab === 'profile' },
+    { id: 'settings', label: 'Paramètres', icon: Settings, active: activeTab === 'settings' },
+  ];
+
+  const modules: Module[] = [
+    { id: 1, title: 'Module 1', subtitle: 'Fondamentaux', progress: 100, locked: false, current: false },
+    { id: 2, title: 'Module 2', subtitle: 'Contrôle Vocal', progress: 100, locked: false, current: false },
+    { id: 3, title: 'Module 3', subtitle: 'Structure du Pitch', progress: 100, locked: false, current: false },
+    { id: 4, title: 'Module 4', subtitle: 'Storytelling', progress: 100, locked: false, current: false },
+    { id: 5, title: 'Module 5', subtitle: 'Gestion du Stress', progress: 100, locked: false, current: false },
+    { id: 6, title: 'Module 6', subtitle: 'Langage Corporel', progress: 60, locked: false, current: true },
+    { id: 7, title: 'Module 7', subtitle: 'Techniques Avancées', progress: 0, locked: true, current: false },
+    { id: 8, title: 'Module 8', subtitle: 'Questions Difficiles', progress: 0, locked: true, current: false },
+  ];
+
+  const recentActivities: Activity[] = [
+    { type: 'module', title: 'Module 3 terminé', time: 'Il y a 2h', icon: Trophy },
+    { type: 'practice', title: 'Session VR complétée', time: 'Il y a 4h', icon: Play },
+    { type: 'achievement', title: 'Badge "Orateur Confiant"', time: 'Il y a 1j', icon: Target }
   ];
 
   const progressData = {
@@ -37,222 +146,309 @@ export default function DashboardPage() {
     ]
   };
 
-  const recentActivities = [
-    { type: 'module', title: 'Module 3 terminé', time: 'Il y a 2h', icon: Trophy },
-    { type: 'practice', title: 'Session VR complétée', time: 'Il y a 4h', icon: Play },
-    { type: 'achievement', title: 'Badge "Orateur Confiant"', time: 'Il y a 1j', icon: Target }
-  ];
+  const currentModule = modules.find(m => m.current) || modules[5];
+  const overallProgress = Math.round(modules.reduce((acc, curr) => acc + curr.progress, 0) / modules.length);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
-      {/* Fixed Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center p-4 bg-black bg-opacity-20 backdrop-blur-sm border-b border-gray-700">
-        <div className="text-xl font-bold text-white">Pitch to Me</div>
-        <div className="flex items-center space-x-4">
-          <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center">
-            <User className="w-4 h-4 text-black" />
-          </div>
+    <div className="flex h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+      {/* Sidebar */}
+      <div className={`${isSidebarOpen ? 'w-64' : 'w-20'} bg-gray-900 text-white transition-all duration-300 ease-in-out flex flex-col`}>
+        <div className="p-4 flex items-center justify-between border-b border-gray-800">
+          {isSidebarOpen ? (
+            <h1 className="text-xl font-bold text-yellow-400">Pitch to Me</h1>
+          ) : (
+            <div className="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center">
+              <span className="text-gray-900 font-bold">P</span>
+            </div>
+          )}
+          <button 
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="text-gray-400 hover:text-white"
+          >
+            {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
+
+        {/* Profile */}
+        <div className="p-4 flex items-center space-x-3 border-b border-gray-800">
+          <div className="relative">
+            <img 
+              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face" 
+              alt="Profile" 
+              className="w-14 h-14 rounded-full border-2 border-yellow-400 object-cover"
+            />
+            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-400 rounded-full border-2 border-white"></div>
+          </div>
+          {isSidebarOpen && (
+            <div>
+              <div className="font-medium text-white">Alex Dupont</div>
+              <div className="text-xs text-gray-400">Niveau 3</div>
+            </div>
+          )}
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1 overflow-y-auto py-4">
+          <ul>
+            {navigation.map((item) => (
+              <li key={item.id}>
+                <a 
+                  href="#" 
+                  className={`flex items-center px-4 py-3 text-sm font-medium ${item.active ? 'bg-gray-800 text-yellow-400' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}`}
+                >
+                  <item.icon className="w-5 h-5 mr-3" />
+                  {isSidebarOpen && item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        {/* Footer */}
+        {isSidebarOpen && (
+          <div className="p-4 border-t border-gray-800 text-xs text-gray-400 mt-auto">
+            <p>© 2024 Pitch to Me</p>
+            <p className="mt-1">Tous droits réservés</p>
+          </div>
+        )}
       </div>
 
-      <div className="flex pt-16">
-        {/* Sidebar Navigation */}
-        <div className="w-64 bg-black bg-opacity-20 min-h-screen p-4">
-          <nav className="space-y-2">
-            {navigation.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-all ${
-                  activeTab === item.id
-                    ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-black'
-                    : 'text-white hover:bg-gray-700'
-                }`}
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden bg-transparent">
+        {/* Top Navigation */}
+        <header className="bg-gray-900 border-b border-gray-800 sticky top-0 z-10 py-2">
+          <div className="flex items-center justify-between px-4 h-14">
+            <div className="flex items-center">
+              <motion.h1 
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
+                className="text-xl font-bold text-white"
               >
-                <item.icon className="w-5 h-5" />
-                <span className="font-medium">{item.label}</span>
+                Tableau de Bord
+              </motion.h1>
+            </div>
+            <div className="flex items-center space-x-6">
+              <button className="p-1.5 rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors relative">
+                <Bell size={20} />
+                <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
-            ))}
-          </nav>
-        </div>
-
-        {/* Main Content */}
-        <div className="flex-1 p-6">
-          {activeTab === 'home' && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="space-y-6"
-            >
-              {/* Welcome Section */}
-              <div className="bg-gray-800 bg-opacity-50 rounded-xl p-6 border border-gray-700">
-                <h1 className="text-2xl font-bold text-white mb-2">
-                  Bonjour, Alex ! 👋
-                </h1>
-                <p className="text-gray-300">
-                  Continuez votre progression vers l'excellence en prise de parole
-                </p>
+              <div className="flex items-center space-x-3">
+                <div className="relative">
+                  <img 
+                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face" 
+                    alt="Profile" 
+                    className="w-8 h-8 rounded-full border-2 border-yellow-400 object-cover"
+                  />
+                  <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-green-400 rounded-full border-2 border-white"></div>
+                </div>
+                <span className="hidden md:inline text-sm font-medium text-white">Alex Dupont</span>
+                <ChevronDown className="w-4 h-4 text-gray-300" />
               </div>
+            </div>
+          </div>
+        </header>
 
-              {/* Progress Overview */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-gray-800 bg-opacity-50 rounded-xl p-6 border border-gray-700">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-white font-semibold">Progression Globale</h3>
-                    <BarChart3 className="w-6 h-6 text-yellow-400" />
-                  </div>
-                  <div className="text-3xl font-bold text-white mb-2">{progressData.overall}%</div>
-                  <div className="w-full bg-gray-700 rounded-full h-2">
-                    <div 
-                      className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-2 rounded-full transition-all"
-                      style={{ width: `${progressData.overall}%` }}
-                    ></div>
-                  </div>
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+
+          {/* Welcome Section */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg p-6 mb-6 border border-gray-700 hover:shadow-xl transition-all"
+          >
+            <h2 className="text-xl font-semibold text-white mb-2">Bon retour, Alex !</h2>
+            <p className="text-gray-300 mb-6">Continuez votre apprentissage là où vous vous êtes arrêté.</p>
+            
+            {/* Progress Overview */}
+            <div className="bg-gradient-to-r from-gray-800 to-gray-700 rounded-xl p-6 text-white mb-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-700">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                <div className="mb-4 md:mb-0">
+                  <h3 className="text-lg font-semibold mb-1">Progression Globale</h3>
+                  <div className="text-gray-300 text-sm">{modules.filter(m => !m.locked).length} sur {modules.length} modules complétés</div>
                 </div>
-
-                <div className="bg-gray-800 bg-opacity-50 rounded-xl p-6 border border-gray-700">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-white font-semibold">Modules Terminés</h3>
-                    <BookOpen className="w-6 h-6 text-cyan-400" />
-                  </div>
-                  <div className="text-3xl font-bold text-white mb-2">3/12</div>
-                  <p className="text-gray-400 text-sm">25% complété</p>
-                </div>
-
-                <div className="bg-gray-800 bg-opacity-50 rounded-xl p-6 border border-gray-700">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-white font-semibold">Score Moyen</h3>
-                    <Trophy className="w-6 h-6 text-green-400" />
-                  </div>
-                  <div className="text-3xl font-bold text-white mb-2">85%</div>
-                  <p className="text-gray-400 text-sm">Excellent travail !</p>
-                </div>
-              </div>
-
-              {/* Premium VR Practice Card */}
-              <div className="bg-gradient-to-r from-purple-600 to-purple-800 rounded-xl p-6 border border-purple-500 shadow-lg shadow-purple-500/25">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="text-white font-semibold text-xl mb-2">Premium Pratique VR</h3>
-                    <p className="text-purple-200">Accédez à des environnements VR immersifs pour pratiquer vos présentations</p>
-                  </div>
-                  <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                    <Play className="w-8 h-8 text-white" />
-                  </div>
-                </div>
-                <Link
-                  href="/vr-scenes"
-                  className="inline-flex items-center space-x-2 bg-white text-purple-600 font-semibold py-3 px-6 rounded-lg hover:bg-gray-100 transition-all duration-300"
-                >
-                  <span>Accéder aux scènes VR</span>
-                  <ArrowRight className="w-5 h-5" />
-                </Link>
-              </div>
-
-              {/* Module Progress */}
-              <div className="bg-gray-800 bg-opacity-50 rounded-xl p-6 border border-gray-700">
-                <h3 className="text-white font-semibold text-lg mb-4">Progression des Modules</h3>
-                <div className="space-y-4">
-                  {progressData.modules.map((module, index) => (
-                    <div key={module.name} className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex justify-between text-sm mb-1">
-                          <span className="text-white">{module.name}</span>
-                          <span className="text-gray-400">{module.progress}%</span>
-                        </div>
-                        <div className="w-full bg-gray-700 rounded-full h-2">
-                          <div 
-                            className={`bg-gradient-to-r ${module.color} h-2 rounded-full transition-all`}
-                            style={{ width: `${module.progress}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Recent Activities */}
-              <div className="bg-gray-800 bg-opacity-50 rounded-xl p-6 border border-gray-700">
-                <h3 className="text-white font-semibold text-lg mb-4">Activités Récentes</h3>
-                <div className="space-y-4">
-                  {recentActivities.map((activity, index) => (
-                    <div key={index} className="flex items-center space-x-4">
-                      <div className="w-10 h-10 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center">
-                        <activity.icon className="w-5 h-5 text-black" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-white font-medium">{activity.title}</div>
-                        <div className="text-gray-400 text-sm">{activity.time}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {activeTab === 'modules' && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="space-y-6"
-            >
-              <h2 className="text-2xl font-bold text-white mb-6">Mes Modules</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {progressData.modules.map((module, index) => (
-                  <div key={module.name} className="bg-gray-800 bg-opacity-50 rounded-xl p-6 border border-gray-700 hover:border-gray-600 transition-all">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-white font-semibold">{module.name}</h3>
-                      <div className="text-2xl font-bold text-white">{module.progress}%</div>
-                    </div>
-                    <div className="w-full bg-gray-700 rounded-full h-2 mb-4">
+                <div className="flex items-center">
+                  <ProgressRing progress={overallProgress} size={80} stroke={6} />
+                  <div className="ml-6">
+                    <div className="text-3xl font-bold">{overallProgress}%</div>
+                    <div className="w-32 bg-gray-700/50 rounded-full h-2 mt-2 overflow-hidden">
                       <div 
-                        className={`bg-gradient-to-r ${module.color} h-2 rounded-full transition-all`}
-                        style={{ width: `${module.progress}%` }}
+                        className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-2 rounded-full" 
+                        style={{ width: `${overallProgress}%` }}
                       ></div>
                     </div>
-                    <button className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-semibold py-2 rounded-lg hover:shadow-lg transition-all">
-                      Continuer
-                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Current Module */}
+            <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 border border-yellow-400/30 mb-6">
+              <div className="flex flex-col h-full">
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-gray-900 mb-1">Continuer l'apprentissage</h3>
+                  <h4 className="text-gray-900 font-semibold">{currentModule.title}: {currentModule.subtitle}</h4>
+                  <p className="text-gray-800 text-sm mt-1">Maîtrisez la communication non verbale</p>
+                </div>
+                <div className="mt-4 flex justify-between items-center">
+                  <span className="text-xs bg-black/10 text-gray-900 px-2 py-1 rounded-full">En cours</span>
+                  <button className="bg-black/10 hover:bg-black/20 text-gray-900 font-medium px-4 py-2 rounded-lg transition-colors">
+                    Continuer
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            {/* Module Progress */}
+            <div className="mt-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-white">Progression du module</h3>
+                <span className="text-sm text-gray-300">{currentModule.progress}% complété</span>
+              </div>
+              <div className="w-full bg-gray-700/50 rounded-full h-2.5 overflow-hidden">
+                <div 
+                  className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-full rounded-full" 
+                  style={{ width: `${currentModule.progress}%` }}
+                />
+              </div>
+              
+              <div className="mt-6 flex justify-end">
+                <button 
+                  className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-white font-medium px-6 py-2.5 rounded-lg transition-all hover:shadow-lg transform hover:-translate-y-0.5 active:translate-y-0 flex items-center"
+                >
+                  <Play className="w-4 h-4 mr-2" />
+                  Continuer le Module
+                </button>
+              </div>
+            </div>
+
+            {/* Modules Grid */}
+            <div>
+              <h3 className="text-lg font-semibold text-white mb-4">Tous les Modules</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {modules.map((module) => (
+                  <motion.div 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    key={module.id}
+                    className={`p-3 rounded-lg border transition-all ${
+                      module.current 
+                        ? 'border-yellow-600 bg-yellow-800/30' 
+                        : module.locked 
+                          ? 'border-gray-600 bg-gray-800/30 opacity-50' 
+                          : 'border-green-600 bg-green-800/30'
+                    } ${!module.locked ? 'transform hover:-translate-y-1' : ''}`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div 
+                          className={`w-8 h-8 rounded-lg flex items-center justify-center mb-2 ${
+                            module.locked 
+                              ? 'bg-gray-600 text-gray-400' 
+                              : module.current 
+                                ? 'bg-yellow-400 text-black'
+                                : 'bg-green-400 text-black'
+                          }`}
+                        >
+                          {module.locked ? (
+                            <Lock className="w-5 h-5" />
+                          ) : module.current ? (
+                            <Play className="w-5 h-5" />
+                          ) : (
+                            <Check className="w-5 h-5" />
+                          )}
+                        </div>
+                        <h4 className="font-medium text-white text-sm">{module.title}</h4>
+                        <p className="text-xs text-gray-300">{module.subtitle}</p>
+                      </div>
+                      {!module.locked && (
+                        <div className="text-xs font-medium text-gray-500">
+                          {module.progress}%
+                        </div>
+                      )}
+                    </div>
+                    {!module.locked && (
+                      <div className="mt-2 w-full bg-gray-700 rounded-full h-1">
+                        <div 
+                          className={`h-1 rounded-full ${
+                            module.current 
+                              ? 'bg-yellow-400' 
+                              : 'bg-green-400'
+                          }`} 
+                          style={{ width: `${module.progress}%` }}
+                        ></div>
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Stats & Activities */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+          >
+            {/* Stats Card */}
+            <div className="bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-gray-700">
+              <h3 className="font-semibold text-white mb-4">Statistiques</h3>
+              <div className="space-y-4">
+                {progressData.modules.map((item, index) => (
+                  <div key={index}>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-300">{item.name}</span>
+                      <span className="font-medium">{item.progress}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className={`h-2 rounded-full bg-gradient-to-r ${item.color}`}
+                        style={{ width: `${item.progress}%` }}
+                      ></div>
+                    </div>
                   </div>
                 ))}
               </div>
-            </motion.div>
-          )}
+            </div>
 
-          {activeTab === 'community' && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="space-y-6"
-            >
-              <h2 className="text-2xl font-bold text-white mb-6">Communauté</h2>
-              <div className="bg-gray-800 bg-opacity-50 rounded-xl p-6 border border-gray-700">
-                <p className="text-gray-300">Fonctionnalité communautaire à venir...</p>
+            {/* Recent Activities */}
+            <div className="lg:col-span-2 bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-gray-700">
+              <h3 className="font-semibold text-white mb-4">Activités Récentes</h3>
+              <div className="space-y-4">
+                {recentActivities.map((activity, index) => (
+                  <div key={index} className="flex items-start space-x-3">
+                    <div className={`p-2 rounded-lg ${
+                      activity.type === 'module' 
+                        ? 'bg-blue-100 text-blue-600' 
+                        : activity.type === 'practice'
+                          ? 'bg-purple-100 text-purple-600'
+                          : 'bg-yellow-100 text-yellow-600'
+                    }`}>
+                      <activity.icon className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-white">{activity.title}</p>
+                      <p className="text-xs text-gray-500">{activity.time}</p>
+                    </div>
+                    <button className="text-gray-400 hover:text-gray-600">
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+                <button 
+                  className="w-full mt-4 text-sm font-medium text-yellow-400 hover:text-yellow-300 flex items-center justify-center transition-all hover:scale-105 active:scale-95"
+                >
+                  Voir toutes les activités <ArrowRight className="w-4 h-4 ml-1" />
+                </button>
               </div>
-            </motion.div>
-          )}
-
-          {activeTab === 'profile' && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="space-y-6"
-            >
-              <h2 className="text-2xl font-bold text-white mb-6">Mon Profil</h2>
-              <div className="bg-gray-800 bg-opacity-50 rounded-xl p-6 border border-gray-700">
-                <p className="text-gray-300">Fonctionnalité profil à venir...</p>
-              </div>
-            </motion.div>
-          )}
-        </div>
+            </div>
+          </motion.div>
+        </main>
       </div>
     </div>
   );
 }
-
