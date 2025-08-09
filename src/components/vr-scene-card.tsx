@@ -42,8 +42,8 @@ export default function VRSceneCard({
 
   return (
     <motion.div 
-      className="scene-card bg-gradient-to-r rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-      whileHover={{ scale: 1.01 }}
+      className="scene-card bg-gradient-to-r rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 max-w-[280px] mx-auto w-full"
+      whileHover={{ scale: 1.03 }}
     >
       <div className={`bg-gradient-to-r ${colorGradients[color as keyof typeof colorGradients] || colorGradients.blue} h-32 relative`}>
         <img 
@@ -57,26 +57,26 @@ export default function VRSceneCard({
         </div>
       </div>
       <div className="p-4">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-white font-semibold text-lg">{title}</h3>
-          <div className="flex items-center space-x-1">
-            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-            <span className="text-yellow-400 text-sm">{rating}</span>
+        <div className="flex items-start justify-between mb-2">
+          <h3 className="text-white font-semibold text-base leading-tight line-clamp-2 h-12 flex items-center">{title}</h3>
+          <div className="flex items-center bg-black/20 rounded-full px-2 py-1 border border-white/10 ml-2">
+            <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
+            <span className="text-yellow-400 text-xs ml-0.5">{rating}</span>
           </div>
         </div>
-        <p className="text-gray-300 text-sm mb-3">{description}</p>
+        <p className="text-gray-300 text-sm mb-3 line-clamp-2 h-10 text-ellipsis overflow-hidden">{description}</p>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <span className={`text-xs text-white px-2 py-1 rounded ${difficultyColors[difficulty]}`}>
+            <span className={`text-[11px] text-white px-2 py-0.5 rounded-full ${difficultyColors[difficulty]} bg-opacity-80`}>
               {difficulty}
             </span>
-            <span className="text-xs text-gray-400">{duration}</span>
+            <span className="text-xs text-gray-400">⏱️ {duration}</span>
           </div>
           <Link 
             href={`/vr-scenes/${id}`}
-            className="bg-white text-gray-800 hover:bg-gray-100 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            className="bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all transform hover:scale-105 active:scale-95 shadow-md shadow-cyan-500/20"
           >
-            Enter VR
+            Essayer
           </Link>
         </div>
       </div>

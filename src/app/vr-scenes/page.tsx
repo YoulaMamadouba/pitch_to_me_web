@@ -67,7 +67,7 @@ export default function VRScenesPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-black/20 backdrop-blur-sm border-b border-gray-800">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-black/70 backdrop-blur-md border-b border-gray-800">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/dashboard" className="text-gray-300 hover:text-white">
             <ChevronLeft className="w-6 h-6" />
@@ -79,7 +79,7 @@ export default function VRScenesPage() {
         </div>
       </header>
 
-      <main className="container mx-auto px-6 py-8 pb-24">
+      <main className="container mx-auto px-4 pt-24 pb-8">
         {/* Hero Section */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-r from-cyan-400 to-cyan-500 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg shadow-cyan-500/30">
@@ -93,7 +93,7 @@ export default function VRScenesPage() {
         </div>
 
         {/* VR Scenes Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {scenes.map((scene) => (
             <VRSceneCard
               key={scene.id}
@@ -112,13 +112,15 @@ export default function VRScenesPage() {
       </main>
 
       {/* Bottom Info */}
-      <div className="fixed bottom-0 left-0 right-0 bg-black/30 backdrop-blur-sm border-t border-gray-800 p-4">
-        <div className="container mx-auto">
-          <div className="flex items-center justify-center space-x-2 mb-2">
-            <Headset className="w-5 h-5 text-cyan-400" />
-            <span className="text-sm font-medium">VR Headset Required</span>
+      <div className="bg-black/30 border-t border-gray-800 p-6 mt-12">
+        <div className="container mx-auto max-w-6xl">
+          <div className="flex flex-col items-center justify-center space-y-2">
+            <div className="flex items-center space-x-2">
+              <Headset className="w-5 h-5 text-cyan-400" />
+              <span className="text-sm font-medium">VR Headset Required</span>
+            </div>
+            <p className="text-xs text-gray-400 text-center">Compatible with Oculus, HTC Vive, and PlayStation VR</p>
           </div>
-          <p className="text-xs text-gray-400 text-center">Compatible with Oculus, HTC Vive, and PlayStation VR</p>
         </div>
       </div>
     </div>
