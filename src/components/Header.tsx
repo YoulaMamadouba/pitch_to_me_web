@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Globe, Menu, X } from 'lucide-react';
+import Image from 'next/image';
 
 interface HeaderProps {
   showLanguageSelector?: boolean;
@@ -14,10 +15,21 @@ export default function Header({ showLanguageSelector = true, showAuthButtons = 
   const [language, setLanguage] = useState('FR');
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center p-4 bg-black bg-opacity-20 backdrop-blur-sm border-b border-gray-700">
+    <header className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center p-4 bg-black border-b border-gray-800">
       {/* Logo */}
-      <Link href="/" className="text-xl font-bold text-white hover:text-yellow-400 transition-colors">
-        Pitch to Me
+      <Link href="/" className="flex items-center space-x-2 group">
+        <div className="w-8 h-8 relative">
+          <Image 
+            src="/microphone-simple-icon.svg" 
+            alt="Pitch to Me Logo" 
+            width={32} 
+            height={32}
+            className="group-hover:scale-110 transition-transform"
+          />
+        </div>
+        <span className="text-xl font-bold text-white group-hover:text-yellow-400 transition-colors">
+          Pitch to Me
+        </span>
       </Link>
 
       {/* Desktop Navigation */}
