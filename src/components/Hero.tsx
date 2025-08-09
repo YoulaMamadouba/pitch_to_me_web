@@ -83,7 +83,7 @@ export default function Hero() {
               >
                 <Link 
                   href="/b2c" 
-                  className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-semibold py-3 px-6 rounded-xl glow-effect hover:shadow-2xl transition-all flex items-center justify-center space-x-2 text-sm"
+                  className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-semibold py-2 px-4 rounded-lg hover:shadow-xl transition-all flex items-center justify-center space-x-2 text-xs"
                 >
                   <User className="w-5 h-5" />
                   <span>Je suis un particulier</span>
@@ -97,7 +97,7 @@ export default function Hero() {
               >
                 <Link 
                   href="/b2b" 
-                  className="w-full bg-gradient-to-r from-cyan-400 to-cyan-500 text-black font-semibold py-3 px-6 rounded-xl neon-glow hover:shadow-2xl transition-all flex items-center justify-center space-x-2 text-sm"
+                  className="w-full bg-gradient-to-r from-cyan-400 to-cyan-500 text-black font-semibold py-2 px-4 rounded-lg hover:shadow-xl transition-all flex items-center justify-center space-x-2 text-xs"
                 >
                   <Building className="w-5 h-5" />
                   <span>Je suis une entreprise</span>
@@ -109,7 +109,7 @@ export default function Hero() {
       </div>
 
       {/* Enhanced Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

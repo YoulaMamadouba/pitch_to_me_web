@@ -18,16 +18,17 @@ export default function Home() {
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
             <div className="space-y-4">
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 group">
                 <div className="w-8 h-8 relative">
                   <Image 
-                    src="/recorder-icon.svg" 
+                    src="/microphone-simple-icon.svg" 
                     alt="Pitch to Me Logo" 
                     width={32} 
                     height={32}
+                    className="group-hover:scale-110 transition-transform"
                   />
                 </div>
-                <span className="text-xl font-bold text-white">Pitch to Me</span>
+                <span className="text-xl font-bold text-white group-hover:text-yellow-400 transition-colors">Pitch to Me</span>
               </div>
               <p className="text-gray-400 text-sm">Transformez votre voix en opportunités avec notre plateforme d'entraînement au pitch ultime.</p>
               <div className="flex space-x-4">
