@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 
 export default function Hero() {
   return (
-    <section className="relative h-screen overflow-hidden flex flex-col">
+    <div className="relative h-screen overflow-hidden flex flex-col">
       {/* Background Video/Image */}
       <div className="absolute inset-0">
         <div className="relative w-full h-full" style={{ top: '-40%', height: '140%' }}>
@@ -104,36 +104,34 @@ export default function Hero() {
                 </Link>
               </motion.div>
             </div>
-          </div>
-        </motion.div>
-      </div>
 
-      {/* Enhanced Scroll Indicator */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2 }}
-          className="flex flex-col items-center"
-        >
-          <div className="relative w-8 h-14">
-            <motion.div
-              className="absolute w-1 h-10 bg-yellow-400 rounded-full left-1/2 -translate-x-1/2"
-              animate={{
-                y: [0, 15],
-                opacity: [0.4, 1, 0.4],
-              }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
-            <div className="absolute bottom-0 left-1/2 w-2 h-2 -translate-x-1/2 bg-yellow-400 rounded-full opacity-70"></div>
+            {/* Enhanced Scroll Indicator - Moved up */}
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.2 }}
+              className="mt-8 mb-4"
+            >
+              <div className="relative w-6 h-12 mx-auto">
+                <motion.div
+                  className="absolute w-1 h-8 bg-yellow-400 rounded-full left-1/2 -translate-x-1/2"
+                  animate={{
+                    y: [0, 10],
+                    opacity: [0.4, 1, 0.4],
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+                <div className="absolute bottom-0 left-1/2 w-2 h-2 -translate-x-1/2 bg-yellow-400 rounded-full opacity-70"></div>
+              </div>
+            </motion.div>
           </div>
         </motion.div>
       </div>
-    </section>
+    </div>
   );
 }
 
