@@ -284,8 +284,8 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Current Module and VR Access */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            {/* Current Module and Tools Access */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               {/* Current Module Card */}
               <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 border border-yellow-400/30 h-full">
                 <div className="flex flex-col h-full">
@@ -323,6 +323,35 @@ export default function DashboardPage() {
                       <span className="text-xs bg-white/20 text-white px-2 py-1 rounded-full">Nouveau</span>
                       <div className="flex items-center text-white/90 group-hover:text-white transition-colors">
                         <span className="font-medium mr-1">Découvrir</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+              
+              {/* Voice Analysis Access Card */}
+              <Link href="/voice-analysis" className="group">
+                <div className="bg-gradient-to-r from-cyan-600 to-blue-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all transform group-hover:-translate-y-0.5 border border-cyan-400/30 h-full">
+                  <div className="flex flex-col h-full">
+                    <div className="flex-1">
+                      <div className="flex items-center mb-2">
+                        <div className="p-2 bg-white/20 rounded-lg mr-3">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                          </svg>
+                        </div>
+                        <h3 className="text-xl font-bold text-white">Analyse Vocale</h3>
+                      </div>
+                      <h4 className="text-white/90 font-medium">Analyse en temps réel</h4>
+                      <p className="text-white/80 text-sm mt-1">Améliorez votre élocution et votre rythme</p>
+                    </div>
+                    <div className="mt-4 flex justify-between items-center">
+                      <span className="text-xs bg-white/20 text-white px-2 py-1 rounded-full">Nouveau</span>
+                      <div className="flex items-center text-white/90 group-hover:text-white transition-colors">
+                        <span className="font-medium mr-1">Analyser</span>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>

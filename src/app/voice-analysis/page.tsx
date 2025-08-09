@@ -1,218 +1,306 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, BarChart3, TrendingUp, Mic, Volume2, Zap, Target } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { ArrowLeft, Share2, Clock, BookOpen, Volume2, Mic } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+interface Recommendation {
+  id: number;
+  category: string;
+  title: string;
+  description: string;
+  icon: React.ElementType;
+  color: string;
+  textColor: string;
+  borderColor: string;
+  bgColor: string;
+}
+
+interface VoiceMetric {
+  name: string;
+  value: number;
+  change: string;
+  color: string;
+  iconName: string;
+}
 
 export default function VoiceAnalysisPage() {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [isRecording, setIsRecording] = useState(false);
+  const [sessionTime, setSessionTime] = useState(0);
+  
+  // Simulate recording time
+  useEffect(() => {
+    let interval: NodeJS.Timeout | undefined;
+    if (isRecording) {
+      interval = setInterval(() => {
+        setSessionTime(prev => prev + 1);
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isRecording]);
 
-  const analysisData = {
-    clarity: 85,
-    speed: 72,
-    expressiveness: 78,
-    confidence: 82,
-    overall: 79
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const recommendations = [
+  const analysisData = {
+    clarity: 92,
+    pace: 78,
+    volume: 88,
+    confidence: 85,
+    overall: 85
+  };
+
+  const recommendations: Recommendation[] = [
     {
-      category: 'Clarté',
-      title: 'Excellent travail sur la prononciation',
-      description: 'Votre articulation est claire et précise. Continuez à maintenir ce niveau.',
-      icon: Mic,
-      color: 'text-green-400'
-    },
-    {
-      category: 'Vitesse',
+      id: 1,
+      category: 'Rythme',
       title: 'Ralentissez légèrement',
-      description: 'Votre débit est un peu rapide. Essayez de faire des pauses plus fréquentes.',
+      description: 'Votre débit est 15% plus rapide que l\'optimal. Essayez de faire des pauses entre les points clés.',
       icon: Volume2,
-      color: 'text-yellow-400'
+      color: 'bg-yellow-600',
+      textColor: 'text-yellow-400',
+      borderColor: 'border-yellow-600',
+      bgColor: 'bg-yellow-900/30'
     },
     {
-      category: 'Expressivité',
-      title: 'Améliorez la variation tonale',
-      description: 'Utilisez plus de variations dans votre ton de voix pour captiver l\'audience.',
-      icon: Zap,
-      color: 'text-blue-400'
-    },
-    {
-      category: 'Confiance',
-      title: 'Posture et contact visuel',
-      description: 'Votre niveau de confiance est bon. Travaillez sur le contact visuel.',
-      icon: Target,
-      color: 'text-purple-400'
+      id: 2,
+      category: 'Clarté',
+      title: 'Excellente clarté !',
+      description: 'Votre articulation s\'est considérablement améliorée. Continuez ainsi !',
+      icon: Mic,
+      color: 'bg-green-600',
+      textColor: 'text-green-400',
+      borderColor: 'border-green-600',
+      bgColor: 'bg-green-900/30'
     }
   ];
 
-  const generateChartData = (value: number) => {
-    const radius = 60;
-    const circumference = 2 * Math.PI * radius;
-    const strokeDasharray = circumference;
-    const strokeDashoffset = circumference - (value / 100) * circumference;
-    return { radius, circumference, strokeDasharray, strokeDashoffset };
-  };
+
+
+  const voiceMetrics: VoiceMetric[] = [
+    { 
+      name: 'Clarté', 
+      value: 92, 
+      change: '+8%', 
+      color: 'bg-green-400',
+      iconName: 'mic'
+    },
+    { 
+      name: 'Rythme', 
+      value: 78, 
+      change: '-3%', 
+      color: 'bg-yellow-400',
+      iconName: 'volume'
+    },
+    { 
+      name: 'Volume', 
+      value: 88, 
+      change: '+5%', 
+      color: 'bg-blue-400',
+      iconName: 'wave'
+    },
+    { 
+      name: 'Confiance', 
+      value: 85, 
+      change: '+12%', 
+      color: 'bg-purple-400',
+      iconName: 'star'
+    }
+  ];
+
+  const waveformBars: number[] = [20, 60, 40, 80, 30, 70, 50, 90, 35, 65];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
       {/* Fixed Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center p-4 bg-black bg-opacity-20 backdrop-blur-sm border-b border-gray-700">
+      <header className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center p-4 bg-black/20 backdrop-blur-sm border-b border-gray-700">
         <Link href="/dashboard" className="text-white hover:text-yellow-400 transition-colors">
           <ArrowLeft className="w-6 h-6" />
         </Link>
-        <div className="text-lg font-bold text-white">Analyse Vocale IA</div>
-        <div className="w-6"></div>
-      </div>
+        
+        <div className="flex items-center space-x-2">
+          <h1 className="text-lg font-bold">Analyse Vocale</h1>
+        </div>
+        
+        <div className="flex items-center space-x-3">
+          <button 
+            className="text-white hover:text-yellow-400 transition-colors p-1"
+            onClick={() => setIsRecording(!isRecording)}
+          >
+            {isRecording ? (
+              <div className="flex items-center space-x-1">
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                <span className="text-xs">Enregistrement</span>
+              </div>
+            ) : (
+              <Mic className="w-5 h-5" />
+            )}
+          </button>
+          <button className="text-white hover:text-yellow-400 transition-colors p-1">
+            <Share2 className="w-5 h-5" />
+          </button>
+        </div>
+      </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center px-4 pt-20 pb-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="w-full max-w-4xl"
-        >
-          {/* Voice Analysis Card */}
-          <div className="bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-2xl p-8 border border-gray-600 shadow-2xl">
-            {/* Hero Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-center mb-8"
-            >
-              <div className="w-24 h-24 bg-gradient-to-r from-cyan-400 to-cyan-500 rounded-full mx-auto mb-6 flex items-center justify-center">
-                <BarChart3 className="w-12 h-12 text-black" />
+      <main className="pt-24 pb-16">
+        <div className="max-w-6xl mx-auto px-4">
+          {/* Top Section - Two Columns */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            {/* Recording Info */}
+            <div className="bg-white/5 rounded-xl p-4 border border-white/10 hover:border-yellow-400/30 transition-colors">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-white font-semibold text-lg">Dernier enregistrement</h2>
+                <span className="text-cyan-400 text-sm">Il y a 2 min</span>
               </div>
-              <h1 className="text-3xl font-bold text-white mb-4">Analyse de votre performance</h1>
-              <p className="text-gray-300">Voici les résultats détaillés de votre session VR</p>
-            </motion.div>
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <Clock className="w-4 h-4 text-yellow-400" />
+                  <span className="text-sm">{formatTime(sessionTime)}</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <BookOpen className="w-4 h-4 text-yellow-400" />
+                  <span className="text-sm">Module 6</span>
+                </div>
+              </div>
+            </div>
 
             {/* Overall Score */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-gray-700 rounded-xl p-6 border border-gray-600 mb-8"
-            >
-              <div className="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-8">
-                <div className="relative">
-                  <svg className="w-32 h-32 transform -rotate-90">
-                    <circle
-                      cx="64"
-                      cy="64"
-                      r="60"
-                      stroke="currentColor"
-                      strokeWidth="8"
-                      fill="transparent"
-                      className="text-gray-600"
-                    />
-                    <circle
-                      cx="64"
-                      cy="64"
-                      r="60"
-                      stroke="currentColor"
-                      strokeWidth="8"
-                      fill="transparent"
-                      strokeDasharray={generateChartData(analysisData.overall).strokeDasharray}
-                      strokeDashoffset={generateChartData(analysisData.overall).strokeDashoffset}
-                      className="text-yellow-400 transition-all duration-1000"
+            <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-xl p-4 text-center hover:shadow-lg hover:shadow-yellow-400/20 transition-all">
+              <div className="flex items-center justify-between">
+                <div className="relative w-16 h-16">
+                  <svg className="w-full h-full" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(0,0,0,0.2)" strokeWidth="8" />
+                    <circle 
+                      cx="50" 
+                      cy="50" 
+                      r="40" 
+                      fill="none" 
+                      stroke="#000000" 
+                      strokeWidth="8" 
+                      strokeDasharray="251.2" 
+                      strokeDashoffset="37.68"
+                      transform="rotate(-90 50 50)" 
                     />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-white">{analysisData.overall}%</div>
-                      <div className="text-gray-400 text-sm">Score global</div>
-                    </div>
+                    <span className="text-black font-bold text-xl">{analysisData.overall}</span>
                   </div>
                 </div>
-                <div className="text-center md:text-left">
-                  <h3 className="text-xl font-bold text-white mb-2">Performance excellente !</h3>
-                  <p className="text-gray-300">
-                    Votre présentation a été très bien reçue. Continuez à pratiquer pour maintenir ce niveau.
-                  </p>
+                <div className="text-left flex-1 pl-4">
+                  <h3 className="text-black font-bold text-lg mb-1">Performance excellente !</h3>
+                  <p className="text-gray-900 text-sm">Votre voix montre une amélioration significative</p>
                 </div>
               </div>
-            </motion.div>
+            </div>
+          </div>
 
-            {/* Detailed Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              {Object.entries(analysisData).filter(([key]) => key !== 'overall').map(([key, value], index) => (
-                <motion.div
-                  key={key}
-                  initial={{ opacity: 0, y: 30 }}
+          {/* Voice Metrics Section */}
+          <div className="mb-6">
+            <h3 className="text-white font-semibold text-lg mb-4">Métriques vocales</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {voiceMetrics.map((metric, index) => (
+                <motion.div 
+                  key={metric.name}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
-                  className="bg-gray-700 rounded-xl p-6 border border-gray-600"
+                  transition={{ delay: 0.1 * index }}
+                  className="bg-white/5 rounded-xl p-4 border border-white/10 hover:border-yellow-400/30 transition-colors"
                 >
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-white font-semibold capitalize">{key}</h3>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      value >= 80 ? 'bg-green-500' : value >= 60 ? 'bg-yellow-500' : 'bg-red-500'
-                    }`}>
-                      <TrendingUp className="w-4 h-4 text-white" />
+                  <div className="flex items-center justify-between mb-2">
+                    <div className={`w-8 h-8 ${metric.color} rounded-lg flex items-center justify-center`}>
+                      {metric.iconName === 'mic' && <Mic className="w-4 h-4 text-white" />}
+                      {metric.iconName === 'volume' && <Volume2 className="w-4 h-4 text-white" />}
+                      {metric.iconName === 'wave' && (
+                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 015 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0115 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z" />
+                        </svg>
+                      )}
+                      {metric.iconName === 'star' && (
+                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      )}
                     </div>
+                    <span className={`text-xs font-bold ${metric.change.startsWith('+') ? 'text-green-400' : 'text-yellow-400'}`}>
+                      {metric.change}
+                    </span>
                   </div>
-                  <div className="text-3xl font-bold text-white mb-2">{value}%</div>
-                  <div className="w-full bg-gray-600 rounded-full h-2">
+                  <div className="text-xl font-bold text-white mb-1">{metric.value}%</div>
+                  <div className="text-sm text-white/70 mb-2">{metric.name}</div>
+                  <div className="w-full bg-gray-700/50 rounded-full h-1.5 overflow-hidden">
                     <div 
-                      className={`h-2 rounded-full transition-all duration-1000 ${
-                        value >= 80 ? 'bg-green-400' : value >= 60 ? 'bg-yellow-400' : 'bg-red-400'
-                      }`}
-                      style={{ width: `${value}%` }}
-                    ></div>
+                      className="h-full rounded-full transition-all duration-500" 
+                      style={{ 
+                        width: `${metric.value}%`,
+                        backgroundColor: metric.color.replace('bg-', '').split('-')[0] === 'blue' ? '#60a5fa' : 
+                                      metric.color.replace('bg-', '').split('-')[0] === 'green' ? '#4ade80' :
+                                      metric.color.replace('bg-', '').split('-')[0] === 'yellow' ? '#facc15' : '#a78bfa'
+                      }}
+                    />
                   </div>
                 </motion.div>
               ))}
             </div>
+          </div>
 
-            {/* Recommendations */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-              className="bg-gray-700 rounded-xl p-6 border border-gray-600 mb-8"
-            >
-              <h3 className="text-xl font-bold text-white mb-6">Recommandations personnalisées</h3>
-              <div className="grid grid-cols-1 gap-6">
-                {recommendations.map((rec, index) => (
-                  <div key={rec.category} className="flex items-start space-x-4">
-                    <div className={`w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0`}>
-                      <rec.icon className={`w-6 h-6 ${rec.color}`} />
-                    </div>
-                    <div>
-                      <h4 className="text-white font-semibold mb-1">{rec.title}</h4>
-                      <p className="text-gray-300 text-sm">{rec.description}</p>
-                    </div>
-                  </div>
+          {/* Voice Waveform and AI Recommendations Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Voice Waveform Section */}
+            <div className="bg-white/5 rounded-xl p-4 border border-white/10 hover:border-yellow-400/30 transition-colors">
+              <h3 className="text-white font-semibold text-lg mb-4">Modèle vocal</h3>
+              <div className="flex items-end justify-center space-x-1 h-32 mb-2">
+                {waveformBars.map((height, index) => (
+                  <motion.div
+                    key={index}
+                    className="w-1.5 bg-gradient-to-t from-cyan-400 to-cyan-600 rounded-t"
+                    initial={{ height: '20%' }}
+                    animate={{ height: `${height}%` }}
+                    transition={{
+                      duration: 0.5,
+                      repeat: Infinity,
+                      repeatType: 'reverse',
+                      delay: index * 0.05
+                    }}
+                  />
                 ))}
               </div>
-            </motion.div>
+              <p className="text-center text-sm text-white/70 mt-2">Énergie constante tout au long de la présentation</p>
+            </div>
 
-            {/* Action Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
-              className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4"
-            >
-              <Link
-                href="/vr-scenes"
-                className="bg-gradient-to-r from-cyan-400 to-cyan-500 text-black font-semibold py-3 px-8 rounded-xl hover:from-cyan-300 hover:to-cyan-400 transition-all duration-300 text-center"
-              >
-                Pratiquer à nouveau
-              </Link>
-              <Link
-                href="/dashboard"
-                className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-semibold py-3 px-8 rounded-xl hover:from-yellow-300 hover:to-yellow-400 transition-all duration-300 text-center"
-              >
-                Retour au dashboard
-              </Link>
-            </motion.div>
+            {/* AI Recommendations Section */}
+            <div className="space-y-3">
+              <h3 className="text-white font-semibold text-lg mb-4">Recommandations de l'IA</h3>
+              <AnimatePresence>
+                {recommendations.map((rec, index) => (
+                  <motion.div
+                    key={rec.id}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 * index }}
+                    className={`${rec.bgColor} ${rec.borderColor} border rounded-xl p-3 hover:shadow-lg hover:shadow-yellow-400/10 transition-all`}
+                  >
+                    <div className="flex items-start space-x-3">
+                      <div className={`${rec.color} w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center`}>
+                        <span className="text-black font-bold text-xs">{index + 1}</span>
+                      </div>
+                      <div>
+                        <h4 className="text-white font-medium text-sm">{rec.title}</h4>
+                        <p className="text-xs text-white/80">{rec.description}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
           </div>
-        </motion.div>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }
