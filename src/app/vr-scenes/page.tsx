@@ -14,6 +14,9 @@ type Scene = {
   tag: string;
   rating: number;
   color: 'red' | 'blue' | 'green' | 'gray';
+  audience: number;
+  audienceAttention: number;
+  confidence: 'High' | 'Medium';
 };
 
 export default function VRScenesPage() {
@@ -27,7 +30,10 @@ export default function VRScenesPage() {
       duration: '18 min',
       tag: 'TEDx',
       rating: 4.9,
-      color: 'red' as const
+      color: 'red' as const,
+      audience: 487,
+      audienceAttention: 94,
+      confidence: 'High'
     },
     {
       id: 'boardroom',
@@ -38,7 +44,10 @@ export default function VRScenesPage() {
       duration: '12 min',
       tag: 'EXEC',
       rating: 4.7,
-      color: 'gray' as const
+      color: 'gray' as const,
+      audience: 12,
+      audienceAttention: 88,
+      confidence: 'Medium'
     },
     {
       id: 'one-to-one',
@@ -49,7 +58,10 @@ export default function VRScenesPage() {
       duration: '8 min',
       tag: '1:1',
       rating: 4.8,
-      color: 'blue' as const
+      color: 'blue' as const,
+      audience: 2,
+      audienceAttention: 92,
+      confidence: 'High'
     },
     {
       id: 'classroom',
@@ -60,9 +72,20 @@ export default function VRScenesPage() {
       duration: '10 min',
       tag: 'EDU',
       rating: 4.6,
-      color: 'green' as const
+      color: 'green' as const,
+      audience: 20,
+      audienceAttention: 90,
+      confidence: 'Medium'
     }
   ];
+
+  const handleSceneSelect = (sceneId: string) => {
+    const scene = scenes.find(s => s.id === sceneId);
+    if (scene) {
+      sessionStorage.setItem('selectedScene', JSON.stringify(scene));
+      window.location.href = '/vr-session';
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white">
@@ -95,18 +118,23 @@ export default function VRScenesPage() {
         {/* VR Scenes Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {scenes.map((scene) => (
-            <VRSceneCard
+            <div 
               key={scene.id}
-              id={scene.id}
-              title={scene.title}
-              description={scene.description}
-              image={scene.image}
-              difficulty={scene.difficulty}
-              duration={scene.duration}
-              tag={scene.tag}
-              rating={scene.rating}
-              color={scene.color}
-            />
+              onClick={() => handleSceneSelect(scene.id)}
+              className="cursor-pointer"
+            >
+              <VRSceneCard
+                id={scene.id}
+                title={scene.title}
+                description={scene.description}
+                image={scene.image}
+                difficulty={scene.difficulty}
+                duration={scene.duration}
+                tag={scene.tag}
+                rating={scene.rating}
+                color={scene.color}
+              />
+            </div>
           ))}
         </div>
       </main>
