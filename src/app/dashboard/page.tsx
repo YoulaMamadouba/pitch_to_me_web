@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { 
   Home, 
   BookOpen, 
-  Users, 
+  Users as UsersIcon,
   User,
   Settings,
   Bell,
@@ -26,9 +26,14 @@ import {
   TrendingUp,
   MessageSquare,
   Bot,
-  Sparkles
+  Sparkles,
+  Users,
+  Heart,
+  Share2,
+  MessageCircle
 } from 'lucide-react';
 import LearnerProfile from '@/components/LearnerProfile';
+import Community from '@/components/Community';
 
 
 interface NavigationItem {
@@ -114,7 +119,7 @@ export default function DashboardPage() {
   }, []);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeModule, setActiveModule] = useState<number>(5); // Module 6 est actif (index 5)
-  const [activeView, setActiveView] = useState<'dashboard' | 'profile'>('dashboard');
+  const [activeView, setActiveView] = useState<'dashboard' | 'profile' | 'community'>('dashboard');
 
 
   const navigation: NavigationItem[] = [
@@ -124,6 +129,13 @@ export default function DashboardPage() {
       icon: Home, 
       active: activeView === 'dashboard',
       onClick: () => setActiveView('dashboard')
+    },
+    { 
+      id: 'community', 
+      label: 'Communauté', 
+      icon: UsersIcon, 
+      active: activeView === 'community',
+      onClick: () => setActiveView('community')
     },
     { 
       id: 'profile', 
@@ -271,6 +283,8 @@ export default function DashboardPage() {
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
           {activeView === 'profile' ? (
             <LearnerProfile onBack={() => setActiveView('dashboard')} />
+          ) : activeView === 'community' ? (
+            <Community />
           ) : (
             <>
           <motion.div 
