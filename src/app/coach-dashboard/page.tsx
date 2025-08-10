@@ -1,0 +1,570 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Home, 
+  Users, 
+  User,
+  Settings,
+  Bell,
+  Menu,
+  X,
+  ChevronDown,
+  ChevronRight,
+  MessageSquare,
+  BarChart2,
+  Calendar,
+  FileText,
+  Video,
+  Award,
+  HelpCircle,
+  LogOut,
+  Play,
+  Check,
+  Star,
+  Clock,
+  Activity,
+  Target,
+  Zap,
+  BarChart3,
+  FileBarChart2,
+  FileSearch,
+  MessageSquarePlus,
+  Plus
+} from 'lucide-react';
+
+// Types
+type NavigationItem = {
+  id: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  active?: boolean;
+  count?: number;
+};
+
+type StudentActivity = {
+  id: number;
+  name: string;
+  avatar: string;
+  action: string;
+  time: string;
+  module?: string;
+  progress?: number;
+  status?: 'completed' | 'pending' | 'feedback';
+  rating?: number;
+};
+
+type MetricCardProps = {
+  icon: React.ComponentType<{ className?: string }>;
+  value: string | number;
+  label: string;
+  change: string;
+  changeType: 'positive' | 'negative' | 'neutral';
+  iconBg: string;
+};
+
+// Components
+const MetricCard = ({ icon: Icon, value, label, change, changeType, iconBg }: MetricCardProps) => {
+  return (
+    <motion.div 
+      whileHover={{ y: -2, boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)' }}
+      className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-yellow-400/30 transition-all"
+    >
+      <div className="flex items-center justify-between mb-3">
+        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${iconBg}`}>
+          <Icon className="w-5 h-5 text-white" />
+        </div>
+        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+          changeType === 'positive' ? 'bg-green-900/50 text-green-400' : 
+          changeType === 'negative' ? 'bg-red-900/50 text-red-400' : 
+          'bg-blue-900/50 text-blue-400'
+        }`}>
+          {change}
+        </span>
+      </div>
+      <div className="text-2xl font-bold text-white mb-1">{value}</div>
+      <div className="text-gray-400 text-sm">{label}</div>
+    </motion.div>
+  );
+};
+
+const ActivityCard = ({ activity }: { activity: StudentActivity }) => {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-3 border border-gray-700/50 hover:border-yellow-400/30 transition-all"
+    >
+      <div className="flex items-start space-x-3">
+        <div className="relative">
+          <Image 
+            src={activity.avatar} 
+            alt={activity.name} 
+            width={40} 
+            height={40}
+            className="w-10 h-10 rounded-full border-2 border-yellow-400/30 object-cover"
+          />
+          {activity.status === 'completed' && (
+            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-gray-800"></div>
+          )}
+        </div>
+        
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between">
+            <h4 className="text-white font-medium text-sm">{activity.name}</h4>
+            <span className="text-gray-500 text-xs">{activity.time}</span>
+          </div>
+          <p className="text-gray-400 text-sm">{activity.action} {activity.module && <span className="text-yellow-400">{activity.module}</span>}</p>
+          
+          {activity.progress !== undefined && (
+            <div className="mt-2 flex items-center">
+              <div className="w-full bg-gray-700 rounded-full h-1.5">
+                <div 
+                  className="bg-yellow-400 h-1.5 rounded-full" 
+                  style={{ width: `${activity.progress}%` }}
+                ></div>
+              </div>
+              <span className="ml-2 text-xs text-yellow-400 font-medium">{activity.progress}%</span>
+            </div>
+          )}
+          
+          {activity.rating !== undefined && (
+            <div className="flex items-center mt-1">
+              {[...Array(5)].map((_, i) => (
+                <Star 
+                  key={i} 
+                  className={`w-3 h-3 ${i < activity.rating! ? 'text-yellow-400 fill-yellow-400' : 'text-gray-600'}`} 
+                />
+              ))}
+            </div>
+          )}
+          
+          {activity.status === 'pending' && (
+            <div className="mt-2">
+              <button className="text-xs bg-yellow-500 hover:bg-yellow-600 text-black font-medium px-3 py-1 rounded-full transition-colors">
+                Review
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const QuickActionButton = ({ 
+  icon: Icon, 
+  label, 
+  color = 'yellow',
+  onClick 
+}: { 
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  color?: 'yellow' | 'blue' | 'purple' | 'gray';
+  onClick: () => void;
+}) => {
+  const colorClasses = {
+    yellow: 'from-yellow-400 to-yellow-500 text-black',
+    blue: 'from-blue-400 to-blue-500 text-black',
+    purple: 'from-purple-400 to-purple-500 text-black',
+    gray: 'from-gray-700 to-gray-800 text-white border border-gray-600/50'
+  };
+  
+  return (
+    <motion.button
+      whileTap={{ scale: 0.98 }}
+      onClick={onClick}
+      className={`w-full bg-gradient-to-r ${colorClasses[color]} rounded-xl p-3 font-medium text-sm flex flex-col items-center space-y-1`}
+    >
+      <Icon className="w-5 h-5" />
+      <span>{label}</span>
+    </motion.button>
+  );
+};
+
+// Main Component
+const CoachDashboard = () => {
+  const [mounted, setMounted] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [unreadNotifications, setUnreadNotifications] = useState(3);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Navigation items
+  const navigation: NavigationItem[] = [
+    { id: 'dashboard', label: 'Dashboard', icon: Home, active: activeTab === 'dashboard' },
+    { id: 'sessions', label: 'Sessions', icon: Video, active: activeTab === 'sessions', count: 5 },
+    { id: 'students', label: 'Students', icon: Users, active: activeTab === 'students', count: 12 },
+    { id: 'analytics', label: 'Analytics', icon: BarChart2, active: activeTab === 'analytics' },
+    { id: 'messages', label: 'Messages', icon: MessageSquare, active: activeTab === 'messages', count: 3 },
+    { id: 'resources', label: 'Resources', icon: FileText, active: activeTab === 'resources' },
+    { id: 'settings', label: 'Settings', icon: Settings, active: activeTab === 'settings' },
+  ];
+
+  // Sample data
+  const recentActivities: StudentActivity[] = [
+    {
+      id: 1,
+      name: 'Alex Martin',
+      avatar: 'https://i.pravatar.cc/150?u=alex',
+      action: 'Completed',
+      module: 'Module 6: Body Language',
+      time: '2 min ago',
+      status: 'completed',
+      progress: 85
+    },
+    {
+      id: 2,
+      name: 'Sarah Johnson',
+      avatar: 'https://i.pravatar.cc/150?u=sarah',
+      action: 'Requested VR coaching session',
+      time: '5 min ago',
+      status: 'pending'
+    },
+    {
+      id: 3,
+      name: 'David Chen',
+      avatar: 'https://i.pravatar.cc/150?u=david',
+      action: 'Left feedback on',
+      module: 'Module 8',
+      time: '12 min ago',
+      status: 'feedback',
+      rating: 5
+    }
+  ];
+
+  const upcomingSessions = [
+    { id: 1, title: 'VR Coaching', student: 'Alex M.', module: 'TEDx Module', time: 'In 15 min', status: 'live' },
+    { id: 2, title: 'Pitch Review', student: 'Maria G.', module: 'Startup Pitch', time: '2:30 PM', status: 'upcoming' },
+    { id: 3, title: 'Group Session', student: 'Team Alpha', module: 'Presentation Skills', time: '4:00 PM', status: 'upcoming' }
+  ];
+
+  if (!mounted) return null;
+
+  return (
+    <div className="flex min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white">
+      {/* Sidebar */}
+      <motion.div 
+        initial={{ x: -300, opacity: 0 }}
+        animate={{ x: isSidebarOpen ? 0 : -300, opacity: isSidebarOpen ? 1 : 0.5 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-gray-900/95 backdrop-blur-md border-r border-gray-800/50 flex flex-col ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
+      >
+        {/* Logo */}
+        <div className="p-4 border-b border-gray-800 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 rounded-lg bg-yellow-400 flex items-center justify-center">
+              <span className="text-black font-bold text-lg">P</span>
+            </div>
+            <h1 className="text-xl font-bold text-yellow-400">Pitch to Me</h1>
+          </div>
+          <button 
+            onClick={() => setIsSidebarOpen(false)}
+            className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Profile */}
+        <div className="p-4 border-b border-gray-800">
+          <div className="flex items-center space-x-3">
+            <div className="relative">
+              <Image 
+                src="https://i.pravatar.cc/150?u=coach1" 
+                alt="Mawa SIMBA" 
+                width={48} 
+                height={48}
+                className="w-12 h-12 rounded-full border-2 border-yellow-400 object-cover"
+              />
+              <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-gray-900"></div>
+            </div>
+            <div>
+              <div className="font-medium text-white">Mawa SIMBA</div>
+              <div className="text-xs text-yellow-400 font-medium">Expert Coach</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1 overflow-y-auto py-4 px-2">
+          <ul className="space-y-1">
+            {navigation.map((item) => (
+              <li key={item.id}>
+                <button
+                  onClick={() => setActiveTab(item.id)}
+                  className={`w-full flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+                    item.active 
+                      ? 'bg-yellow-500/10 text-yellow-400' 
+                      : 'text-gray-300 hover:bg-gray-800/50 hover:text-white'
+                  }`}
+                >
+                  <div className="flex items-center">
+                    <item.icon className="w-5 h-5 mr-3" />
+                    <span>{item.label}</span>
+                  </div>
+                  {item.count && item.count > 0 && (
+                    <span className="bg-yellow-500 text-black text-xs font-bold px-2 py-0.5 rounded-full">
+                      {item.count}
+                    </span>
+                  )}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        {/* Footer */}
+        <div className="p-4 border-t border-gray-800 mt-auto">
+          <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 text-center mb-3">
+            <div className="text-yellow-400 mb-1">
+              <Award className="w-5 h-5 mx-auto" />
+            </div>
+            <p className="text-xs text-yellow-400 font-medium">Coach of the Month</p>
+            <p className="text-xs text-yellow-300">97% satisfaction</p>
+          </div>
+          
+          <div className="flex items-center justify-between text-xs text-gray-500">
+            <button className="flex items-center hover:text-yellow-400 transition-colors">
+              <HelpCircle className="w-4 h-4 mr-1" />
+              <span>Help</span>
+            </button>
+            <button className="flex items-center hover:text-yellow-400 transition-colors">
+              <LogOut className="w-4 h-4 mr-1" />
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Main Content */}
+      <div className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarOpen ? 'md:ml-64' : 'md:ml-0'}`}>
+        {/* Top Navigation */}
+        <header className="bg-gray-900/95 backdrop-blur-md border-b border-gray-800/50 fixed top-0 right-0 left-0 z-50 transition-all duration-300" style={{ left: isSidebarOpen ? '16rem' : '0' }}>
+          <div className="flex items-center justify-between h-16 px-4">
+            <div className="flex items-center">
+              <button 
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                className="text-gray-400 hover:text-white p-2 mr-2 rounded-full hover:bg-gray-800/50"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+              <h1 className="text-xl font-semibold text-white">
+                {navigation.find(nav => nav.active)?.label || 'Dashboard'}
+              </h1>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <button className="relative p-2 text-gray-400 hover:text-white rounded-full hover:bg-gray-800/50">
+                <Bell className="w-5 h-5" />
+                {unreadNotifications > 0 && (
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+                )}
+              </button>
+              
+              <div className="h-8 w-px bg-gray-700"></div>
+              
+              <div className="flex items-center space-x-2">
+                <div className="text-right hidden md:block">
+                  <p className="text-sm font-medium text-white">Mawa SIMBA</p>
+                  <p className="text-xs text-yellow-400">Expert Coach</p>
+                </div>
+                <div className="relative">
+                  <Image 
+                  src="https://i.pravatar.cc/150?u=coach1" 
+                  alt="Mawa SIMBA" 
+                  width={36} 
+                  height={36}
+                  className="w-9 h-9 rounded-full border-2 border-yellow-400 object-cover"
+                />
+                  <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 rounded-full border-2 border-gray-900"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 mt-16">
+          {/* Welcome Section */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-6"
+          >
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-1">Welcome back, Mawa!</h2>
+            <p className="text-gray-400">Here's what's happening with your coaching today</p>
+          </motion.div>
+
+          {/* Live Session Alert */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="relative overflow-hidden rounded-xl bg-gradient-to-r from-green-900/50 to-green-800/30 border border-green-500/30 p-4 mb-6"
+          >
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-green-500/5 to-transparent opacity-30"></div>
+            <div className="relative z-10">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                <div className="flex items-center space-x-3 mb-3 md:mb-0">
+                  <div className="flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-green-400 font-semibold">Live Session Active</h3>
+                    <p className="text-gray-300 text-sm">VR Coaching - Alex M. (TEDx Module)</p>
+                  </div>
+                </div>
+                <button className="bg-green-500 hover:bg-green-600 text-black font-medium px-4 py-2 rounded-lg transition-colors w-full md:w-auto">
+                  Join Session
+                </button>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Key Metrics */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <MetricCard 
+              icon={Users} 
+              value="247" 
+              label="Active Students" 
+              change="+12%" 
+              changeType="positive"
+              iconBg="bg-blue-600"
+            />
+            <MetricCard 
+              icon={Check} 
+              value="89%" 
+              label="Completion Rate" 
+              change="+8%" 
+              changeType="positive"
+              iconBg="bg-green-600"
+            />
+            <MetricCard 
+              icon={Star} 
+              value="4.8" 
+              label="Avg. Rating" 
+              change="4.9" 
+              changeType="neutral"
+              iconBg="bg-yellow-600"
+            />
+            <MetricCard 
+              icon={Video} 
+              value="12" 
+              label="VR Sessions" 
+              change="Live" 
+              changeType="positive"
+              iconBg="bg-purple-600"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Recent Activities */}
+            <div className="lg:col-span-2">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white">Recent Activities</h3>
+                <button className="text-sm text-yellow-400 hover:text-yellow-300 flex items-center">
+                  View All <ChevronRight className="w-4 h-4 ml-1" />
+                </button>
+              </div>
+              
+              <div className="space-y-3">
+                <AnimatePresence>
+                  {recentActivities.map((activity) => (
+                    <ActivityCard key={activity.id} activity={activity} />
+                  ))}
+                </AnimatePresence>
+              </div>
+            </div>
+
+            {/* Upcoming Sessions & Quick Actions */}
+            <div className="space-y-6">
+              {/* Upcoming Sessions */}
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-white">Upcoming Sessions</h3>
+                  <button className="text-sm text-yellow-400 hover:text-yellow-300">
+                    View All
+                  </button>
+                </div>
+                
+                <div className="space-y-3">
+                  {upcomingSessions.map((session, index) => (
+                    <motion.div 
+                      key={session.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-yellow-400/30 transition-all"
+                    >
+                      <div className="flex items-start">
+                        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center mr-3">
+                          <Video className="w-5 h-5 text-yellow-400" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-white font-medium">{session.title}</h4>
+                            <span className={`text-xs px-2 py-0.5 rounded-full ${
+                              session.status === 'live' 
+                                ? 'bg-green-900/50 text-green-400' 
+                                : 'bg-blue-900/50 text-blue-400'
+                            }`}>
+                              {session.status === 'live' ? 'Live' : session.time}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-400">{session.student} • {session.module}</p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Quick Actions */}
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <QuickActionButton 
+                    icon={Video} 
+                    label="Start Live" 
+                    color="yellow"
+                    onClick={() => {}}
+                  />
+                  <QuickActionButton 
+                    icon={BarChart3} 
+                    label="Analytics" 
+                    color="blue"
+                    onClick={() => {}}
+                  />
+                  <QuickActionButton 
+                    icon={FileText} 
+                    label="Create Content" 
+                    color="purple"
+                    onClick={() => {}}
+                  />
+                  <QuickActionButton 
+                    icon={Users} 
+                    label="Students" 
+                    color="gray"
+                    onClick={() => {}}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default CoachDashboard;
