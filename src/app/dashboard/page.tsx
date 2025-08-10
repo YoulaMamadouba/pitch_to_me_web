@@ -287,21 +287,23 @@ export default function DashboardPage() {
             {/* Current Module and Tools Access */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               {/* Current Module Card */}
-              <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 border border-yellow-400/30 h-full">
-                <div className="flex flex-col h-full">
-                  <div className="flex-1">
-                    <h3 className="text-xl font-bold text-gray-900 mb-1">Continuer l'apprentissage</h3>
-                    <h4 className="text-gray-900 font-semibold">{currentModule.title}: {currentModule.subtitle}</h4>
-                    <p className="text-gray-800 text-sm mt-1">Maîtrisez la communication non verbale</p>
-                  </div>
-                  <div className="mt-4 flex justify-between items-center">
-                    <span className="text-xs bg-black/10 text-gray-900 px-2 py-1 rounded-full">En cours</span>
-                    <button className="bg-black/10 hover:bg-black/20 text-gray-900 font-medium px-4 py-2 rounded-lg transition-colors">
-                      Continuer
-                    </button>
+              <Link href="/modules/6" className="block h-full">
+                <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 border border-yellow-400/30 h-full">
+                  <div className="flex flex-col h-full">
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-gray-900 mb-1">Continuer l'apprentissage</h3>
+                      <h4 className="text-gray-900 font-semibold">{currentModule.title}: {currentModule.subtitle}</h4>
+                      <p className="text-gray-800 text-sm mt-1">Maîtrisez la communication non verbale</p>
+                    </div>
+                    <div className="mt-4 flex justify-between items-center">
+                      <span className="text-xs bg-black/10 text-gray-900 px-2 py-1 rounded-full">En cours</span>
+                      <div className="bg-black/10 hover:bg-black/20 text-gray-900 font-medium px-4 py-2 rounded-lg transition-colors">
+                        Continuer
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Link>
               
               {/* VR Scenes Access Card */}
               <Link href="/vr-scenes" className="group">
