@@ -19,28 +19,37 @@ export default function PremiumAuthHeader() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Animation variants
+  // Animation variants with proper typing
   const container = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
-        delayChildren: 0.2
+        delayChildren: 0.2,
+        type: 'tween' as const
       }
     }
   };
 
   const item = {
     hidden: { opacity: 0, y: -10 },
-    show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+    show: { 
+      opacity: 1, 
+      y: 0, 
+      transition: { 
+        type: 'spring' as const, 
+        stiffness: 300, 
+        damping: 24 
+      } 
+    }
   };
 
   return (
     <motion.header 
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+      transition={{ type: 'spring' as const, stiffness: 100, damping: 20 }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isScrolled 
           ? 'bg-black/90 backdrop-blur-md border-b border-gray-700/50 shadow-xl' 
@@ -53,7 +62,7 @@ export default function PremiumAuthHeader() {
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.2, type: 'spring' }}
+            transition={{ delay: 0.2, type: 'spring' as const }}
             className="flex-shrink-0 flex items-center"
           >
             <Link href="/" className="flex items-center space-x-3 group">
@@ -166,7 +175,7 @@ function AnimatedMenu({ isOpen, onClose }: { isOpen: boolean, onClose: () => voi
       height: 'auto',
       opacity: 1,
       transition: { 
-        type: 'spring',
+        type: 'spring' as const,
         damping: 25,
         stiffness: 300
       }
@@ -175,7 +184,7 @@ function AnimatedMenu({ isOpen, onClose }: { isOpen: boolean, onClose: () => voi
       height: 0,
       opacity: 0,
       transition: { 
-        type: 'spring',
+        type: 'spring' as const,
         damping: 25,
         stiffness: 300
       }
@@ -187,7 +196,7 @@ function AnimatedMenu({ isOpen, onClose }: { isOpen: boolean, onClose: () => voi
       y: 0, 
       opacity: 1,
       transition: { 
-        type: 'spring',
+        type: 'spring' as const,
         stiffness: 300,
         damping: 24
       }

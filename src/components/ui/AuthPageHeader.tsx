@@ -3,7 +3,7 @@ import { ArrowLeft, Mic } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface AuthPageHeaderProps {
-  pageTitle: 'Connexion' | 'Inscription' | 'Onboarding';
+  pageTitle: string;
 }
 
 export default function AuthPageHeader({ pageTitle }: AuthPageHeaderProps) {
