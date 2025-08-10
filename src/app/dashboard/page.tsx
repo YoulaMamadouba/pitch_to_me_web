@@ -30,10 +30,14 @@ import {
   Users,
   Heart,
   Share2,
-  MessageCircle
+  MessageCircle,
+  Headset,
+  Zap,
+  Wifi
 } from 'lucide-react';
 import LearnerProfile from '@/components/LearnerProfile';
 import Community from '@/components/Community';
+import VRCalibration from '@/components/VRCalibration';
 
 
 interface NavigationItem {
@@ -119,7 +123,7 @@ export default function DashboardPage() {
   }, []);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeModule, setActiveModule] = useState<number>(5); // Module 6 est actif (index 5)
-  const [activeView, setActiveView] = useState<'dashboard' | 'profile' | 'community'>('dashboard');
+  const [activeView, setActiveView] = useState<'dashboard' | 'profile' | 'community' | 'vrcalibration'>('dashboard');
 
 
   const navigation: NavigationItem[] = [
@@ -143,6 +147,14 @@ export default function DashboardPage() {
       icon: User, 
       active: activeView === 'profile',
       onClick: () => setActiveView('profile')
+    },
+    { 
+      id: 'vrcalibration', 
+      label: 'VR Calibration', 
+      icon: Headset, 
+      active: activeView === 'vrcalibration',
+      className: 'mt-4 pt-4 border-t border-gray-700',
+      onClick: () => setActiveView('vrcalibration')
     },
   ];
 
@@ -285,6 +297,8 @@ export default function DashboardPage() {
             <LearnerProfile onBack={() => setActiveView('dashboard')} />
           ) : activeView === 'community' ? (
             <Community />
+          ) : activeView === 'vrcalibration' ? (
+            <VRCalibration />
           ) : (
             <>
           <motion.div 
