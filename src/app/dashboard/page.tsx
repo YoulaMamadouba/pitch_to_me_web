@@ -23,7 +23,9 @@ import {
   Calendar,
   ArrowRight,
   TrendingUp,
-
+  MessageSquare,
+  Bot,
+  Sparkles
 } from 'lucide-react';
 
 
@@ -299,6 +301,50 @@ export default function DashboardPage() {
                       <span className="text-xs bg-black/10 text-gray-900 px-2 py-1 rounded-full">En cours</span>
                       <div className="bg-black/10 hover:bg-black/20 text-gray-900 font-medium px-4 py-2 rounded-lg transition-colors">
                         Continuer
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+              
+              {/* AI Coach Chat Card */}
+              <Link href="/ai-coach" className="block h-full">
+                <div className="bg-gradient-to-r from-cyan-600 to-blue-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 border border-cyan-400/30 h-full relative overflow-hidden">
+                  {/* Animated background elements */}
+                  <div className="absolute -right-6 -top-6 w-24 h-24 bg-white/10 rounded-full"></div>
+                  <div className="absolute -right-3 -bottom-3 w-16 h-16 bg-white/5 rounded-full"></div>
+                  
+                  <div className="relative z-10 flex flex-col h-full">
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-xl font-bold text-white flex items-center">
+                          <Bot className="w-5 h-5 mr-2 text-cyan-200" />
+                          AI Coach
+                        </h3>
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-cyan-400 rounded-full opacity-75 animate-ping"></div>
+                          <div className="relative bg-cyan-500 p-1.5 rounded-full">
+                            <MessageSquare className="w-5 h-5 text-white" />
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-cyan-100 text-sm">Obtenez des conseils personnalisés en temps réel</p>
+                      
+                      {/* AI Message Preview */}
+                      <div className="mt-3 bg-white/10 backdrop-blur-sm rounded-lg p-3 text-left">
+                        <div className="flex items-start space-x-2">
+                          <div className="w-2 h-2 bg-cyan-300 rounded-full mt-2"></div>
+                          <p className="text-xs text-white line-clamp-2">Bonjour Alex ! Prêt pour votre session d'aujourd'hui ?</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-4 flex justify-between items-center">
+                      <div className="flex items-center space-x-1">
+                        <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                        <span className="text-xs text-white/80">En ligne</span>
+                      </div>
+                      <div className="bg-white/20 hover:bg-white/30 text-white font-medium px-4 py-2 rounded-lg transition-colors flex items-center">
+                        Discuter <ArrowRight className="ml-1 w-4 h-4" />
                       </div>
                     </div>
                   </div>
