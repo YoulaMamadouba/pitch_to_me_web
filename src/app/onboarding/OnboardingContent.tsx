@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { Check, Play, Volume2, BookOpen, Award } from 'lucide-react';
-import AuthPageHeader from '@/components/ui/AuthPageHeader';
+import { useEffect, useState } from 'react';
 
-export default function OnboardingPage() {
+export default function OnboardingContent() {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -22,8 +21,14 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 flex flex-col">
       {/* Header */}
-      <AuthPageHeader pageTitle="Onboarding" />
-      
+      <div className="fixed top-0 left-0 right-0 z-50 bg-gray-900/80 backdrop-blur-sm border-b border-gray-800">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <h1 className="text-lg font-bold text-white">Onboarding</h1>
+          </div>
+        </div>
+      </div>
+
       <div className="flex-1 overflow-y-auto pt-10 pb-4">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full">
           <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-3xl overflow-hidden border border-gray-700/50 mt-6">
