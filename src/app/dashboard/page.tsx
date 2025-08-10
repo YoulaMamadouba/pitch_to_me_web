@@ -455,6 +455,35 @@ export default function DashboardPage() {
                 </div>
               </Link>
               
+              {/* Recording Studio Access Card */}
+              <Link href="/recording-studio" className="group">
+                <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all transform group-hover:-translate-y-0.5 border border-indigo-400/30 h-full">
+                  <div className="flex flex-col h-full">
+                    <div className="flex-1">
+                      <div className="flex items-center mb-2">
+                        <div className="p-2 bg-white/20 rounded-lg mr-3">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <h3 className="text-xl font-bold text-white">Recording Studio</h3>
+                      </div>
+                      <h4 className="text-white/90 font-medium">Enregistrement professionnel</h4>
+                      <p className="text-white/80 text-sm mt-1">Pratiquez avec des retours en temps réel</p>
+                    </div>
+                    <div className="mt-4 flex justify-between items-center">
+                      <span className="text-xs bg-white/20 text-white px-2 py-1 rounded-full">Nouveau</span>
+                      <div className="flex items-center text-white/90 group-hover:text-white transition-colors">
+                        <span className="font-medium mr-1">Commencer</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+
               {/* Emotion Recognition Access Card */}
               <Link href="/emotion-recognition" className="group">
                 <div className="bg-gradient-to-r from-pink-600 to-rose-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all transform group-hover:-translate-y-0.5 border border-pink-400/30 h-full relative overflow-hidden">

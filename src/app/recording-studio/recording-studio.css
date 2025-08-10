@@ -1,0 +1,137 @@
+/* Animation for recording pulse */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Animation for audio waveform */
+@keyframes wave {
+  0%, 100% {
+    transform: scaleY(0.6);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+/* Apply animation to waveform bars */
+.audio-waveform > div {
+  animation: wave 1.2s ease-in-out infinite alternate;
+  transform-origin: bottom;
+}
+
+/* Delay each bar's animation */
+.audio-waveform > div:nth-child(1) { animation-delay: 0s; }
+.audio-waveform > div:nth-child(2) { animation-delay: 0.2s; }
+.audio-waveform > div:nth-child(3) { animation-delay: 0.4s; }
+.audio-waveform > div:nth-child(4) { animation-delay: 0.6s; }
+.audio-waveform > div:nth-child(5) { animation-delay: 0.8s; }
+.audio-waveform > div:nth-child(6) { animation-delay: 1s; }
+.audio-waveform > div:nth-child(7) { animation-delay: 1.2s; }
+.audio-waveform > div:nth-child(8) { animation-delay: 1.4s; }
+
+/* Smooth transitions for buttons */
+button {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Hover effects for camera angles */
+.camera-angle {
+  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.camera-angle:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Recording button animation */
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+.recording-active {
+  animation: pulse-glow 2s infinite;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Smooth appearance for dropdowns and modals */
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tooltip styles */
+[data-tooltip] {
+  position: relative;
+  cursor: help;
+}
+
+[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1000;
+  margin-bottom: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .camera-preview {
+    height: 200px;
+  }
+  
+  .camera-angles {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
