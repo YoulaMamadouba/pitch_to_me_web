@@ -1,21 +1,106 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Eye, EyeOff, Mail, Lock, Home } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, Home, User, GraduationCap, Users, Briefcase, Award, BookOpen, Clock } from 'lucide-react';
 import AuthCard from '@/components/ui/AuthCard';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import AuthPageHeader from '@/components/ui/AuthPageHeader';
+import RoleSelector from '@/components/auth/RoleSelector';
+import RoleBasedFields from '@/components/auth/RoleBasedFields';
+
+type UserRole = 'learner' | 'coach' | 'hr';
+
+interface FormData {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+  // Learner fields
+  learningGoal?: string;
+  currentLevel?: string;
+  // Coach fields
+  specialization?: string;
+  yearsOfExperience?: number;
+  // HR fields
+  company?: string;
+  department?: string;
+}
+
+const getDefaultFormData = (role: UserRole): FormData => {
+  const baseData = {
+    email: '',
+    password: '',
+    rememberMe: false,
+  };
+
+  switch (role) {
+    case 'coach':
+      return {
+        ...baseData,
+        email: 'coach@example.com',
+        password: 'coach123',
+        specialization: 'Prise de parole en public',
+        yearsOfExperience: 5,
+      };
+    case 'hr':
+      return {
+        ...baseData,
+        email: 'rh@example.com',
+        password: 'rh123',
+        company: 'Entreprise XYZ',
+        department: 'Ressources Humaines',
+      };
+    case 'learner':
+    default:
+      return {
+        ...baseData,
+        email: 'apprenant@example.com',
+        password: 'apprenant123',
+        learningGoal: 'Améliorer mes présentations professionnelles',
+        currentLevel: 'Intermédiaire',
+      };
+  }
+};
 
 export default function LoginPage() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<UserRole>('learner');
+  const [formData, setFormData] = useState<FormData>(getDefaultFormData('learner'));
+
+  // Mettre à jour les champs par défaut quand le rôle change
+  useEffect(() => {
+    setFormData(getDefaultFormData(selectedRole));
+  }, [selectedRole]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement login logic
-    console.log('Login attempt:', { email, password, rememberMe });
+    console.log('Login attempt:', { ...formData, role: selectedRole });
+    
+    // Redirection en fonction du rôle
+    if (selectedRole === 'coach') {
+      router.push('/coach-dashboard');
+    } else if (selectedRole === 'hr') {
+      router.push('/hr-dashboard');
+    } else {
+      router.push('/dashboard');
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'number' ? parseInt(value, 10) : value,
+    }));
+  };
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: checked,
+    }));
   };
 
   return (
@@ -26,16 +111,16 @@ export default function LoginPage() {
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center p-4 pt-24">
         <AuthCard
-          title="Welcome Back!"
-          subtitle="Continue your speaking journey"
-          icon={<Home className="w-8 h-8 text-black" />}
+          title="Bienvenue !"
+          subtitle="Accédez à votre espace personnel"
+          icon={<Home className="w-8 h-8 text-white" />}
         >
           {/* Quick Stats */}
           <div className="bg-gray-700 bg-opacity-50 rounded-xl p-4">
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
                 <div className="text-lg font-bold text-yellow-400">50k+</div>
-                <div className="text-xs text-gray-400">Active Learners</div>
+                <div className="text-xs text-gray-400">Utilisateurs actifs</div>
               </div>
               <div>
                 <div className="text-lg font-bold text-cyan-400">12</div>
@@ -43,87 +128,46 @@ export default function LoginPage() {
               </div>
               <div>
                 <div className="text-lg font-bold text-green-400">95%</div>
-                <div className="text-xs text-gray-400">Success Rate</div>
+                <div className="text-xs text-gray-400">Taux de réussite</div>
               </div>
             </div>
           </div>
 
           {/* Login Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">Email Address</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-4 w-4 text-gray-400" />
-                </div>
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-gray-700 bg-opacity-50 border border-gray-600 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400 transition-all"
-                  required
-                />
-              </div>
-            </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Sélecteur de rôle */}
+            <RoleSelector 
+              selectedRole={selectedRole}
+              onRoleChange={setSelectedRole}
+            />
 
-            <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">Password</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-4 w-4 text-gray-400" />
-                </div>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-gray-700 bg-opacity-50 border border-gray-600 rounded-lg pl-10 pr-10 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400 transition-all"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white transition-colors"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
-            </div>
+            {/* Champs dynamiques en fonction du rôle */}
+            <RoleBasedFields
+              role={selectedRole}
+              formData={formData}
+              onInputChange={handleInputChange}
+              onCheckboxChange={handleCheckboxChange}
+              showPassword={showPassword}
+              setShowPassword={setShowPassword}
+            />
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-gray-600 rounded bg-gray-700"
-                />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">
-                  Remember me
-                </label>
-              </div>
-
-              <div className="text-sm">
-                <Link href="/forgot-password" className="font-medium text-yellow-400 hover:text-yellow-300">
-                  Forgot your password?
-                </Link>
-              </div>
-            </div>
-
+            {/* Bouton de connexion */}
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-black bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-300 hover:to-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-all duration-200"
+                className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-black focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 ${
+                  selectedRole === 'coach'
+                    ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-300 hover:to-yellow-400 focus:ring-yellow-500'
+                    : selectedRole === 'hr'
+                    ? 'bg-gradient-to-r from-purple-400 to-purple-500 hover:from-purple-300 hover:to-purple-400 focus:ring-purple-500'
+                    : 'bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-300 hover:to-blue-400 focus:ring-blue-500'
+                }`}
               >
-                Sign in
+                {selectedRole === 'coach' 
+                  ? 'Accéder au tableau de bord Coach'
+                  : selectedRole === 'hr'
+                  ? 'Accéder au tableau de bord RH'
+                  : 'Se connecter'}
               </button>
             </div>
           </form>
@@ -134,7 +178,7 @@ export default function LoginPage() {
               <div className="w-full border-t border-gray-600"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-gray-800 text-gray-400">Or continue with</span>
+              <span className="px-2 bg-gray-800 text-gray-400">Ou continuer avec</span>
             </div>
           </div>
 
@@ -173,9 +217,9 @@ export default function LoginPage() {
 
           <div className="mt-6 text-center text-sm">
             <p className="text-gray-400">
-              Don't have an account?{' '}
+              Pas encore de compte ?{' '}
               <Link href="/signup" className="font-medium text-yellow-400 hover:text-yellow-300">
-                Sign up
+                S'inscrire
               </Link>
             </p>
           </div>
