@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { User, GraduationCap, Users } from 'lucide-react';
 
 type UserRole = 'learner' | 'coach' | 'hr';
@@ -6,7 +6,7 @@ type UserRole = 'learner' | 'coach' | 'hr';
 interface RoleOption {
   value: UserRole;
   label: string;
-  icon: JSX.Element;
+  icon: React.ReactNode;
   color: string;
 }
 

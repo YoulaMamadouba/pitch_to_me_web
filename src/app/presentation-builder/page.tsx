@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState, JSX } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Share2, Plus, Star, Clock, Users, Layout, Calendar, BarChart2, Users as TeamIcon, Check } from 'lucide-react';
 import './presentation-builder.css';
@@ -14,7 +14,7 @@ interface Slide {
 
 interface AISuggestion {
   id: number;
-  icon: JSX.Element;
+  icon: React.ReactNode;
   title: string;
   description: string;
   buttonText: string;
@@ -26,7 +26,7 @@ interface AISuggestion {
 interface Template {
   id: number;
   title: string;
-  icon: JSX.Element;
+  icon: React.ReactNode;
   gradient: string;
 }
 
