@@ -240,6 +240,34 @@ export default function B2BPage() {
             </div>
           </section>
 
+          {/* Accès rapide */}
+          <section className="mb-8">
+            <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider text-gray-400 text-center">Accès rapide</h3>
+            <div className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto">
+              <Link href="/presentation-builder">
+                <motion.div 
+                  whileHover={{ y: -2, scale: 1.02 }}
+                  className="bg-gradient-to-br from-yellow-300 to-amber-400 rounded-lg p-4 border border-amber-300/50 hover:border-amber-400 transition-all cursor-pointer group w-full max-w-[300px]"
+                >
+                  <div className="flex items-center">
+                    <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mr-3">
+                      <svg className="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="flex items-center">
+                        <h4 className="text-black text-base font-medium">Presentation Builder</h4>
+                        <span className="ml-2 bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold">NOUVEAU</span>
+                      </div>
+                      <p className="text-gray-800 text-sm">Créez des présentations percutantes</p>
+                    </div>
+                  </div>
+                </motion.div>
+              </Link>
+            </div>
+          </section>
+
           {/* CTA Section - Compact Buttons */}
           <section className="mt-10">
             <div className="flex flex-wrap justify-center gap-4 max-w-md mx-auto">
