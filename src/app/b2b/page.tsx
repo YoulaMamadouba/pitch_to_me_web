@@ -289,6 +289,29 @@ export default function B2BPage() {
                   </div>
                 </motion.div>
               </Link>
+
+              {/* Carte Company Analytics */}
+              <Link href="/company-analytics" className="w-full sm:w-auto">
+                <motion.div 
+                  whileHover={{ y: -2, scale: 1.02 }}
+                  className="bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg p-4 border border-blue-300/50 hover:border-blue-400 transition-all cursor-pointer group w-full sm:min-w-[280px] max-w-[300px] h-full"
+                >
+                  <div className="flex items-center h-full">
+                    <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center">
+                        <h4 className="text-white text-base font-medium truncate">Analytics Entreprise</h4>
+                        <span className="ml-2 bg-white/30 text-white text-xs px-2 py-0.5 rounded-full font-semibold whitespace-nowrap">NOUVEAU</span>
+                      </div>
+                      <p className="text-white/90 text-sm truncate">Suivez les performances de votre équipe</p>
+                    </div>
+                  </div>
+                </motion.div>
+              </Link>
             </div>
           </section>
 
