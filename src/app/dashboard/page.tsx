@@ -439,13 +439,60 @@ export default function DashboardPage() {
                         </div>
                         <h3 className="text-xl font-bold text-white">Analyse Vocale</h3>
                       </div>
-                      <h4 className="text-white/90 font-medium">Analyse en temps rel</h4>
-                      <p className="text-white/80 text-sm mt-1">Amliorez votre locution et votre rythme</p>
+                      <h4 className="text-white/90 font-medium">Analyse en temps réel</h4>
+                      <p className="text-white/80 text-sm mt-1">Améliorez votre locution et votre rythme</p>
                     </div>
                     <div className="mt-4 flex justify-between items-center">
                       <span className="text-xs bg-white/20 text-white px-2 py-1 rounded-full">Nouveau</span>
                       <div className="flex items-center text-white/90 group-hover:text-white transition-colors">
                         <span className="font-medium mr-1">Analyser</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+              
+              {/* Emotion Recognition Access Card */}
+              <Link href="/emotion-recognition" className="group">
+                <div className="bg-gradient-to-r from-pink-600 to-rose-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all transform group-hover:-translate-y-0.5 border border-pink-400/30 h-full relative overflow-hidden">
+                  {/* Animated pulse effect */}
+                  <div className="absolute -right-4 -top-4 w-16 h-16 bg-white/10 rounded-full animate-pulse"></div>
+                  
+                  <div className="relative z-10 flex flex-col h-full">
+                    <div className="flex-1">
+                      <div className="flex items-center mb-2">
+                        <div className="p-2 bg-white/20 rounded-lg mr-3">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
+                        <h3 className="text-xl font-bold text-white">Analyse des Émotions</h3>
+                      </div>
+                      <h4 className="text-white/90 font-medium">Détection en temps réel</h4>
+                      <p className="text-white/80 text-sm mt-1">Optimisez votre langage corporel</p>
+                      
+                      {/* Mini face detection preview */}
+                      <div className="mt-3 relative w-16 h-16 mx-auto bg-white/10 rounded-full flex items-center justify-center">
+                        <div className="absolute w-12 h-12 border-2 border-yellow-400 rounded-full opacity-30">
+                          <div className="absolute top-3 left-2 w-2 h-2 bg-green-400 rounded-full"></div>
+                          <div className="absolute top-3 right-2 w-2 h-2 bg-green-400 rounded-full"></div>
+                          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-4 h-1 bg-yellow-400 rounded-full"></div>
+                        </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="mt-4 flex justify-between items-center">
+                      <div className="relative">
+                        <span className="relative z-10 text-xs bg-white/20 text-white px-2 py-1 rounded-full">IA Premium</span>
+                        <div className="absolute -inset-0.5 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full blur opacity-75"></div>
+                      </div>
+                      <div className="flex items-center text-white/90 group-hover:text-white transition-colors">
+                        <span className="font-medium mr-1">Démarrer</span>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
