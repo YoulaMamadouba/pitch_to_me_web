@@ -14,6 +14,7 @@ import {
   X,
   ChevronDown,
   ChevronRight,
+  ChevronLeft,
   Play,
   Check,
   Lock,
@@ -27,13 +28,16 @@ import {
   Bot,
   Sparkles
 } from 'lucide-react';
+import LearnerProfile from '@/components/LearnerProfile';
 
 
-type NavigationItem = {
+interface NavigationItem {
   id: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
+  className?: string;
   active?: boolean;
+  onClick?: () => void;
 };
 
 type Module = {
@@ -110,15 +114,24 @@ export default function DashboardPage() {
   }, []);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeModule, setActiveModule] = useState<number>(5); // Module 6 est actif (index 5)
-  const [activeTab, setActiveTab] = useState<string>('home');
+  const [activeView, setActiveView] = useState<'dashboard' | 'profile'>('dashboard');
 
 
   const navigation: NavigationItem[] = [
-    { id: 'home', label: 'Tableau de bord', icon: Home, active: activeTab === 'home' },
-    { id: 'modules', label: 'Mes Modules', icon: BookOpen, active: activeTab === 'modules' },
-    { id: 'community', label: 'Communauté', icon: Users, active: activeTab === 'community' },
-    { id: 'profile', label: 'Mon Profil', icon: User, active: activeTab === 'profile' },
-    { id: 'settings', label: 'Paramètres', icon: Settings, active: activeTab === 'settings' },
+    { 
+      id: 'dashboard', 
+      label: 'Tableau de bord', 
+      icon: Home, 
+      active: activeView === 'dashboard',
+      onClick: () => setActiveView('dashboard')
+    },
+    { 
+      id: 'profile', 
+      label: 'Mon Profil', 
+      icon: User, 
+      active: activeView === 'profile',
+      onClick: () => setActiveView('profile')
+    },
   ];
 
   const modules: Module[] = [
@@ -194,13 +207,16 @@ export default function DashboardPage() {
           <ul>
             {navigation.map((item) => (
               <li key={item.id}>
-                <a 
-                  href="#" 
-                  className={`flex items-center px-4 py-3 text-sm font-medium ${item.active ? 'bg-gray-800 text-yellow-400' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}`}
+                <button 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (item.onClick) item.onClick();
+                  }}
+                  className={`w-full text-left flex items-center px-4 py-3 text-sm font-medium ${item.active ? 'bg-gray-800 text-yellow-400' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}`}
                 >
                   <item.icon className="w-5 h-5 mr-3" />
                   {isSidebarOpen && item.label}
-                </a>
+                </button>
               </li>
             ))}
           </ul>
@@ -227,7 +243,7 @@ export default function DashboardPage() {
                 transition={{ duration: 0.5 }}
                 className="text-xl font-bold text-white"
               >
-                Tableau de Bord
+                {activeView === 'dashboard' ? 'Tableau de Bord' : 'Mon Profil'}
               </motion.h1>
             </div>
             <div className="flex items-center space-x-6">
@@ -253,8 +269,10 @@ export default function DashboardPage() {
 
         {/* Main Content Area */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
-
-          {/* Welcome Section */}
+          {activeView === 'profile' ? (
+            <LearnerProfile onBack={() => setActiveView('dashboard')} />
+          ) : (
+            <>
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -262,14 +280,14 @@ export default function DashboardPage() {
             className="bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg p-6 mb-6 border border-gray-700 hover:shadow-xl transition-all"
           >
             <h2 className="text-xl font-semibold text-white mb-2">Bon retour, Alex !</h2>
-            <p className="text-gray-300 mb-6">Continuez votre apprentissage là où vous vous êtes arrêté.</p>
+            <p className="text-gray-300 mb-6">Continuez votre apprentissage l o vous vous tes arrt.</p>
             
             {/* Progress Overview */}
             <div className="bg-gradient-to-r from-gray-800 to-gray-700 rounded-xl p-6 text-white mb-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-700">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                 <div className="mb-4 md:mb-0">
                   <h3 className="text-lg font-semibold mb-1">Progression Globale</h3>
-                  <div className="text-gray-300 text-sm">{modules.filter(m => !m.locked).length} sur {modules.length} modules complétés</div>
+                  <div className="text-gray-300 text-sm">{modules.filter(m => !m.locked).length} sur {modules.length} modules complts</div>
                 </div>
                 <div className="flex items-center">
                   <ProgressRing progress={overallProgress} size={80} stroke={6} />
@@ -295,7 +313,7 @@ export default function DashboardPage() {
                     <div className="flex-1">
                       <h3 className="text-xl font-bold text-gray-900 mb-1">Continuer l'apprentissage</h3>
                       <h4 className="text-gray-900 font-semibold">{currentModule.title}: {currentModule.subtitle}</h4>
-                      <p className="text-gray-800 text-sm mt-1">Maîtrisez la communication non verbale</p>
+                      <p className="text-gray-800 text-sm mt-1">Maitrisez la communication non verbale</p>
                     </div>
                     <div className="mt-4 flex justify-between items-center">
                       <span className="text-xs bg-black/10 text-gray-900 px-2 py-1 rounded-full">En cours</span>
@@ -328,13 +346,13 @@ export default function DashboardPage() {
                           </div>
                         </div>
                       </div>
-                      <p className="text-cyan-100 text-sm">Obtenez des conseils personnalisés en temps réel</p>
+                      <p className="text-cyan-100 text-sm">Obtenez des conseils personnalis en temps rel</p>
                       
                       {/* AI Message Preview */}
                       <div className="mt-3 bg-white/10 backdrop-blur-sm rounded-lg p-3 text-left">
                         <div className="flex items-start space-x-2">
                           <div className="w-2 h-2 bg-cyan-300 rounded-full mt-2"></div>
-                          <p className="text-xs text-white line-clamp-2">Bonjour Alex ! Prêt pour votre session d'aujourd'hui ?</p>
+                          <p className="text-xs text-white line-clamp-2">Bonjour Alex ! Prt pour votre session d'aujourd'hui ?</p>
                         </div>
                       </div>
                     </div>
@@ -359,18 +377,18 @@ export default function DashboardPage() {
                       <div className="flex items-center mb-2">
                         <div className="p-2 bg-white/20 rounded-lg mr-3">
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 116 0v6a2 2 0 01-3 3z" />
                           </svg>
                         </div>
-                        <h3 className="text-xl font-bold text-white">S'entraîner en VR</h3>
+                        <h3 className="text-xl font-bold text-white">S'entraner en VR</h3>
                       </div>
                       <h4 className="text-white/90 font-medium">Environnements immersifs</h4>
-                      <p className="text-white/80 text-sm mt-1">Pratiquez dans des scénarios réalistes</p>
+                      <p className="text-white/80 text-sm mt-1">Pratiquez dans des scnarios ralistes</p>
                     </div>
                     <div className="mt-4 flex justify-between items-center">
                       <span className="text-xs bg-white/20 text-white px-2 py-1 rounded-full">Nouveau</span>
                       <div className="flex items-center text-white/90 group-hover:text-white transition-colors">
-                        <span className="font-medium mr-1">Découvrir</span>
+                        <span className="font-medium mr-1">Dcouvrir</span>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
@@ -393,8 +411,8 @@ export default function DashboardPage() {
                         </div>
                         <h3 className="text-xl font-bold text-white">Analyse Vocale</h3>
                       </div>
-                      <h4 className="text-white/90 font-medium">Analyse en temps réel</h4>
-                      <p className="text-white/80 text-sm mt-1">Améliorez votre élocution et votre rythme</p>
+                      <h4 className="text-white/90 font-medium">Analyse en temps rel</h4>
+                      <p className="text-white/80 text-sm mt-1">Amliorez votre locution et votre rythme</p>
                     </div>
                     <div className="mt-4 flex justify-between items-center">
                       <span className="text-xs bg-white/20 text-white px-2 py-1 rounded-full">Nouveau</span>
@@ -555,7 +573,9 @@ export default function DashboardPage() {
                 </button>
               </div>
             </div>
-          </motion.div>
+              </motion.div>
+            </>
+          )}
         </main>
       </div>
     </div>
