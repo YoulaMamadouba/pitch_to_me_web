@@ -312,6 +312,29 @@ export default function B2BPage() {
                   </div>
                 </motion.div>
               </Link>
+
+              {/* Carte Team Management */}
+              <Link href="/team-management" className="w-full sm:w-auto">
+                <motion.div 
+                  whileHover={{ y: -2, scale: 1.02 }}
+                  className="bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg p-4 border border-pink-300/50 hover:border-pink-400 transition-all cursor-pointer group w-full sm:min-w-[280px] max-w-[300px] h-full"
+                >
+                  <div className="flex items-center h-full">
+                    <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center">
+                        <h4 className="text-white text-base font-medium truncate">Team Management</h4>
+                        <span className="ml-2 bg-white/30 text-white text-xs px-2 py-0.5 rounded-full font-semibold whitespace-nowrap">NOUVEAU</span>
+                      </div>
+                      <p className="text-white/90 text-sm truncate">Gérez votre équipe efficacement</p>
+                    </div>
+                  </div>
+                </motion.div>
+              </Link>
             </div>
           </section>
 
