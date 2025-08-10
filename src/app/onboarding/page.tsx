@@ -2,9 +2,15 @@
 
 import { motion } from 'framer-motion';
 import { Check, Play, Volume2, BookOpen, Award } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import AuthPageHeader from '@/components/ui/AuthPageHeader';
 
 export default function OnboardingPage() {
+  const router = useRouter();
+
+  const handleContinue = () => {
+    router.push('/dashboard');
+  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 flex flex-col">
       {/* Header */}
@@ -154,7 +160,10 @@ export default function OnboardingPage() {
 
                 {/* CTA Button */}
                 <div className="text-center">
-                  <button className="w-full max-w-xs mx-auto bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-black font-semibold py-3 px-6 rounded-xl transition-all transform hover:scale-[1.02] active:scale-95">
+                  <button 
+                    onClick={handleContinue}
+                    className="w-full max-w-xs mx-auto bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-black font-semibold py-3 px-6 rounded-xl transition-all transform hover:scale-[1.02] active:scale-95"
+                  >
                     Continuer la configuration
                   </button>
                   <p className="text-gray-400 text-xs mt-2">Moins de 2 minutes</p>
