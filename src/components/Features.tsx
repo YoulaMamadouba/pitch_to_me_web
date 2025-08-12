@@ -41,8 +41,8 @@ export default function Features() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Pourquoi choisir <span className="bg-gradient-to-r from-yellow-400 to-yellow-500 bg-clip-text text-transparent">Pitch to Me</span> ?
+          <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
+            Pourquoi choisir <span className="text-yellow-400">Pitch to Me</span> ?
           </h2>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
             Découvrez les fonctionnalités qui font de notre plateforme la solution ultime pour maîtriser l'art de la prise de parole en public.
