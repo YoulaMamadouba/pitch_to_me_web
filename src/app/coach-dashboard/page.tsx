@@ -320,6 +320,8 @@ const CoachDashboard = () => {
         videoUrl: moduleData.videoUrl || '',
         theme: moduleData.theme || '',
         domain: moduleData.domain || '',
+        offerType: moduleData.offerType || '',
+        activityDomain: moduleData.activityDomain || '',
         difficulty: moduleData.difficulty || 'intermediate',
         duration: moduleData.duration || 30,
         tags: moduleData.tags || [],
@@ -804,18 +806,24 @@ const CoachDashboard = () => {
         editingModule={editingModule}
         domains={activeModuleType === 'b2b' 
           ? [
-              { id: 'commercial', name: 'Commercial' },
-              { id: 'marketing', name: 'Marketing' },
-              { id: 'rh', name: 'Ressources Humaines' },
-              { id: 'finance', name: 'Finance' },
-              { id: 'management', name: 'Management' },
-              { id: 'international', name: 'International' }
+              { id: 'banque', name: 'Banque & Finance' },
+              { id: 'minier', name: 'Mines & Énergie' },
+              { id: 'gouvernement', name: 'Gouvernement & Public' },
+              { id: 'industrie', name: 'Industrie & Manufacture' },
+              { id: 'automobile', name: 'Automobile & Transport' },
+              { id: 'aerospatial', name: 'Aérospatial & Aviation' },
+              { id: 'sante', name: 'Santé & Médical' },
+              { id: 'education', name: 'Éducation & Formation' },
+              { id: 'retail', name: 'Commerce & Retail' },
+              { id: 'technologie', name: 'Technologie & IT' },
+              { id: 'environnement', name: 'Environnement & Développement Durable' },
+              { id: 'consulting', name: 'Consulting & Services' }
             ]
           : [
               { id: 'personal-development', name: 'Développement Personnel' },
-              { id: 'career', name: 'Carrière' },
+              { id: 'career', name: 'Carrière & Emploi' },
               { id: 'public-speaking', name: 'Prise de Parole' },
-              { id: 'networking', name: 'Networking' },
+              { id: 'networking', name: 'Networking & Relations' },
               { id: 'entrepreneurship', name: 'Entrepreneuriat' }
             ]
         }

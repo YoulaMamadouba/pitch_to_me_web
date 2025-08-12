@@ -28,6 +28,7 @@ export default function ModuleForm({
     videoUrl: '',
     theme: '',
     domain: '',
+    offerType: '',
     difficulty: 'intermediate' as const,
     duration: 30,
     tags: ''
@@ -43,6 +44,7 @@ export default function ModuleForm({
         videoUrl: editingModule.videoUrl,
         theme: editingModule.theme,
         domain: editingModule.domain,
+        offerType: editingModule.activityDomain || '',
         difficulty: editingModule.difficulty,
         duration: editingModule.duration,
         tags: editingModule.tags.join(', ')
@@ -54,6 +56,7 @@ export default function ModuleForm({
         videoUrl: '',
         theme: '',
         domain: '',
+        offerType: '',
         difficulty: 'intermediate',
         duration: 30,
         tags: ''
@@ -77,7 +80,8 @@ export default function ModuleForm({
       const moduleData = {
         ...formData,
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0),
-        moduleType
+        moduleType,
+        activityDomain: formData.offerType // On mappe offerType vers activityDomain
       };
 
       await onSubmit(moduleData);
@@ -88,6 +92,17 @@ export default function ModuleForm({
       setIsSubmitting(false);
     }
   };
+
+  // Types d'offre (qui sont en fait les domaines d'activité)
+  const offerTypes = [
+    { value: 'commercial', label: 'Commercial' },
+    { value: 'marketing', label: 'Marketing' },
+    { value: 'rh', label: 'Ressources Humaines' },
+    { value: 'finance', label: 'Finance' },
+    { value: 'management', label: 'Management' },
+    { value: 'international', label: 'International' },
+    { value: 'autres', label: 'Autres' }
+  ];
 
   if (!isOpen) return null;
 
@@ -195,7 +210,7 @@ export default function ModuleForm({
             
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Domaine d'activité *
+                Domaine métier *
               </label>
               <select
                 name="domain"
@@ -217,6 +232,26 @@ export default function ModuleForm({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
+                Type d'offre *
+              </label>
+              <select
+                name="offerType"
+                value={formData.offerType}
+                onChange={handleInputChange}
+                required
+                className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+              >
+                <option value="">Sélectionnez un type d'offre</option>
+                {offerTypes.map((type) => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
                 Niveau de difficulté *
               </label>
               <select
@@ -231,7 +266,9 @@ export default function ModuleForm({
                 <option value="advanced">Avancé</option>
               </select>
             </div>
-            
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Durée estimée (minutes) *

@@ -10,6 +10,8 @@ export interface Module {
   videoUrl: string;
   theme: string;
   domain: string;
+  offerType?: string;
+  activityDomain?: string;
   difficulty: 'easy' | 'intermediate' | 'advanced';
   duration: number; // en minutes
   tags: string[];

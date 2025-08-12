@@ -22,7 +22,9 @@ const initialModules: Module[] = [
     description: 'Maîtrisez les techniques de vente les plus efficaces pour maximiser vos résultats commerciaux.',
     videoUrl: 'https://www.youtube.com/watch?v=example1',
     theme: 'Négociation commerciale',
-    domain: 'Commercial',
+    domain: 'Banque & Finance',
+    offerType: 'commercial',
+    activityDomain: 'commercial',
     difficulty: 'advanced',
     duration: 45,
     tags: ['vente', 'négociation', 'commercial', 'techniques'],
@@ -36,7 +38,9 @@ const initialModules: Module[] = [
     description: 'Apprenez à présenter vos projets de manière claire et convaincante.',
     videoUrl: 'https://www.youtube.com/watch?v=example2',
     theme: 'Présentation',
-    domain: 'Management',
+    domain: 'Gouvernement & Public',
+    offerType: 'management',
+    activityDomain: 'management',
     difficulty: 'intermediate',
     duration: 30,
     tags: ['présentation', 'projet', 'management', 'communication'],
@@ -51,6 +55,8 @@ const initialModules: Module[] = [
     videoUrl: 'https://www.youtube.com/watch?v=example3',
     theme: 'Développement personnel',
     domain: 'Développement Personnel',
+    offerType: 'rh',
+    activityDomain: 'rh',
     difficulty: 'easy',
     duration: 25,
     tags: ['confiance', 'entretien', 'développement', 'personnel'],
@@ -83,8 +89,13 @@ export function ModulesProvider({ children }: { children: ReactNode }) {
 
   const getModulesByType = (type: 'b2b' | 'b2c') => {
     // Logique pour filtrer par type B2B ou B2C basée sur les domaines
-    const b2bDomains = ['Commercial', 'Marketing', 'Ressources Humaines', 'Finance', 'Management', 'International'];
-    const b2cDomains = ['Développement Personnel', 'Carrière', 'Prise de Parole', 'Networking', 'Entrepreneuriat'];
+    const b2bDomains = [
+      'Banque & Finance', 'Mines & Énergie', 'Gouvernement & Public', 
+      'Industrie & Manufacture', 'Automobile & Transport', 'Aérospatial & Aviation',
+      'Santé & Médical', 'Éducation & Formation', 'Commerce & Retail',
+      'Technologie & IT', 'Environnement & Développement Durable', 'Consulting & Services'
+    ];
+    const b2cDomains = ['Développement Personnel', 'Carrière & Emploi', 'Prise de Parole', 'Networking & Relations', 'Entrepreneuriat'];
     
     const targetDomains = type === 'b2b' ? b2bDomains : b2cDomains;
     return modules.filter(module => targetDomains.includes(module.domain));
