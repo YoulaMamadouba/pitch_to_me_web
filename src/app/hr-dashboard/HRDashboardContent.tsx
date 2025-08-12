@@ -1,25 +1,23 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import HRSidebar from '@/components/hr/HRSidebar';
 import HRHeader from '@/components/hr/HRHeader';
+import EmployeesSection from '@/components/hr-dashboard/EmployeesSection';
 import { Check, Clock, AlertTriangle, Star, BarChart3, Search, Bell, Users } from 'lucide-react';
 
 // Export par défaut pour faciliter l'import dynamique
 export default function HRDashboardContent() {
-  return (
-    <div className="flex h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100">
-      {/* Sidebar */}
-      <HRSidebar />
-      
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <HRHeader />
-        
-        {/* Main Content */}
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-7xl mx-auto">
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'employees' | 'trainings' | 'skills' | 'evaluation'>('dashboard');
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'employees':
+        return <EmployeesSection />;
+      case 'dashboard':
+      default:
+        return (
+          <>
             {/* Company Overview */}
             <CompanyOverview />
             
@@ -34,6 +32,83 @@ export default function HRDashboardContent() {
             
             {/* Quick Actions */}
             <QuickActions />
+          </>
+        );
+    }
+  };
+
+  return (
+    <div className="flex h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100">
+      {/* Sidebar */}
+      <HRSidebar />
+      
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <HRHeader />
+        
+        {/* Navigation Tabs */}
+        <div className="bg-gray-900 border-b border-gray-800">
+          <div className="max-w-7xl mx-auto px-6">
+            <nav className="flex space-x-8">
+              <button
+                onClick={() => setActiveTab('dashboard')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === 'dashboard'
+                    ? 'border-cyan-500 text-cyan-400'
+                    : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-700'
+                }`}
+              >
+                Tableau de bord
+              </button>
+              <button
+                onClick={() => setActiveTab('employees')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === 'employees'
+                    ? 'border-cyan-500 text-cyan-400'
+                    : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-700'
+                }`}
+              >
+                Employés
+              </button>
+              <button
+                onClick={() => setActiveTab('trainings')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === 'trainings'
+                    ? 'border-cyan-500 text-cyan-400'
+                    : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-700'
+                }`}
+              >
+                Formations
+              </button>
+              <button
+                onClick={() => setActiveTab('skills')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === 'skills'
+                    ? 'border-cyan-500 text-cyan-400'
+                    : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-700'
+                }`}
+              >
+                Compétences
+              </button>
+              <button
+                onClick={() => setActiveTab('evaluation')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === 'evaluation'
+                    ? 'border-cyan-500 text-cyan-400'
+                    : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-700'
+                }`}
+              >
+                Évaluation
+              </button>
+            </nav>
+          </div>
+        </div>
+        
+        {/* Main Content */}
+        <main className="flex-1 overflow-y-auto p-6">
+          <div className="max-w-7xl mx-auto">
+            {renderContent()}
           </div>
         </main>
       </div>

@@ -442,175 +442,175 @@ const CoachDashboard = () => {
     // Default dashboard view
     return (
       <>
-        {/* Welcome Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-6"
-        >
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-1">Welcome back, Mawa!</h2>
-          <p className="text-gray-400">Here's what's happening with your coaching today</p>
-        </motion.div>
+          {/* Welcome Section */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-6"
+          >
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-1">Welcome back, Mawa!</h2>
+            <p className="text-gray-400">Here's what's happening with your coaching today</p>
+          </motion.div>
 
-        {/* Live Session Alert */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="relative overflow-hidden rounded-xl bg-gradient-to-r from-green-900/50 to-green-800/30 border border-green-500/30 p-4 mb-6"
-        >
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-green-500/5 to-transparent opacity-30"></div>
-          <div className="relative z-10">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-              <div className="flex items-center space-x-3 mb-3 md:mb-0">
-                <div className="flex-shrink-0">
-                  <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+          {/* Live Session Alert */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="relative overflow-hidden rounded-xl bg-gradient-to-r from-green-900/50 to-green-800/30 border border-green-500/30 p-4 mb-6"
+          >
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-green-500/5 to-transparent opacity-30"></div>
+            <div className="relative z-10">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                <div className="flex items-center space-x-3 mb-3 md:mb-0">
+                  <div className="flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-green-400 font-semibold">Live Session Active</h3>
+                    <p className="text-gray-300 text-sm">VR Coaching - Alex M. (TEDx Module)</p>
                   </div>
                 </div>
-                <div>
-                  <h3 className="text-green-400 font-semibold">Live Session Active</h3>
-                  <p className="text-gray-300 text-sm">VR Coaching - Alex M. (TEDx Module)</p>
-                </div>
+                <button className="bg-green-500 hover:bg-green-600 text-black font-medium px-4 py-2 rounded-lg transition-colors w-full md:w-auto">
+                  Join Session
+                </button>
               </div>
-              <button className="bg-green-500 hover:bg-green-600 text-black font-medium px-4 py-2 rounded-lg transition-colors w-full md:w-auto">
-                Join Session
-              </button>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
 
-        {/* Key Metrics */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <MetricCard 
-            icon={Users} 
-            value="247" 
-            label="Active Students" 
-            change="+12%" 
-            changeType="positive"
-            iconBg="bg-blue-600"
-          />
-          <MetricCard 
-            icon={Check} 
-            value="89%" 
-            label="Completion Rate" 
-            change="+8%" 
-            changeType="positive"
-            iconBg="bg-green-600"
-          />
-          <MetricCard 
-            icon={Star} 
-            value="4.8" 
-            label="Avg. Rating" 
-            change="4.9" 
-            changeType="neutral"
-            iconBg="bg-yellow-600"
-          />
-          <MetricCard 
-            icon={Video} 
-            value="12" 
-            label="VR Sessions" 
-            change="Live" 
-            changeType="positive"
-            iconBg="bg-purple-600"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Recent Activities */}
-          <div className="lg:col-span-2">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white">Recent Activities</h3>
-              <button className="text-sm text-yellow-400 hover:text-yellow-300 flex items-center">
-                View All <ChevronRight className="w-4 h-4 ml-1" />
-              </button>
-            </div>
-            
-            <div className="space-y-3">
-              <AnimatePresence>
-                {recentActivities.map((activity) => (
-                  <ActivityCard key={activity.id} activity={activity} />
-                ))}
-              </AnimatePresence>
-            </div>
+          {/* Key Metrics */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <MetricCard 
+              icon={Users} 
+              value="247" 
+              label="Active Students" 
+              change="+12%" 
+              changeType="positive"
+              iconBg="bg-blue-600"
+            />
+            <MetricCard 
+              icon={Check} 
+              value="89%" 
+              label="Completion Rate" 
+              change="+8%" 
+              changeType="positive"
+              iconBg="bg-green-600"
+            />
+            <MetricCard 
+              icon={Star} 
+              value="4.8" 
+              label="Avg. Rating" 
+              change="4.9" 
+              changeType="neutral"
+              iconBg="bg-yellow-600"
+            />
+            <MetricCard 
+              icon={Video} 
+              value="12" 
+              label="VR Sessions" 
+              change="Live" 
+              changeType="positive"
+              iconBg="bg-purple-600"
+            />
           </div>
 
-          {/* Upcoming Sessions & Quick Actions */}
-          <div className="space-y-6">
-            {/* Upcoming Sessions */}
-            <div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Recent Activities */}
+            <div className="lg:col-span-2">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white">Upcoming Sessions</h3>
-                <button className="text-sm text-yellow-400 hover:text-yellow-300">
-                  View All
+                <h3 className="text-lg font-semibold text-white">Recent Activities</h3>
+                <button className="text-sm text-yellow-400 hover:text-yellow-300 flex items-center">
+                  View All <ChevronRight className="w-4 h-4 ml-1" />
                 </button>
               </div>
               
               <div className="space-y-3">
-                {upcomingSessions.map((session, index) => (
-                  <motion.div 
-                    key={session.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-yellow-400/30 transition-all"
-                  >
-                    <div className="flex items-start">
-                      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center mr-3">
-                        <Video className="w-5 h-5 text-yellow-400" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                          <h4 className="text-white font-medium">{session.title}</h4>
-                          <span className={`text-xs px-2 py-0.5 rounded-full ${
-                            session.status === 'live' 
-                              ? 'bg-green-900/50 text-green-400' 
-                              : 'bg-blue-900/50 text-blue-400'
-                          }`}>
-                            {session.status === 'live' ? 'Live' : session.time}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-400">{session.student} • {session.module}</p>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
+                <AnimatePresence>
+                  {recentActivities.map((activity) => (
+                    <ActivityCard key={activity.id} activity={activity} />
+                  ))}
+                </AnimatePresence>
               </div>
             </div>
 
-            {/* Quick Actions */}
-            <div>
-              <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <QuickActionButton 
-                  icon={Video} 
-                  label="Start Live" 
-                  color="yellow"
-                  onClick={() => {}}
-                />
-                <QuickActionButton 
-                  icon={BarChart3} 
-                  label="Analytics" 
-                  color="blue"
-                  onClick={() => {}}
-                />
-                <QuickActionButton 
-                  icon={FileText} 
-                  label="Create Content" 
-                  color="purple"
-                  onClick={() => {}}
-                />
-                <QuickActionButton 
-                  icon={Users} 
-                  label="Students" 
-                  color="gray"
-                  onClick={() => {}}
-                />
+            {/* Upcoming Sessions & Quick Actions */}
+            <div className="space-y-6">
+              {/* Upcoming Sessions */}
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-white">Upcoming Sessions</h3>
+                  <button className="text-sm text-yellow-400 hover:text-yellow-300">
+                    View All
+                  </button>
+                </div>
+                
+                <div className="space-y-3">
+                  {upcomingSessions.map((session, index) => (
+                    <motion.div 
+                      key={session.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-yellow-400/30 transition-all"
+                    >
+                      <div className="flex items-start">
+                        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center mr-3">
+                          <Video className="w-5 h-5 text-yellow-400" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-white font-medium">{session.title}</h4>
+                            <span className={`text-xs px-2 py-0.5 rounded-full ${
+                              session.status === 'live' 
+                                ? 'bg-green-900/50 text-green-400' 
+                                : 'bg-blue-900/50 text-blue-400'
+                            }`}>
+                              {session.status === 'live' ? 'Live' : session.time}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-400">{session.student} • {session.module}</p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Quick Actions */}
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <QuickActionButton 
+                    icon={Video} 
+                    label="Start Live" 
+                    color="yellow"
+                    onClick={() => {}}
+                  />
+                  <QuickActionButton 
+                    icon={BarChart3} 
+                    label="Analytics" 
+                    color="blue"
+                    onClick={() => {}}
+                  />
+                  <QuickActionButton 
+                    icon={FileText} 
+                    label="Create Content" 
+                    color="purple"
+                    onClick={() => {}}
+                  />
+                  <QuickActionButton 
+                    icon={Users} 
+                    label="Students" 
+                    color="gray"
+                    onClick={() => {}}
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
       </>
     );
   };

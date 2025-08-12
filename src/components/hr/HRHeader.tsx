@@ -191,48 +191,6 @@ const HRHeader = () => {
           </div>
         </div>
       </div>
-      
-      {/* Secondary navigation */}
-      <div className="px-6 py-2 bg-gray-800/50 border-t border-b border-gray-700">
-        <div className="flex items-center space-x-4 overflow-x-auto">
-          <a
-            href="#"
-            className="px-3 py-2 text-sm font-medium text-cyan-400 border-b-2 border-cyan-400 whitespace-nowrap"
-          >
-            Tableau de bord
-          </a>
-          <a
-            href="#"
-            className="px-3 py-2 text-sm font-medium text-gray-400 hover:text-white whitespace-nowrap"
-          >
-            Employés
-          </a>
-          <a
-            href="#"
-            className="px-3 py-2 text-sm font-medium text-gray-400 hover:text-white whitespace-nowrap"
-          >
-            Formations
-          </a>
-          <a
-            href="#"
-            className="px-3 py-2 text-sm font-medium text-gray-400 hover:text-white whitespace-nowrap"
-          >
-            Compétences
-          </a>
-          <a
-            href="#"
-            className="px-3 py-2 text-sm font-medium text-gray-400 hover:text-white whitespace-nowrap"
-          >
-            Évaluations
-          </a>
-          <a
-            href="#"
-            className="px-3 py-2 text-sm font-medium text-gray-400 hover:text-white whitespace-nowrap"
-          >
-            Rapports
-          </a>
-        </div>
-      </div>
     </header>
   );
 };
