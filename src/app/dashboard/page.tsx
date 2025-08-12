@@ -38,7 +38,8 @@ import {
   Eye,
   Mic,
   Video,
-  Smile
+  Smile,
+  MessageSquareText
 } from 'lucide-react';
 import LearnerProfile from '@/components/LearnerProfile';
 import Community from '@/components/Community';
@@ -66,6 +67,10 @@ const RecordingStudioView = dynamic(() => import('@/components/dashboard/Recordi
 });
 
 const EmotionRecognitionView = dynamic(() => import('@/components/dashboard/EmotionRecognitionView'), {
+  loading: () => <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div></div>
+});
+
+const AICoachDrawer = dynamic(() => import('@/components/dashboard/AICoachDrawer'), {
   loading: () => <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div></div>
 });
 
@@ -168,6 +173,7 @@ export default function DashboardPage() {
   const [activeView, setActiveView] = useState<ViewType>('dashboard');
   const [selectedModuleId, setSelectedModuleId] = useState<string>('6');
   const [selectedVRScene, setSelectedVRScene] = useState<string>('');
+  const [isAICoachOpen, setIsAICoachOpen] = useState(false);
 
 
   const navigation: NavigationItem[] = [
@@ -443,7 +449,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Current Module Card */}
+              {/* Current Module Card */}
             <div className="mb-6">
               <button 
                 onClick={() => {
@@ -620,6 +626,25 @@ export default function DashboardPage() {
           )}
         </main>
       </div>
+
+      {/* AI Coach Circle Button */}
+      <motion.button
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => setIsAICoachOpen(true)}
+        className="fixed bottom-8 right-8 z-40 w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center"
+      >
+        <MessageSquareText className="w-6 h-6 text-white" />
+      </motion.button>
+
+      {/* AI Coach Drawer */}
+      <AICoachDrawer 
+        isOpen={isAICoachOpen} 
+        onClose={() => setIsAICoachOpen(false)} 
+      />
     </div>
   );
 }
