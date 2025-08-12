@@ -106,7 +106,7 @@ export default function Hero() {
                 transition={{ delay: 0.7 }}
               >
                 <Link 
-                  href="/b2c" 
+                  href="/login" 
                   className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-semibold py-2 px-4 rounded-lg hover:shadow-xl transition-all flex items-center justify-center space-x-2 text-xs"
                 >
                   <User className="w-5 h-5" />

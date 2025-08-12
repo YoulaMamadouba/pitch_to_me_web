@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import Features from '@/components/Features';
+import B2CSection from '@/components/B2CSection';
 import { Mic } from 'lucide-react';
 
 export default function Home() {
@@ -10,6 +11,7 @@ export default function Home() {
       <div className="pt-16">
         <Hero />
         <Features />
+        <B2CSection />
       </div>
       
       {/* Footer */}
