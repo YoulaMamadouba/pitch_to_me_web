@@ -36,11 +36,20 @@ import {
   Plus
 } from 'lucide-react';
 import SidebarModulesMenu from '@/components/dashboard/SidebarModulesMenu';
+import SidebarB2BMenu from '@/components/dashboard-coach/SidebarB2BMenu';
+import SidebarB2CMenu from '@/components/dashboard-coach/SidebarB2CMenu';
 import DomainsList from '@/components/dashboard/DomainsList';
 import ModulesList from '@/components/dashboard/ModulesList';
 import ModuleForm from '@/components/dashboard/ModuleForm';
+import CompanyList from '@/components/dashboard-coach/CompanyList';
+import CompanyForm from '@/components/dashboard-coach/CompanyForm';
+import StudentList from '@/components/dashboard-coach/StudentList';
 import { useModules } from '@/contexts/ModulesContext';
+import { useCompanies } from '@/contexts/CompaniesContext';
+import { useStudents } from '@/contexts/StudentsContext';
 import { Module } from '@/components/dashboard/ModuleCard';
+import { Company } from '@/components/dashboard-coach/CompanyCard';
+import { Student } from '@/components/dashboard-coach/StudentCard';
 
 // Types
 type NavigationItem = {
@@ -204,7 +213,13 @@ const CoachDashboard = () => {
   const [isModuleFormOpen, setIsModuleFormOpen] = useState(false);
   const [editingModule, setEditingModule] = useState<Module | null>(null);
   
+  // Companies state
+  const [isCompanyFormOpen, setIsCompanyFormOpen] = useState(false);
+  const [editingCompany, setEditingCompany] = useState<Company | null>(null);
+  
   const { modules, addModule, updateModule, deleteModule, getModulesByDomain } = useModules();
+  const { companies, addCompany, updateCompany, deleteCompany } = useCompanies();
+  const { students } = useStudents();
 
   useEffect(() => {
     setMounted(true);
@@ -292,15 +307,12 @@ const CoachDashboard = () => {
 
   const handleViewModule = (module: Module) => {
     console.log('View module:', module);
-    // Implémenter la logique de visualisation
   };
 
   const handleModuleSubmit = async (moduleData: Partial<Module>) => {
     if (editingModule) {
-      // Update existing module
       updateModule(editingModule.id, moduleData);
     } else {
-      // Create new module
       const newModule: Module = {
         id: Date.now().toString(),
         title: moduleData.title || '',
@@ -317,6 +329,65 @@ const CoachDashboard = () => {
       };
       addModule(newModule);
     }
+  };
+
+  // Company handlers
+  const handleCreateCompany = () => {
+    setEditingCompany(null);
+    setIsCompanyFormOpen(true);
+  };
+
+  const handleEditCompany = (company: Company) => {
+    setEditingCompany(company);
+    setIsCompanyFormOpen(true);
+  };
+
+  const handleDeleteCompany = (companyId: string) => {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette entreprise ?')) {
+      deleteCompany(companyId);
+    }
+  };
+
+  const handleViewCompany = (company: Company) => {
+    console.log('View company:', company);
+  };
+
+  const handleCompanySubmit = async (companyData: Partial<Company>) => {
+    if (editingCompany) {
+      updateCompany(editingCompany.id, companyData);
+    } else {
+      const newCompany: Company = {
+        id: Date.now().toString(),
+        name: companyData.name || '',
+        logo: companyData.logo || '',
+        industry: companyData.industry || '',
+        employeeCount: companyData.employeeCount || 0,
+        hrName: companyData.hrName || '',
+        hrEmail: companyData.hrEmail || '',
+        hrPhone: companyData.hrPhone || '',
+        modules: companyData.modules || [],
+        createdAt: new Date().toISOString().split('T')[0]
+      };
+      addCompany(newCompany);
+    }
+  };
+
+  // Student handlers
+  const handleViewStudent = (student: Student) => {
+    console.log('View student:', student);
+  };
+
+  // Navigation handlers
+  const handleB2BNavigation = () => {
+    setActiveTab('companies');
+    setActiveModuleType(null);
+    setSelectedDomain(null);
+  };
+
+  const handleB2CNavigation = () => {
+    setActiveTab('students');
+    setActiveModuleType(null);
+    setSelectedDomain(null);
   };
 
   const getCurrentView = () => {
@@ -343,6 +414,27 @@ const CoachDashboard = () => {
           />
         );
       }
+    }
+
+    if (activeTab === 'companies') {
+      return (
+        <CompanyList
+          companies={companies}
+          onCreateCompany={handleCreateCompany}
+          onEditCompany={handleEditCompany}
+          onDeleteCompany={handleDeleteCompany}
+          onViewCompany={handleViewCompany}
+        />
+      );
+    }
+
+    if (activeTab === 'students') {
+      return (
+        <StudentList
+          students={students}
+          onViewStudent={handleViewStudent}
+        />
+      );
     }
 
     // Default dashboard view
@@ -594,11 +686,27 @@ const CoachDashboard = () => {
               </li>
             ))}
             
+            {/* B2B Menu */}
+            <li>
+              <SidebarB2BMenu
+                isActive={activeTab === 'companies'}
+                onClick={handleB2BNavigation}
+              />
+            </li>
+
+            {/* B2C Menu */}
+            <li>
+              <SidebarB2CMenu
+                isActive={activeTab === 'students'}
+                onClick={handleB2CNavigation}
+              />
+            </li>
+            
             {/* Modules Menu */}
             <li>
               <SidebarModulesMenu
                 onModuleTypeSelect={handleModuleTypeSelect}
-                activeModuleType={activeModuleType}
+                activeModuleType={activeModuleType || undefined}
               />
             </li>
           </ul>
@@ -642,6 +750,10 @@ const CoachDashboard = () => {
               <h1 className="text-xl font-semibold text-white">
                 {activeTab === 'modules' && activeModuleType 
                   ? `Modules ${activeModuleType.toUpperCase()}`
+                  : activeTab === 'companies'
+                  ? 'Entreprises B2B'
+                  : activeTab === 'students'
+                  ? 'Étudiants B2C'
                   : navigation.find(nav => nav.active)?.label || 'Dashboard'
                 }
               </h1>
@@ -707,6 +819,24 @@ const CoachDashboard = () => {
               { id: 'entrepreneurship', name: 'Entrepreneuriat' }
             ]
         }
+      />
+
+      {/* Company Form Modal */}
+      <CompanyForm
+        isOpen={isCompanyFormOpen}
+        onClose={() => setIsCompanyFormOpen(false)}
+        onSubmit={handleCompanySubmit}
+        editingCompany={editingCompany}
+        availableModules={[
+          'Techniques de vente avancées',
+          'Présentation de projet efficace',
+          'Management d\'équipe',
+          'Stratégies marketing',
+          'Communication digitale',
+          'Présentation financière',
+          'Négociation commerciale',
+          'Développement personnel'
+        ]}
       />
     </div>
   );
