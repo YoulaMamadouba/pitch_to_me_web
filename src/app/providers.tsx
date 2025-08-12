@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { ModulesProvider } from '@/contexts/ModulesContext';
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
@@ -14,5 +15,9 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
     return null;
   }
 
-  return <>{children}</>;
+  return (
+    <ModulesProvider>
+      {children}
+    </ModulesProvider>
+  );
 }

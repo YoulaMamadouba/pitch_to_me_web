@@ -35,6 +35,12 @@ import {
   MessageSquarePlus,
   Plus
 } from 'lucide-react';
+import SidebarModulesMenu from '@/components/dashboard/SidebarModulesMenu';
+import DomainsList from '@/components/dashboard/DomainsList';
+import ModulesList from '@/components/dashboard/ModulesList';
+import ModuleForm from '@/components/dashboard/ModuleForm';
+import { useModules } from '@/contexts/ModulesContext';
+import { Module } from '@/components/dashboard/ModuleCard';
 
 // Types
 type NavigationItem = {
@@ -191,6 +197,14 @@ const CoachDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [unreadNotifications, setUnreadNotifications] = useState(3);
+  
+  // Modules state
+  const [activeModuleType, setActiveModuleType] = useState<'b2b' | 'b2c' | null>(null);
+  const [selectedDomain, setSelectedDomain] = useState<any>(null);
+  const [isModuleFormOpen, setIsModuleFormOpen] = useState(false);
+  const [editingModule, setEditingModule] = useState<Module | null>(null);
+  
+  const { modules, addModule, updateModule, deleteModule, getModulesByDomain } = useModules();
 
   useEffect(() => {
     setMounted(true);
@@ -244,6 +258,268 @@ const CoachDashboard = () => {
     { id: 2, title: 'Pitch Review', student: 'Maria G.', module: 'Startup Pitch', time: '2:30 PM', status: 'upcoming' },
     { id: 3, title: 'Group Session', student: 'Team Alpha', module: 'Presentation Skills', time: '4:00 PM', status: 'upcoming' }
   ];
+
+  // Module handlers
+  const handleModuleTypeSelect = (type: 'b2b' | 'b2c') => {
+    setActiveModuleType(type);
+    setSelectedDomain(null);
+    setActiveTab('modules');
+  };
+
+  const handleDomainSelect = (domain: any) => {
+    setSelectedDomain(domain);
+  };
+
+  const handleBackToDomains = () => {
+    setSelectedDomain(null);
+  };
+
+  const handleCreateModule = () => {
+    setEditingModule(null);
+    setIsModuleFormOpen(true);
+  };
+
+  const handleEditModule = (module: Module) => {
+    setEditingModule(module);
+    setIsModuleFormOpen(true);
+  };
+
+  const handleDeleteModule = (moduleId: string) => {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce module ?')) {
+      deleteModule(moduleId);
+    }
+  };
+
+  const handleViewModule = (module: Module) => {
+    console.log('View module:', module);
+    // Implémenter la logique de visualisation
+  };
+
+  const handleModuleSubmit = async (moduleData: Partial<Module>) => {
+    if (editingModule) {
+      // Update existing module
+      updateModule(editingModule.id, moduleData);
+    } else {
+      // Create new module
+      const newModule: Module = {
+        id: Date.now().toString(),
+        title: moduleData.title || '',
+        description: moduleData.description || '',
+        videoUrl: moduleData.videoUrl || '',
+        theme: moduleData.theme || '',
+        domain: moduleData.domain || '',
+        difficulty: moduleData.difficulty || 'intermediate',
+        duration: moduleData.duration || 30,
+        tags: moduleData.tags || [],
+        rating: 0,
+        studentsCount: 0,
+        createdAt: new Date().toISOString().split('T')[0]
+      };
+      addModule(newModule);
+    }
+  };
+
+  const getCurrentView = () => {
+    if (activeTab === 'modules' && activeModuleType) {
+      if (selectedDomain) {
+        const domainModules = getModulesByDomain(selectedDomain.name);
+        return (
+          <ModulesList
+            domain={selectedDomain}
+            modules={domainModules}
+            onBack={handleBackToDomains}
+            onCreateModule={handleCreateModule}
+            onEditModule={handleEditModule}
+            onDeleteModule={handleDeleteModule}
+            onViewModule={handleViewModule}
+          />
+        );
+      } else {
+        return (
+          <DomainsList
+            moduleType={activeModuleType}
+            onDomainSelect={handleDomainSelect}
+            onCreateModule={handleCreateModule}
+          />
+        );
+      }
+    }
+
+    // Default dashboard view
+    return (
+      <>
+        {/* Welcome Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-6"
+        >
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-1">Welcome back, Mawa!</h2>
+          <p className="text-gray-400">Here's what's happening with your coaching today</p>
+        </motion.div>
+
+        {/* Live Session Alert */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="relative overflow-hidden rounded-xl bg-gradient-to-r from-green-900/50 to-green-800/30 border border-green-500/30 p-4 mb-6"
+        >
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-green-500/5 to-transparent opacity-30"></div>
+          <div className="relative z-10">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+              <div className="flex items-center space-x-3 mb-3 md:mb-0">
+                <div className="flex-shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-green-400 font-semibold">Live Session Active</h3>
+                  <p className="text-gray-300 text-sm">VR Coaching - Alex M. (TEDx Module)</p>
+                </div>
+              </div>
+              <button className="bg-green-500 hover:bg-green-600 text-black font-medium px-4 py-2 rounded-lg transition-colors w-full md:w-auto">
+                Join Session
+              </button>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Key Metrics */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <MetricCard 
+            icon={Users} 
+            value="247" 
+            label="Active Students" 
+            change="+12%" 
+            changeType="positive"
+            iconBg="bg-blue-600"
+          />
+          <MetricCard 
+            icon={Check} 
+            value="89%" 
+            label="Completion Rate" 
+            change="+8%" 
+            changeType="positive"
+            iconBg="bg-green-600"
+          />
+          <MetricCard 
+            icon={Star} 
+            value="4.8" 
+            label="Avg. Rating" 
+            change="4.9" 
+            changeType="neutral"
+            iconBg="bg-yellow-600"
+          />
+          <MetricCard 
+            icon={Video} 
+            value="12" 
+            label="VR Sessions" 
+            change="Live" 
+            changeType="positive"
+            iconBg="bg-purple-600"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Recent Activities */}
+          <div className="lg:col-span-2">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-white">Recent Activities</h3>
+              <button className="text-sm text-yellow-400 hover:text-yellow-300 flex items-center">
+                View All <ChevronRight className="w-4 h-4 ml-1" />
+              </button>
+            </div>
+            
+            <div className="space-y-3">
+              <AnimatePresence>
+                {recentActivities.map((activity) => (
+                  <ActivityCard key={activity.id} activity={activity} />
+                ))}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* Upcoming Sessions & Quick Actions */}
+          <div className="space-y-6">
+            {/* Upcoming Sessions */}
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white">Upcoming Sessions</h3>
+                <button className="text-sm text-yellow-400 hover:text-yellow-300">
+                  View All
+                </button>
+              </div>
+              
+              <div className="space-y-3">
+                {upcomingSessions.map((session, index) => (
+                  <motion.div 
+                    key={session.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-yellow-400/30 transition-all"
+                  >
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center mr-3">
+                        <Video className="w-5 h-5 text-yellow-400" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-white font-medium">{session.title}</h4>
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${
+                            session.status === 'live' 
+                              ? 'bg-green-900/50 text-green-400' 
+                              : 'bg-blue-900/50 text-blue-400'
+                          }`}>
+                            {session.status === 'live' ? 'Live' : session.time}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-400">{session.student} • {session.module}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div>
+              <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <QuickActionButton 
+                  icon={Video} 
+                  label="Start Live" 
+                  color="yellow"
+                  onClick={() => {}}
+                />
+                <QuickActionButton 
+                  icon={BarChart3} 
+                  label="Analytics" 
+                  color="blue"
+                  onClick={() => {}}
+                />
+                <QuickActionButton 
+                  icon={FileText} 
+                  label="Create Content" 
+                  color="purple"
+                  onClick={() => {}}
+                />
+                <QuickActionButton 
+                  icon={Users} 
+                  label="Students" 
+                  color="gray"
+                  onClick={() => {}}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  };
 
   if (!mounted) return null;
 
@@ -317,6 +593,14 @@ const CoachDashboard = () => {
                 </button>
               </li>
             ))}
+            
+            {/* Modules Menu */}
+            <li>
+              <SidebarModulesMenu
+                onModuleTypeSelect={handleModuleTypeSelect}
+                activeModuleType={activeModuleType}
+              />
+            </li>
           </ul>
         </nav>
 
@@ -356,7 +640,10 @@ const CoachDashboard = () => {
                 <Menu className="w-5 h-5" />
               </button>
               <h1 className="text-xl font-semibold text-white">
-                {navigation.find(nav => nav.active)?.label || 'Dashboard'}
+                {activeTab === 'modules' && activeModuleType 
+                  ? `Modules ${activeModuleType.toUpperCase()}`
+                  : navigation.find(nav => nav.active)?.label || 'Dashboard'
+                }
               </h1>
             </div>
             
@@ -392,177 +679,35 @@ const CoachDashboard = () => {
 
         {/* Main Content Area */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6 mt-16">
-          {/* Welcome Section */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mb-6"
-          >
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-1">Welcome back, Mawa!</h2>
-            <p className="text-gray-400">Here's what's happening with your coaching today</p>
-          </motion.div>
-
-          {/* Live Session Alert */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="relative overflow-hidden rounded-xl bg-gradient-to-r from-green-900/50 to-green-800/30 border border-green-500/30 p-4 mb-6"
-          >
-            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-green-500/5 to-transparent opacity-30"></div>
-            <div className="relative z-10">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                <div className="flex items-center space-x-3 mb-3 md:mb-0">
-                  <div className="flex-shrink-0">
-                    <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
-                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="text-green-400 font-semibold">Live Session Active</h3>
-                    <p className="text-gray-300 text-sm">VR Coaching - Alex M. (TEDx Module)</p>
-                  </div>
-                </div>
-                <button className="bg-green-500 hover:bg-green-600 text-black font-medium px-4 py-2 rounded-lg transition-colors w-full md:w-auto">
-                  Join Session
-                </button>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Key Metrics */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <MetricCard 
-              icon={Users} 
-              value="247" 
-              label="Active Students" 
-              change="+12%" 
-              changeType="positive"
-              iconBg="bg-blue-600"
-            />
-            <MetricCard 
-              icon={Check} 
-              value="89%" 
-              label="Completion Rate" 
-              change="+8%" 
-              changeType="positive"
-              iconBg="bg-green-600"
-            />
-            <MetricCard 
-              icon={Star} 
-              value="4.8" 
-              label="Avg. Rating" 
-              change="4.9" 
-              changeType="neutral"
-              iconBg="bg-yellow-600"
-            />
-            <MetricCard 
-              icon={Video} 
-              value="12" 
-              label="VR Sessions" 
-              change="Live" 
-              changeType="positive"
-              iconBg="bg-purple-600"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Recent Activities */}
-            <div className="lg:col-span-2">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white">Recent Activities</h3>
-                <button className="text-sm text-yellow-400 hover:text-yellow-300 flex items-center">
-                  View All <ChevronRight className="w-4 h-4 ml-1" />
-                </button>
-              </div>
-              
-              <div className="space-y-3">
-                <AnimatePresence>
-                  {recentActivities.map((activity) => (
-                    <ActivityCard key={activity.id} activity={activity} />
-                  ))}
-                </AnimatePresence>
-              </div>
-            </div>
-
-            {/* Upcoming Sessions & Quick Actions */}
-            <div className="space-y-6">
-              {/* Upcoming Sessions */}
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-white">Upcoming Sessions</h3>
-                  <button className="text-sm text-yellow-400 hover:text-yellow-300">
-                    View All
-                  </button>
-                </div>
-                
-                <div className="space-y-3">
-                  {upcomingSessions.map((session, index) => (
-                    <motion.div 
-                      key={session.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-yellow-400/30 transition-all"
-                    >
-                      <div className="flex items-start">
-                        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center mr-3">
-                          <Video className="w-5 h-5 text-yellow-400" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
-                            <h4 className="text-white font-medium">{session.title}</h4>
-                            <span className={`text-xs px-2 py-0.5 rounded-full ${
-                              session.status === 'live' 
-                                ? 'bg-green-900/50 text-green-400' 
-                                : 'bg-blue-900/50 text-blue-400'
-                            }`}>
-                              {session.status === 'live' ? 'Live' : session.time}
-                            </span>
-                          </div>
-                          <p className="text-sm text-gray-400">{session.student} • {session.module}</p>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Quick Actions */}
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <QuickActionButton 
-                    icon={Video} 
-                    label="Start Live" 
-                    color="yellow"
-                    onClick={() => {}}
-                  />
-                  <QuickActionButton 
-                    icon={BarChart3} 
-                    label="Analytics" 
-                    color="blue"
-                    onClick={() => {}}
-                  />
-                  <QuickActionButton 
-                    icon={FileText} 
-                    label="Create Content" 
-                    color="purple"
-                    onClick={() => {}}
-                  />
-                  <QuickActionButton 
-                    icon={Users} 
-                    label="Students" 
-                    color="gray"
-                    onClick={() => {}}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+          {getCurrentView()}
         </main>
       </div>
+
+      {/* Module Form Modal */}
+      <ModuleForm
+        isOpen={isModuleFormOpen}
+        onClose={() => setIsModuleFormOpen(false)}
+        onSubmit={handleModuleSubmit}
+        moduleType={activeModuleType || 'b2b'}
+        editingModule={editingModule}
+        domains={activeModuleType === 'b2b' 
+          ? [
+              { id: 'commercial', name: 'Commercial' },
+              { id: 'marketing', name: 'Marketing' },
+              { id: 'rh', name: 'Ressources Humaines' },
+              { id: 'finance', name: 'Finance' },
+              { id: 'management', name: 'Management' },
+              { id: 'international', name: 'International' }
+            ]
+          : [
+              { id: 'personal-development', name: 'Développement Personnel' },
+              { id: 'career', name: 'Carrière' },
+              { id: 'public-speaking', name: 'Prise de Parole' },
+              { id: 'networking', name: 'Networking' },
+              { id: 'entrepreneurship', name: 'Entrepreneuriat' }
+            ]
+        }
+      />
     </div>
   );
 };
