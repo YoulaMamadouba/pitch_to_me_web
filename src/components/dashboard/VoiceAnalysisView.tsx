@@ -117,7 +117,12 @@ export default function VoiceAnalysisView({ onBack }: VoiceAnalysisViewProps) {
   const waveformBars: number[] = [20, 60, 40, 80, 30, 70, 50, 90, 35, 65];
 
   return (
-    <div className="w-full">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.1 }}
+      className="bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-all"
+    >
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
@@ -210,7 +215,7 @@ export default function VoiceAnalysisView({ onBack }: VoiceAnalysisViewProps) {
         {/* Voice Metrics Section */}
         <div className="mb-6">
           <h3 className="text-white font-semibold text-lg mb-4">Métriques vocales</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {voiceMetrics.map((metric, index) => (
               <motion.div 
                 key={metric.name}
@@ -307,6 +312,6 @@ export default function VoiceAnalysisView({ onBack }: VoiceAnalysisViewProps) {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

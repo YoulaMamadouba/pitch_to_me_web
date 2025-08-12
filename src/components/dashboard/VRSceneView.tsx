@@ -2,6 +2,8 @@
 
 import { Headset } from 'lucide-react';
 import VRSceneCard from '@/components/vr-scene-card';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
 
 type Scene = {
   id: string;
@@ -24,6 +26,8 @@ interface VRSceneViewProps {
 }
 
 export default function VRSceneView({ onSceneSelect, onBack }: VRSceneViewProps) {
+  const [selectedCategory, setSelectedCategory] = useState('all');
+
   const scenes: Scene[] = [
     {
       id: 'tedx',
@@ -92,7 +96,12 @@ export default function VRSceneView({ onSceneSelect, onBack }: VRSceneViewProps)
   };
 
   return (
-    <div className="w-full">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.1 }}
+      className="bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-all"
+    >
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
@@ -127,7 +136,7 @@ export default function VRSceneView({ onSceneSelect, onBack }: VRSceneViewProps)
       </div>
 
       {/* VR Scenes Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
         {scenes.map((scene) => (
           <div 
             key={scene.id}
@@ -151,7 +160,7 @@ export default function VRSceneView({ onSceneSelect, onBack }: VRSceneViewProps)
 
       {/* Bottom Info */}
       <div className="bg-black/30 border-t border-gray-800 p-6 mt-12">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <div className="flex flex-col items-center justify-center space-y-2">
             <div className="flex items-center space-x-2">
               <Headset className="w-5 h-5 text-cyan-400" />
@@ -161,6 +170,6 @@ export default function VRSceneView({ onSceneSelect, onBack }: VRSceneViewProps)
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

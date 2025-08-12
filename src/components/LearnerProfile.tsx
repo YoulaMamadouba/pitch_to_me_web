@@ -30,11 +30,11 @@ export default function LearnerProfile({ onBack }: LearnerProfileProps) {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="flex-1 overflow-y-auto p-4 md:p-6"
+      transition={{ duration: 0.5, delay: 0.1 }}
+      className="bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-all"
     >
       {/* Profile Header */}
-      <div className="bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-700 mb-6">
+      <div className="mb-6">
         <div className="flex items-center justify-between mb-6">
           <button 
             onClick={onBack}
@@ -88,7 +88,7 @@ export default function LearnerProfile({ onBack }: LearnerProfileProps) {
         {stats.map((stat, index) => (
           <div 
             key={index}
-            className="bg-gray-800/80 backdrop-blur-sm rounded-xl p-4 border border-gray-700 hover:border-gray-600 transition-colors"
+            className="bg-gray-700/50 backdrop-blur-sm rounded-xl p-4 border border-gray-600 hover:border-gray-500 transition-colors"
           >
             <div className="text-center">
               <div className={`text-2xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
@@ -104,12 +104,7 @@ export default function LearnerProfile({ onBack }: LearnerProfileProps) {
                 </div>
               )}
               {stat.sublabel && (
-                <div className="text-xs mt-1 text-blue-400">{stat.sublabel}</div>
-              )}
-              {stat.icon && (
-                <div className="flex justify-center mt-1">
-                  <stat.icon className="w-4 h-4 text-yellow-400" fill="currentColor" />
-                </div>
+                <div className="text-xs text-gray-400 mt-1">{stat.sublabel}</div>
               )}
             </div>
           </div>
@@ -117,7 +112,7 @@ export default function LearnerProfile({ onBack }: LearnerProfileProps) {
       </div>
 
       {/* Achievements */}
-      <div className="bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-700 mb-6">
+      <div className="bg-gray-700/50 backdrop-blur-sm rounded-xl p-6 border border-gray-600 mb-6">
         <h3 className="text-white font-semibold mb-4">Récompenses Récentes</h3>
         <div className="grid grid-cols-4 gap-3">
           {achievements.map((achievement) => (
@@ -146,13 +141,13 @@ export default function LearnerProfile({ onBack }: LearnerProfileProps) {
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-700 mb-6">
+      <div className="bg-gray-700/50 backdrop-blur-sm rounded-xl p-6 border border-gray-600 mb-6">
         <h3 className="text-white font-semibold mb-4">Activité Récente</h3>
         <div className="space-y-3">
           {activities.map((activity) => (
             <div 
               key={activity.id}
-              className="bg-gray-700/50 rounded-xl p-3 border border-gray-600 hover:border-gray-500 transition-colors"
+              className="bg-gray-600/50 rounded-xl p-3 border border-gray-500 hover:border-gray-400 transition-colors"
             >
               <div className="flex items-start space-x-3">
                 <div className={`w-8 h-8 rounded-full ${activity.iconBg} flex-shrink-0 flex items-center justify-center`}>

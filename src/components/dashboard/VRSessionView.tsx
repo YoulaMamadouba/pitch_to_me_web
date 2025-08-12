@@ -24,8 +24,9 @@ interface VRSessionViewProps {
 }
 
 export default function VRSessionView({ onExit, onBack }: VRSessionViewProps) {
-  const [isActive, setIsActive] = useState(true);
-  const [sessionTime, setSessionTime] = useState(222); // 3:42 en secondes
+  const [sessionState, setSessionState] = useState<'preparing' | 'active' | 'paused' | 'completed'>('preparing');
+  const [currentTime, setCurrentTime] = useState(0);
+  const [totalTime] = useState(300); // 5 minutes
   const [isRecording, setIsRecording] = useState(true);
   const [currentScene] = useState('TEDx Stage');
   const [aiFeedbacks] = useState<AICoachFeedback[]>([
@@ -57,13 +58,13 @@ export default function VRSessionView({ onExit, onBack }: VRSessionViewProps) {
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    if (isActive) {
+    if (sessionState === 'active') {
       interval = setInterval(() => {
-        setSessionTime(prev => prev + 1);
+        setCurrentTime(prev => prev + 1);
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [isActive]);
+  }, [sessionState]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -72,7 +73,7 @@ export default function VRSessionView({ onExit, onBack }: VRSessionViewProps) {
   };
 
   const handleEndSession = () => {
-    setIsActive(false);
+    setSessionState('completed');
     // Rediriger vers l'analyse vocale après quelques secondes
     setTimeout(() => {
       onExit();
@@ -80,7 +81,12 @@ export default function VRSessionView({ onExit, onBack }: VRSessionViewProps) {
   };
 
   return (
-    <div className="w-full">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.1 }}
+      className="bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-all"
+    >
       {/* Fixed Header */}
       <div className="bg-red-900 bg-opacity-70 backdrop-blur-md border-b border-gray-800 mb-6">
         <div className="px-6 py-3">
@@ -118,7 +124,7 @@ export default function VRSessionView({ onExit, onBack }: VRSessionViewProps) {
           </div>
           
           <div className="absolute top-4 right-4 bg-black bg-opacity-70 rounded-lg p-2">
-            <div className="text-white text-xs">Time: {formatTime(sessionTime)}</div>
+            <div className="text-white text-xs">Time: {formatTime(currentTime)}</div>
             <div className="text-green-400 text-xs">Confidence: High</div>
           </div>
 
@@ -231,7 +237,7 @@ export default function VRSessionView({ onExit, onBack }: VRSessionViewProps) {
         </div>
 
         {/* Control Panel */}
-        <div className="fixed bottom-0 left-0 right-0 bg-black/70 backdrop-blur-md border-t border-gray-800 p-4">
+        <div className="sticky bottom-0 bg-black/70 backdrop-blur-md border-t border-gray-800 p-4 mt-6">
           <div className="max-w-md mx-auto">
             <div className="flex justify-center space-x-6">
               <button className="flex flex-col items-center text-gray-300 hover:text-white transition-colors">
@@ -274,6 +280,6 @@ export default function VRSessionView({ onExit, onBack }: VRSessionViewProps) {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

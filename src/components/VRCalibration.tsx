@@ -24,7 +24,7 @@ type CalibrationStep = {
   progress?: number;
 };
 
-const VRCalibration = () => {
+export default function VRCalibration() {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [height, setHeight] = useState<number>(173); // Default height in cm
   const [isConnected, setIsConnected] = useState<boolean>(true);
@@ -97,26 +97,27 @@ const VRCalibration = () => {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="h-full flex flex-col bg-gradient-to-b from-gray-900 to-gray-800 text-white"
+      transition={{ duration: 0.5, delay: 0.1 }}
+      className="bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-all"
     >
       {/* Header */}
-      <div className="p-6 pb-4">
+      <div className="mb-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-4">
-            <button className="p-2 rounded-full hover:bg-gray-700 transition-colors">
-              <ArrowLeft className="w-5 h-5" />
+            <button className="p-2 rounded-full hover:bg-gray-700/50 transition-colors">
+              <ArrowLeft className="w-5 h-5 text-white" />
             </button>
-            <h1 className="text-2xl font-bold">VR Calibration</h1>
+            <h1 className="text-xl font-bold text-white">VR Calibration</h1>
           </div>
-          <button className="p-2 rounded-full hover:bg-gray-700 transition-colors">
-            <Info className="w-5 h-5" />
+          <button className="p-2 rounded-full hover:bg-gray-700/50 transition-colors">
+            <Info className="w-5 h-5 text-white" />
           </button>
         </div>
         
         {/* Connection Status */}
-        <div className="bg-gray-800 bg-opacity-50 rounded-xl p-4 border border-gray-700 mb-6">
+        <div className="bg-gray-700/50 rounded-xl p-4 border border-gray-600 mb-6">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold">Device Status</h3>
+            <h3 className="font-semibold text-white">Device Status</h3>
             <div className={`px-3 py-1 rounded-full text-xs font-medium ${isConnected ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'}`}>
               {isConnected ? 'Connected' : 'Disconnected'}
             </div>
@@ -127,7 +128,7 @@ const VRCalibration = () => {
               <Settings className={`w-6 h-6 ${isConnected ? 'text-white' : 'text-gray-400'}`} />
             </div>
             <div className="flex-1">
-              <h4 className="font-medium">Oculus Quest 2</h4>
+              <h4 className="font-medium text-white">Oculus Quest 2</h4>
               <div className="flex items-center space-x-4 text-sm text-gray-400">
                 <span className="flex items-center">
                   <Wifi className={`w-4 h-4 mr-1 ${isConnected ? 'text-green-400' : 'text-red-400'}`} />
@@ -145,7 +146,7 @@ const VRCalibration = () => {
             </div>
             <button 
               onClick={toggleConnection}
-              className="px-3 py-1.5 text-sm rounded-md bg-gray-700 hover:bg-gray-600 transition-colors"
+              className="px-3 py-1.5 text-sm rounded-md bg-gray-600 hover:bg-gray-500 transition-colors text-white"
             >
               {isConnected ? 'Disconnect' : 'Connect'}
             </button>
@@ -317,6 +318,4 @@ const VRCalibration = () => {
       `}</style>
     </motion.div>
   );
-};
-
-export default VRCalibration;
+}

@@ -13,12 +13,7 @@ interface EmotionRecognitionViewProps {
 
 export default function EmotionRecognitionView({ onBack }: EmotionRecognitionViewProps) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [currentEmotion, setCurrentEmotion] = useState({
-    name: 'Confident',
-    level: 87,
-    color: 'green-400',
-    emoji: '😊'
-  });
+  const [analysisResult, setAnalysisResult] = useState<EmotionAnalysis | null>(null);
 
   const emotions = [
     { name: 'Confident', level: 87, color: 'green-400', emoji: '😊' },
@@ -57,7 +52,12 @@ export default function EmotionRecognitionView({ onBack }: EmotionRecognitionVie
   };
 
   return (
-    <div className="w-full">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.1 }}
+      className="bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-all"
+    >
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
@@ -108,7 +108,7 @@ export default function EmotionRecognitionView({ onBack }: EmotionRecognitionVie
           transition={{ duration: 0.3, delay: 0.1 }}
           className="relative bg-gray-900 rounded-xl overflow-hidden mb-4 border border-gray-700"
         >
-          <div className="aspect-video bg-gray-800 flex items-center justify-center p-4">
+          <div className="aspect-video bg-gray-700/50 flex items-center justify-center p-4">
             {isAnalyzing ? (
               <div className="text-center p-4">
                 <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
@@ -131,8 +131,8 @@ export default function EmotionRecognitionView({ onBack }: EmotionRecognitionVie
                 </div>
                 <div className="absolute top-3 right-3 bg-black/70 text-white px-2 py-1 rounded-md text-xs font-medium flex items-center">
                   <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-1.5"></div>
-                  {currentEmotion.name}
-                  <span className="ml-1.5 text-green-400 text-xs">{currentEmotion.level}%</span>
+                  Confident
+                  <span className="ml-1.5 text-green-400 text-xs">87%</span>
                 </div>
               </div>
             )}
@@ -245,8 +245,8 @@ export default function EmotionRecognitionView({ onBack }: EmotionRecognitionVie
         </motion.div>
       </div>
 
-      {/* Action Buttons - Fixed at bottom with more spacing */}
-      <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-black/95 via-black/90 to-transparent p-4 pt-8 pb-6">
+              {/* Action Buttons - Sticky at bottom with more spacing */}
+        <div className="sticky bottom-0 bg-gradient-to-t from-black/95 via-black/90 to-transparent p-4 pt-8 pb-6 mt-6">
         <div className="max-w-md mx-auto grid grid-cols-2 gap-3">
           <button 
             className="bg-gradient-to-r from-purple-500 to-purple-600 text-white text-sm font-medium py-3 px-4 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center space-x-2"
@@ -274,6 +274,6 @@ export default function EmotionRecognitionView({ onBack }: EmotionRecognitionVie
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

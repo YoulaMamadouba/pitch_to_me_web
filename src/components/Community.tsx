@@ -92,11 +92,12 @@ const Community = () => {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="h-full flex flex-col"
+      transition={{ duration: 0.5, delay: 0.1 }}
+      className="bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-all"
     >
       {/* Header */}
-      <div className="flex justify-between items-center p-6 pb-4">
-        <h2 className="text-2xl font-bold text-white">Community</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-bold text-white">Community</h2>
         <div className="flex items-center space-x-4">
           <button className="text-gray-400 hover:text-white p-2">
             <MessageSquare className="w-5 h-5" />
@@ -137,7 +138,7 @@ const Community = () => {
               className={`px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium ${
                 i === 0 
                   ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-black' 
-                  : 'bg-gray-800 text-white'
+                  : 'bg-gray-700/50 text-white'
               }`}
             >
               {i === 0 && '🔥 '}{tag}
@@ -154,7 +155,7 @@ const Community = () => {
             className={`rounded-xl overflow-hidden border ${
               post.isCoachTip 
                 ? 'bg-gradient-to-r from-purple-900 to-purple-700 border-purple-600' 
-                : 'bg-gray-800 border-gray-700'
+                : 'bg-gray-700/50 border-gray-600'
             }`}
           >
             {/* Post Header */}

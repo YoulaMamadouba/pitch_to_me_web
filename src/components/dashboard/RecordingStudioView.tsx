@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Settings, Mic, Video, Square, Pause, RefreshCw, Search, Maximize2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface RecordingStudioViewProps {
   onBack?: () => void;
@@ -82,7 +83,12 @@ export default function RecordingStudioView({ onBack }: RecordingStudioViewProps
   const maxLevel = Math.max(...audioLevels);
 
   return (
-    <div className="w-full">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.1 }}
+      className="bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-all"
+    >
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
@@ -186,7 +192,7 @@ export default function RecordingStudioView({ onBack }: RecordingStudioViewProps
                 className={`p-3 rounded-lg border-2 transition-all ${
                   activeAngle === angle.id
                     ? 'border-yellow-400 bg-yellow-400/10'
-                    : 'border-gray-700 hover:border-gray-600 bg-gray-800/50'
+                    : 'border-gray-600 hover:border-gray-500 bg-gray-700/50'
                 }`}
               >
                 <div className="bg-gray-700/50 rounded h-16 mb-2 flex items-center justify-center">
@@ -219,7 +225,7 @@ export default function RecordingStudioView({ onBack }: RecordingStudioViewProps
         </div>
 
         {/* Audio Levels - Reduced margin bottom */}
-        <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700 mb-4">
+        <div className="bg-gray-700/50 rounded-xl p-4 border border-gray-600 mb-4">
           <div className="flex justify-between items-center mb-3">
             <h2 className="text-lg font-semibold text-white">Niveaux audio</h2>
             <div className="text-green-400 font-mono">-12 dB</div>
@@ -257,8 +263,8 @@ export default function RecordingStudioView({ onBack }: RecordingStudioViewProps
         </div>
       </div>
 
-      {/* Fixed Bottom Controls - More compact */}
-      <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-md border-t border-gray-800 py-3 px-4">
+              {/* Sticky Bottom Controls - More compact */}
+        <div className="sticky bottom-0 bg-gray-900/95 backdrop-blur-md border-t border-gray-800 py-3 px-4 mt-6">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-center space-x-6 mb-3">
             {/* Stop Button - Smaller */}
@@ -316,8 +322,8 @@ export default function RecordingStudioView({ onBack }: RecordingStudioViewProps
         </div>
       </div>
 
-      {/* Add padding to prevent content from being hidden behind fixed controls */}
-      <div className="pb-40"></div>
-    </div>
+              {/* Add padding to prevent content from being hidden behind sticky controls */}
+        <div className="pb-4"></div>
+    </motion.div>
   );
 }

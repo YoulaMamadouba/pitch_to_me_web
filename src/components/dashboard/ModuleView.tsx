@@ -91,7 +91,12 @@ export default function ModuleView({ moduleId, onBack }: ModuleViewProps) {
   const remainingLessons = moduleData.totalLessons - moduleData.completedLessons;
 
   return (
-    <div className="w-full">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.1 }}
+      className="bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-all"
+    >
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
@@ -155,7 +160,7 @@ export default function ModuleView({ moduleId, onBack }: ModuleViewProps) {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-5 border border-gray-700/50 h-full"
+          className="bg-gray-700/50 backdrop-blur-sm rounded-xl p-5 border border-gray-600 h-full"
         >
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-base font-semibold">Votre Progrès</h2>
@@ -289,12 +294,12 @@ export default function ModuleView({ moduleId, onBack }: ModuleViewProps) {
         ))}
       </motion.div>
       
-      {/* Fixed Bottom CTA - Compact */}
+      {/* Sticky Bottom CTA - Compact */}
       <motion.div 
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.3, delay: 0.2 }}
-        className="fixed bottom-0 left-0 right-0 bg-gray-900/90 backdrop-blur-md border-t border-gray-700/50 py-2 z-40"
+        className="sticky bottom-0 bg-gray-900/90 backdrop-blur-md border-t border-gray-700/50 py-2 mt-6"
       >
         <div className="max-w-4xl mx-auto px-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
@@ -323,8 +328,8 @@ export default function ModuleView({ moduleId, onBack }: ModuleViewProps) {
         </div>
       </motion.div>
       
-      {/* Add padding to account for fixed bottom CTA */}
-      <div className="pb-16"></div>
-    </div>
+      {/* Add padding to account for sticky bottom CTA */}
+      <div className="pb-4"></div>
+    </motion.div>
   );
 }
