@@ -121,7 +121,7 @@ export default function Hero() {
               >
                 <button 
                   onClick={() => setIsDrawerOpen(true)}
-                  className="w-full bg-gradient-to-r from-cyan-400 to-cyan-500 text-black font-semibold py-2 px-4 rounded-lg hover:shadow-xl transition-all flex items-center justify-center space-x-2 text-xs group"
+                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:shadow-xl transition-all flex items-center justify-center space-x-2 text-xs group"
                 >
                   <Building className="w-5 h-5" />
                   <span>Je suis une entreprise</span>
