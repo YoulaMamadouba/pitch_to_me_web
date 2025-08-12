@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
 import { 
   Home, 
   BookOpen, 
@@ -33,11 +34,40 @@ import {
   MessageCircle,
   Headset,
   Zap,
-  Wifi
+  Wifi,
+  Eye,
+  Mic,
+  Video,
+  Smile
 } from 'lucide-react';
 import LearnerProfile from '@/components/LearnerProfile';
 import Community from '@/components/Community';
 import VRCalibration from '@/components/VRCalibration';
+
+// Import dynamique des composants pour le chargement à la demande
+const ModuleView = dynamic(() => import('@/components/dashboard/ModuleView'), {
+  loading: () => <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div></div>
+});
+
+const VRSceneView = dynamic(() => import('@/components/dashboard/VRSceneView'), {
+  loading: () => <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div></div>
+});
+
+const VRSessionView = dynamic(() => import('@/components/dashboard/VRSessionView'), {
+  loading: () => <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div></div>
+});
+
+const VoiceAnalysisView = dynamic(() => import('@/components/dashboard/VoiceAnalysisView'), {
+  loading: () => <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div></div>
+});
+
+const RecordingStudioView = dynamic(() => import('@/components/dashboard/RecordingStudioView'), {
+  loading: () => <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div></div>
+});
+
+const EmotionRecognitionView = dynamic(() => import('@/components/dashboard/EmotionRecognitionView'), {
+  loading: () => <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div></div>
+});
 
 
 interface NavigationItem {
@@ -48,6 +78,18 @@ interface NavigationItem {
   active?: boolean;
   onClick?: () => void;
 };
+
+type ViewType = 
+  | 'dashboard' 
+  | 'profile' 
+  | 'community' 
+  | 'vrcalibration'
+  | 'module'
+  | 'vr-scene'
+  | 'vr-session'
+  | 'voice-analysis'
+  | 'recording-studio'
+  | 'emotion-recognition';
 
 type Module = {
   id: number;
@@ -123,7 +165,9 @@ export default function DashboardPage() {
   }, []);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeModule, setActiveModule] = useState<number>(5); // Module 6 est actif (index 5)
-  const [activeView, setActiveView] = useState<'dashboard' | 'profile' | 'community' | 'vrcalibration'>('dashboard');
+  const [activeView, setActiveView] = useState<ViewType>('dashboard');
+  const [selectedModuleId, setSelectedModuleId] = useState<string>('6');
+  const [selectedVRScene, setSelectedVRScene] = useState<string>('');
 
 
   const navigation: NavigationItem[] = [
@@ -149,11 +193,39 @@ export default function DashboardPage() {
       onClick: () => setActiveView('profile')
     },
     { 
+      id: 'vr-scene', 
+      label: 'S\'entraîner en VR', 
+      icon: Headset, 
+      active: activeView === 'vr-scene',
+      className: 'mt-4 pt-4 border-t border-gray-700',
+      onClick: () => setActiveView('vr-scene')
+    },
+    { 
+      id: 'voice-analysis', 
+      label: 'Analyse Vocale', 
+      icon: Mic, 
+      active: activeView === 'voice-analysis',
+      onClick: () => setActiveView('voice-analysis')
+    },
+    { 
+      id: 'recording-studio', 
+      label: 'Recording Studio', 
+      icon: Video, 
+      active: activeView === 'recording-studio',
+      onClick: () => setActiveView('recording-studio')
+    },
+    { 
+      id: 'emotion-recognition', 
+      label: 'Analyse des Émotions', 
+      icon: Smile, 
+      active: activeView === 'emotion-recognition',
+      onClick: () => setActiveView('emotion-recognition')
+    },
+    { 
       id: 'vrcalibration', 
       label: 'VR Calibration', 
-      icon: Headset, 
+      icon: Eye, 
       active: activeView === 'vrcalibration',
-      className: 'mt-4 pt-4 border-t border-gray-700',
       onClick: () => setActiveView('vrcalibration')
     },
   ];
@@ -267,7 +339,16 @@ export default function DashboardPage() {
                 transition={{ duration: 0.5 }}
                 className="text-xl font-bold text-white"
               >
-                {activeView === 'dashboard' ? 'Tableau de Bord' : 'Mon Profil'}
+                {activeView === 'dashboard' && 'Tableau de Bord'}
+                {activeView === 'profile' && 'Mon Profil'}
+                {activeView === 'community' && 'Communauté'}
+                {activeView === 'vr-scene' && 'S\'entraîner en VR'}
+                {activeView === 'vr-session' && 'Session VR'}
+                {activeView === 'voice-analysis' && 'Analyse Vocale'}
+                {activeView === 'recording-studio' && 'Recording Studio'}
+                {activeView === 'emotion-recognition' && 'Analyse des Émotions'}
+                {activeView === 'vrcalibration' && 'VR Calibration'}
+                {activeView === 'module' && `Module ${selectedModuleId}`}
               </motion.h1>
             </div>
             <div className="flex items-center space-x-6">
@@ -299,6 +380,36 @@ export default function DashboardPage() {
             <Community />
           ) : activeView === 'vrcalibration' ? (
             <VRCalibration />
+          ) : activeView === 'module' ? (
+            <ModuleView 
+              moduleId={selectedModuleId} 
+              onBack={() => setActiveView('dashboard')} 
+            />
+          ) : activeView === 'vr-scene' ? (
+            <VRSceneView 
+              onSceneSelect={(sceneId) => {
+                setSelectedVRScene(sceneId);
+                setActiveView('vr-session');
+              }}
+              onBack={() => setActiveView('dashboard')} 
+            />
+          ) : activeView === 'vr-session' ? (
+            <VRSessionView 
+              onExit={() => setActiveView('vr-scene')}
+              onBack={() => setActiveView('vr-scene')} 
+            />
+          ) : activeView === 'voice-analysis' ? (
+            <VoiceAnalysisView 
+              onBack={() => setActiveView('dashboard')} 
+            />
+          ) : activeView === 'recording-studio' ? (
+            <RecordingStudioView 
+              onBack={() => setActiveView('dashboard')} 
+            />
+          ) : activeView === 'emotion-recognition' ? (
+            <EmotionRecognitionView 
+              onBack={() => setActiveView('dashboard')} 
+            />
           ) : (
             <>
           <motion.div 
@@ -332,12 +443,17 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Current Module and Tools Access */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              {/* Current Module Card */}
-              <Link href="/modules/6" className="block h-full">
-                <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 border border-yellow-400/30 h-full">
-                  <div className="flex flex-col h-full">
+            {/* Current Module Card */}
+            <div className="mb-6">
+              <button 
+                onClick={() => {
+                  setSelectedModuleId('6');
+                  setActiveView('module');
+                }}
+                className="block w-full text-left"
+              >
+                <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 border border-yellow-400/30">
+                  <div className="flex flex-col">
                     <div className="flex-1">
                       <h3 className="text-xl font-bold text-gray-900 mb-1">Continuer l'apprentissage</h3>
                       <h4 className="text-gray-900 font-semibold">{currentModule.title}: {currentModule.subtitle}</h4>
@@ -351,185 +467,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
                 </div>
-              </Link>
-              
-              {/* AI Coach Chat Card */}
-              <Link href="/ai-coach" className="block h-full">
-                <div className="bg-gradient-to-r from-cyan-600 to-blue-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 border border-cyan-400/30 h-full relative overflow-hidden">
-                  {/* Animated background elements */}
-                  <div className="absolute -right-6 -top-6 w-24 h-24 bg-white/10 rounded-full"></div>
-                  <div className="absolute -right-3 -bottom-3 w-16 h-16 bg-white/5 rounded-full"></div>
-                  
-                  <div className="relative z-10 flex flex-col h-full">
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-xl font-bold text-white flex items-center">
-                          <Bot className="w-5 h-5 mr-2 text-cyan-200" />
-                          AI Coach
-                        </h3>
-                        <div className="relative">
-                          <div className="absolute inset-0 bg-cyan-400 rounded-full opacity-75 animate-ping"></div>
-                          <div className="relative bg-cyan-500 p-1.5 rounded-full">
-                            <MessageSquare className="w-5 h-5 text-white" />
-                          </div>
-                        </div>
-                      </div>
-                      <p className="text-cyan-100 text-sm">Obtenez des conseils personnalis en temps rel</p>
-                      
-                      {/* AI Message Preview */}
-                      <div className="mt-3 bg-white/10 backdrop-blur-sm rounded-lg p-3 text-left">
-                        <div className="flex items-start space-x-2">
-                          <div className="w-2 h-2 bg-cyan-300 rounded-full mt-2"></div>
-                          <p className="text-xs text-white line-clamp-2">Bonjour Alex ! Prt pour votre session d'aujourd'hui ?</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-4 flex justify-between items-center">
-                      <div className="flex items-center space-x-1">
-                        <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                        <span className="text-xs text-white/80">En ligne</span>
-                      </div>
-                      <div className="bg-white/20 hover:bg-white/30 text-white font-medium px-4 py-2 rounded-lg transition-colors flex items-center">
-                        Discuter <ArrowRight className="ml-1 w-4 h-4" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-              
-              {/* VR Scenes Access Card */}
-              <Link href="/vr-scenes" className="group">
-                <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all transform group-hover:-translate-y-0.5 border border-purple-400/30 h-full">
-                  <div className="flex flex-col h-full">
-                    <div className="flex-1">
-                      <div className="flex items-center mb-2">
-                        <div className="p-2 bg-white/20 rounded-lg mr-3">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 116 0v6a2 2 0 01-3 3z" />
-                          </svg>
-                        </div>
-                        <h3 className="text-xl font-bold text-white">S'entraner en VR</h3>
-                      </div>
-                      <h4 className="text-white/90 font-medium">Environnements immersifs</h4>
-                      <p className="text-white/80 text-sm mt-1">Pratiquez dans des scnarios ralistes</p>
-                    </div>
-                    <div className="mt-4 flex justify-between items-center">
-                      <span className="text-xs bg-white/20 text-white px-2 py-1 rounded-full">Nouveau</span>
-                      <div className="flex items-center text-white/90 group-hover:text-white transition-colors">
-                        <span className="font-medium mr-1">Dcouvrir</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-              
-              {/* Voice Analysis Access Card */}
-              <Link href="/voice-analysis" className="group">
-                <div className="bg-gradient-to-r from-cyan-600 to-blue-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all transform group-hover:-translate-y-0.5 border border-cyan-400/30 h-full">
-                  <div className="flex flex-col h-full">
-                    <div className="flex-1">
-                      <div className="flex items-center mb-2">
-                        <div className="p-2 bg-white/20 rounded-lg mr-3">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                          </svg>
-                        </div>
-                        <h3 className="text-xl font-bold text-white">Analyse Vocale</h3>
-                      </div>
-                      <h4 className="text-white/90 font-medium">Analyse en temps réel</h4>
-                      <p className="text-white/80 text-sm mt-1">Améliorez votre locution et votre rythme</p>
-                    </div>
-                    <div className="mt-4 flex justify-between items-center">
-                      <span className="text-xs bg-white/20 text-white px-2 py-1 rounded-full">Nouveau</span>
-                      <div className="flex items-center text-white/90 group-hover:text-white transition-colors">
-                        <span className="font-medium mr-1">Analyser</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-              
-              {/* Recording Studio Access Card */}
-              <Link href="/recording-studio" className="group">
-                <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all transform group-hover:-translate-y-0.5 border border-indigo-400/30 h-full">
-                  <div className="flex flex-col h-full">
-                    <div className="flex-1">
-                      <div className="flex items-center mb-2">
-                        <div className="p-2 bg-white/20 rounded-lg mr-3">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                          </svg>
-                        </div>
-                        <h3 className="text-xl font-bold text-white">Recording Studio</h3>
-                      </div>
-                      <h4 className="text-white/90 font-medium">Enregistrement professionnel</h4>
-                      <p className="text-white/80 text-sm mt-1">Pratiquez avec des retours en temps réel</p>
-                    </div>
-                    <div className="mt-4 flex justify-between items-center">
-                      <span className="text-xs bg-white/20 text-white px-2 py-1 rounded-full">Nouveau</span>
-                      <div className="flex items-center text-white/90 group-hover:text-white transition-colors">
-                        <span className="font-medium mr-1">Commencer</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-
-              {/* Emotion Recognition Access Card */}
-              <Link href="/emotion-recognition" className="group">
-                <div className="bg-gradient-to-r from-pink-600 to-rose-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all transform group-hover:-translate-y-0.5 border border-pink-400/30 h-full relative overflow-hidden">
-                  {/* Animated pulse effect */}
-                  <div className="absolute -right-4 -top-4 w-16 h-16 bg-white/10 rounded-full animate-pulse"></div>
-                  
-                  <div className="relative z-10 flex flex-col h-full">
-                    <div className="flex-1">
-                      <div className="flex items-center mb-2">
-                        <div className="p-2 bg-white/20 rounded-lg mr-3">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                        </div>
-                        <h3 className="text-xl font-bold text-white">Analyse des Émotions</h3>
-                      </div>
-                      <h4 className="text-white/90 font-medium">Détection en temps réel</h4>
-                      <p className="text-white/80 text-sm mt-1">Optimisez votre langage corporel</p>
-                      
-                      {/* Mini face detection preview */}
-                      <div className="mt-3 relative w-16 h-16 mx-auto bg-white/10 rounded-full flex items-center justify-center">
-                        <div className="absolute w-12 h-12 border-2 border-yellow-400 rounded-full opacity-30">
-                          <div className="absolute top-3 left-2 w-2 h-2 bg-green-400 rounded-full"></div>
-                          <div className="absolute top-3 right-2 w-2 h-2 bg-green-400 rounded-full"></div>
-                          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-4 h-1 bg-yellow-400 rounded-full"></div>
-                        </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </div>
-                    </div>
-                    <div className="mt-4 flex justify-between items-center">
-                      <div className="relative">
-                        <span className="relative z-10 text-xs bg-white/20 text-white px-2 py-1 rounded-full">IA Premium</span>
-                        <div className="absolute -inset-0.5 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full blur opacity-75"></div>
-                      </div>
-                      <div className="flex items-center text-white/90 group-hover:text-white transition-colors">
-                        <span className="font-medium mr-1">Démarrer</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Link>
+              </button>
             </div>
             
             {/* Module Progress */}
