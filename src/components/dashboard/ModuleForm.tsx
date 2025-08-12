@@ -22,14 +22,24 @@ export default function ModuleForm({
   editingModule, 
   domains 
 }: ModuleFormProps) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    title: string;
+    description: string;
+    videoUrl: string;
+    theme: string;
+    domain: string;
+    offerType: string;
+    difficulty: 'easy' | 'intermediate' | 'advanced';
+    duration: number;
+    tags: string;
+  }>({
     title: '',
     description: '',
     videoUrl: '',
     theme: '',
     domain: '',
     offerType: '',
-    difficulty: 'intermediate' as const,
+    difficulty: 'intermediate',
     duration: 30,
     tags: ''
   });

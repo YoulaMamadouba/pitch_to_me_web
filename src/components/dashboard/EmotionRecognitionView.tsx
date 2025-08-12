@@ -7,6 +7,13 @@ import { Share2, User, Check, Star, AlertTriangle, Zap, Smile, Frown, Meh, Refre
 // Sample user image URL - replace with your actual user image URL or dynamic import
 const userImageUrl = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face';
 
+interface EmotionAnalysis {
+  name: string;
+  level: number;
+  color: string;
+  emoji: string;
+}
+
 interface EmotionRecognitionViewProps {
   onBack?: () => void;
 }
