@@ -89,7 +89,7 @@ export default function B2CSection() {
         </motion.div>
 
         {/* Enhanced Training Plans */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16 max-w-3xl mx-auto px-4">
           {plans.map((plan, index) => (
             <motion.div
               key={plan.id}
@@ -247,11 +247,11 @@ export default function B2CSection() {
           >
             <Link 
               href="/login" 
-              className="inline-flex items-center space-x-3 bg-gradient-to-r from-cyan-400 to-cyan-500 text-black font-semibold py-5 px-10 rounded-2xl hover:shadow-2xl transition-all duration-300 relative overflow-hidden group"
+              className="inline-flex items-center space-x-2 bg-gradient-to-r from-cyan-400 to-cyan-500 text-black font-medium py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-200 text-sm relative overflow-hidden group"
             >
-              <Zap className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
-              <span className="text-lg">Je suis un particulier</span>
-              <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform duration-300" />
+              <Zap className="w-5 h-5 group-hover:rotate-12 transition-transform duration-200" />
+              <span className="text-base">Je suis un particulier</span>
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" />
               
               {/* Animated background */}
               <motion.div
