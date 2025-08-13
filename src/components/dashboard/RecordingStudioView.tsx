@@ -135,7 +135,7 @@ export default function RecordingStudioView({
               <span>Retour Recording Studio</span>
             </button>
           )}
-          <h1 className="text-lg font-semibold text-white">Recording Studio</h1>
+          {/* Intentionally no small title here to avoid repetition with the main title elsewhere */}
         </div>
         <div className="flex items-center justify-center space-x-3">
           {/* Record/Stop */}
@@ -201,14 +201,20 @@ export default function RecordingStudioView({
           </div>
         )}
 
-        {/* Camera Preview - Original width, reduced height */}
-        <div className="relative bg-black rounded-xl overflow-hidden mb-6" style={{ height: '300px' }}>
+        {/* Camera Preview - Premium styling */}
+        <div
+          className={`relative rounded-2xl overflow-hidden mb-6 border bg-gradient-to-br from-gray-900 to-gray-800 shadow-xl ${
+            displayIsRecording ? 'border-red-600/40 ring-2 ring-red-500/30' : 'border-gray-700/60'
+          }`}
+          style={{ height: '460px' }}
+        >
           {/* Camera Feed from HTML design */}
           <div className="absolute inset-0">
             <img 
-              src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=400&fit=crop" 
+              src="https://i.pravatar.cc/800?u=coach1" 
               alt="Aperçu de la caméra" 
               className="w-full h-full object-cover"
+              style={{ objectPosition: '50% 50%' }}
               onError={(e) => {
                 // Fallback si l'image ne charge pas
                 const target = e.target as HTMLImageElement;
@@ -219,6 +225,9 @@ export default function RecordingStudioView({
           
           {/* Camera Overlay */}
           <div className="absolute inset-0 pointer-events-none">
+            {/* Vignette and gradient overlays */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent"></div>
+            <div className="absolute inset-0" style={{ boxShadow: 'inset 0 0 120px rgba(0,0,0,0.5)' }}></div>
             {/* Grid Overlay */}
             <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 opacity-20">
               {[...Array(9)].map((_, i) => (
@@ -256,13 +265,13 @@ export default function RecordingStudioView({
               <button
                 key={angle.id}
                 onClick={() => setActiveAngle(angle.id)}
-                className={`p-3 rounded-lg border-2 transition-all ${
+                className={`p-3 rounded-xl transition-all transform ${
                   activeAngle === angle.id
-                    ? 'border-yellow-400 bg-yellow-400/10'
-                    : 'border-gray-600 hover:border-gray-500 bg-gray-700/50'
+                    ? 'bg-gradient-to-br from-yellow-500/20 to-amber-400/10 border border-yellow-400/50 shadow-lg shadow-yellow-500/10 scale-[1.02]'
+                    : 'bg-gray-800/60 border border-gray-700/60 hover:border-gray-500/60 hover:shadow-md'
                 }`}
               >
-                <div className="bg-gray-700/50 rounded h-16 mb-2 flex items-center justify-center">
+                <div className="rounded-lg h-16 mb-2 flex items-center justify-center bg-gray-900/40 border border-white/5">
                   <svg
                     className={`w-6 h-6 ${
                       activeAngle === angle.id ? 'text-yellow-400' : 'text-gray-400'
@@ -279,20 +288,16 @@ export default function RecordingStudioView({
                     />
                   </svg>
                 </div>
-                <p
-                  className={`text-xs text-center ${
-                    activeAngle === angle.id ? 'text-yellow-400' : 'text-gray-400'
-                  }`}
-                >
-                  {angle.label}
-                </p>
+                <p className={`text-xs text-center tracking-wide ${
+                  activeAngle === angle.id ? 'text-yellow-300 font-medium' : 'text-gray-300'
+                }`}>{angle.label}</p>
               </button>
             ))}
           </div>
         </div>
 
         {/* Audio Levels */}
-        <div className="bg-gray-700/50 rounded-xl p-4 border border-gray-600 mb-4">
+        <div className="bg-gray-800/60 backdrop-blur rounded-2xl p-5 border border-gray-700/60 mb-4 shadow-lg hover:border-yellow-400/20 transition-colors">
           <div className="flex justify-between items-center mb-3">
             <h2 className="text-lg font-semibold text-white">Niveaux audio</h2>
             <div className="text-green-400 font-mono">-12 dB</div>
@@ -319,9 +324,9 @@ export default function RecordingStudioView({
             <button className="text-gray-300 hover:text-white transition-colors">
               <Mic className="w-5 h-5" />
             </button>
-            <div className="flex-1 bg-gray-700 rounded-full h-2">
+            <div className="flex-1 bg-gray-700/70 rounded-full h-2 overflow-hidden">
               <div 
-                className="bg-green-400 h-2 rounded-full" 
+                className="bg-gradient-to-r from-green-400 to-emerald-500 h-2 rounded-full" 
                 style={{ width: '75%' }}
               ></div>
             </div>
