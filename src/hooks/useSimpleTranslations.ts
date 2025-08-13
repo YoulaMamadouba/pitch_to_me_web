@@ -121,11 +121,11 @@ const frTranslations = {
       "title": "Choisissez votre parcours",
       "subtitle": "Découvrez nos solutions adaptées à votre entreprise",
       "client": {
-        "title": "Vous êtes client ?",
+        "title": "Vous êtes déjà client ?",
         "description": "Accédez à votre espace personnel et continuez votre formation"
       },
       "notClient": {
-        "title": "Vous n'êtes pas client ?",
+        "title": "Vous n'êtes pas encore client ?",
         "description": "Demandez un devis personnalisé pour votre entreprise"
       },
       "stats": {
@@ -357,11 +357,11 @@ const enTranslations = {
       "title": "Choose your path",
       "subtitle": "Discover our solutions tailored to your business",
       "client": {
-        "title": "Are you a client?",
+        "title": "Already a customer?",
         "description": "Access your personal space and continue your training"
       },
       "notClient": {
-        "title": "Not a client yet?",
+        "title": "Not a customer yet?",
         "description": "Request a personalized quote for your company"
       },
       "stats": {
