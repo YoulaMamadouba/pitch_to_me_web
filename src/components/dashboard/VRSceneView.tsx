@@ -75,7 +75,7 @@ export default function VRSceneView({ onSceneSelect, onBack }: VRSceneViewProps)
       id: 'classroom',
       title: 'University Classroom',
       description: 'Teach and present to engaged students in academic setting',
-      image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9d1?w=400&h=300&fit=crop',
+      image: 'https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=800&q=80',
       difficulty: 'Beginner' as const,
       duration: '10 min',
       tag: 'EDU',
@@ -103,23 +103,39 @@ export default function VRSceneView({ onSceneSelect, onBack }: VRSceneViewProps)
       className="bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-all"
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center">
-          {onBack && (
-            <button 
-              onClick={onBack}
-              className="flex items-center text-gray-300 hover:text-white transition-colors text-sm mr-4"
-            >
-              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              <span>Retour</span>
-            </button>
-          )}
-          <h1 className="text-xl font-bold text-white">VR Practice</h1>
-        </div>
-        <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black text-xs px-2 py-1 rounded-full font-bold">
-          PREMIUM
+      <div className="mb-6">
+        <div className="grid grid-cols-3 items-center">
+          {/* Left: Back + Title */}
+          <div className="flex items-center">
+            {onBack && (
+              <button 
+                onClick={onBack}
+                className="flex items-center text-gray-300 hover:text-white transition-colors text-sm mr-4"
+              >
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                <span>Retour</span>
+              </button>
+            )}
+            <h1 className="text-xl font-bold text-white">VR Practice</h1>
+          </div>
+
+          {/* Center: Former footer info */}
+          <div className="flex flex-col items-center justify-center text-center">
+            <div className="flex items-center space-x-2">
+              <Headset className="w-5 h-5 text-cyan-400" />
+              <span className="text-sm font-medium text-white">VR Headset Required</span>
+            </div>
+            <p className="text-[11px] text-gray-400">Compatible with Oculus, HTC Vive, PlayStation VR</p>
+          </div>
+
+          {/* Right: Premium */}
+          <div className="flex items-center justify-end">
+            <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black text-xs px-2 py-1 rounded-full font-bold">
+              PREMIUM
+            </div>
+          </div>
         </div>
       </div>
 
@@ -158,18 +174,7 @@ export default function VRSceneView({ onSceneSelect, onBack }: VRSceneViewProps)
         ))}
       </div>
 
-      {/* Bottom Info */}
-      <div className="bg-black/30 border-t border-gray-800 p-6 mt-12">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex flex-col items-center justify-center space-y-2">
-            <div className="flex items-center space-x-2">
-              <Headset className="w-5 h-5 text-cyan-400" />
-              <span className="text-sm font-medium text-white">VR Headset Required</span>
-            </div>
-            <p className="text-xs text-gray-400 text-center">Compatible with Oculus, HTC Vive, and PlayStation VR</p>
-          </div>
-        </div>
-      </div>
+      
     </motion.div>
   );
 }

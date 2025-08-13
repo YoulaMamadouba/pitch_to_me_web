@@ -103,11 +103,50 @@ export default function VRSessionView({ onExit, onBack }: VRSessionViewProps) {
               Exit VR
             </button>
           </div>
+          {/* Session Controls (moved from footer) */}
+          <div className="mt-3 flex justify-center space-x-6">
+            <button className="flex flex-col items-center text-gray-200 hover:text-white transition-colors">
+              <div className="bg-gray-700/70 p-3 rounded-full mb-1 border border-gray-600">
+                <Pause className="w-5 h-5" />
+              </div>
+              <span className="text-xs">Pause</span>
+            </button>
+
+            <button 
+              onClick={() => setIsRecording(!isRecording)}
+              className="flex flex-col items-center text-gray-200 hover:text-white transition-colors"
+            >
+              <div className={`p-3 rounded-full mb-1 border ${isRecording ? 'bg-red-600 border-red-500' : 'bg-gray-700/70 border-gray-600'}`}>
+                <div className="w-5 h-5 relative">
+                  {isRecording ? (
+                    <div className="absolute inset-0 bg-white rounded-sm"></div>
+                  ) : (
+                    <div className="w-0 h-0 border-t-5 border-b-5 border-l-8 border-t-transparent border-b-transparent border-l-white ml-1.5 mt-1"></div>
+                  )}
+                </div>
+              </div>
+              <span className="text-xs">{isRecording ? 'Stop' : 'Record'}</span>
+            </button>
+
+            <button className="flex flex-col items-center text-gray-200 hover:text-white transition-colors">
+              <div className="bg-gray-700/70 p-3 rounded-full mb-1 border border-gray-600">
+                <RotateCcw className="w-5 h-5" />
+              </div>
+              <span className="text-xs">Reset</span>
+            </button>
+
+            <button className="flex flex-col items-center text-gray-200 hover:text-white transition-colors">
+              <div className="bg-gray-700/70 p-3 rounded-full mb-1 border border-gray-600">
+                <Settings className="w-5 h-5" />
+              </div>
+              <span className="text-xs">Settings</span>
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="pb-24">
+      <div className="pb-6">
         {/* VR Environment Preview */}
         <div className="relative h-64 bg-gradient-to-b from-red-900 to-black overflow-hidden rounded-xl mb-6">
           <img 
@@ -236,49 +275,7 @@ export default function VRSessionView({ onExit, onBack }: VRSessionViewProps) {
           </div>
         </div>
 
-        {/* Control Panel */}
-        <div className="sticky bottom-0 bg-black/70 backdrop-blur-md border-t border-gray-800 p-4 mt-6">
-          <div className="max-w-md mx-auto">
-            <div className="flex justify-center space-x-6">
-              <button className="flex flex-col items-center text-gray-300 hover:text-white transition-colors">
-                <div className="bg-gray-700 p-3 rounded-full mb-1">
-                  <Pause className="w-5 h-5" />
-                </div>
-                <span className="text-xs">Pause</span>
-              </button>
-              
-              <button 
-                onClick={() => setIsRecording(!isRecording)}
-                className="flex flex-col items-center text-gray-300 hover:text-white transition-colors"
-              >
-                <div className={`p-3 rounded-full mb-1 ${isRecording ? 'bg-red-600' : 'bg-gray-700'}`}>
-                  <div className="w-5 h-5 relative">
-                    {isRecording ? (
-                      <div className="absolute inset-0 bg-white rounded-sm"></div>
-                    ) : (
-                      <div className="w-0 h-0 border-t-5 border-b-5 border-l-8 border-t-transparent border-b-transparent border-l-white ml-1.5 mt-1"></div>
-                    )}
-                  </div>
-                </div>
-                <span className="text-xs">{isRecording ? 'Stop' : 'Record'}</span>
-              </button>
-              
-              <button className="flex flex-col items-center text-gray-300 hover:text-white transition-colors">
-                <div className="bg-gray-700 p-3 rounded-full mb-1">
-                  <RotateCcw className="w-5 h-5" />
-                </div>
-                <span className="text-xs">Reset</span>
-              </button>
-              
-              <button className="flex flex-col items-center text-gray-300 hover:text-white transition-colors">
-                <div className="bg-gray-700 p-3 rounded-full mb-1">
-                  <Settings className="w-5 h-5" />
-                </div>
-                <span className="text-xs">Settings</span>
-              </button>
-            </div>
-          </div>
-        </div>
+        
       </div>
     </motion.div>
   );
