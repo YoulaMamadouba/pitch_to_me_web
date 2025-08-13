@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 import { 
   Home, 
   BookOpen, 
@@ -174,6 +175,12 @@ export default function DashboardPage() {
   const [selectedModuleId, setSelectedModuleId] = useState<string>('6');
   const [selectedVRScene, setSelectedVRScene] = useState<string>('');
   const [isAICoachOpen, setIsAICoachOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const router = useRouter();
+  const handleLogout = () => {
+    setIsUserMenuOpen(false);
+    router.push('/');
+  };
 
 
   const navigation: NavigationItem[] = [
@@ -362,17 +369,37 @@ export default function DashboardPage() {
                 <Bell size={20} />
                 <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
-              <div className="flex items-center space-x-3">
-                <div className="relative">
-                  <img 
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face" 
-                    alt="Profile" 
-                    className="w-8 h-8 rounded-full border-2 border-yellow-400 object-cover"
-                  />
-                  <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-green-400 rounded-full border-2 border-white"></div>
-                </div>
-                <span className="hidden md:inline text-sm font-medium text-white">Alex Dupont</span>
-                <ChevronDown className="w-4 h-4 text-gray-300" />
+              <div className="relative">
+                <button
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="flex items-center space-x-3 focus:outline-none"
+                >
+                  <div className="relative">
+                    <img 
+                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face" 
+                      alt="Profile" 
+                      className="w-8 h-8 rounded-full border-2 border-yellow-400 object-cover"
+                    />
+                    <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-green-400 rounded-full border-2 border-white"></div>
+                  </div>
+                  <span className="hidden md:inline text-sm font-medium text-white">Alex Dupont</span>
+                  <ChevronDown className={`w-4 h-4 text-gray-300 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-56 bg-gray-900/95 backdrop-blur rounded-lg shadow-lg border border-gray-700 z-20">
+                    <div className="px-4 py-3">
+                      <p className="text-sm font-medium text-white">Alex Dupont</p>
+                      <p className="text-xs text-gray-300">alex.dupont@example.com</p>
+                    </div>
+                    <div className="border-t border-gray-700"></div>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-800"
+                    >
+                      Déconnexion
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
