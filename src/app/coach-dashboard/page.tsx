@@ -286,7 +286,6 @@ const CoachDashboard = () => {
     { id: 'dashboard', label: 'Dashboard', icon: Home, active: activeTab === 'dashboard' },
     { id: 'sessions', label: 'Sessions', icon: Video, active: activeTab === 'sessions', count: 5 },
     { id: 'recording-studio', label: 'Recording Studio', icon: Video, active: activeTab === 'recording-studio' },
-    { id: 'students', label: 'Students', icon: Users, active: activeTab === 'students', count: 12 },
     { id: 'analytics', label: 'Analytics', icon: BarChart2, active: activeTab === 'analytics' },
     { id: 'messages', label: 'Messages', icon: MessageSquare, active: activeTab === 'messages', count: 3 },
     { id: 'resources', label: 'Resources', icon: FileText, active: activeTab === 'resources' },
