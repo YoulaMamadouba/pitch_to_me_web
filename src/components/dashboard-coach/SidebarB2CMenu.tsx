@@ -5,9 +5,10 @@ import { Users, ChevronRight } from 'lucide-react';
 interface SidebarB2CMenuProps {
   isActive: boolean;
   onClick: () => void;
+  count?: number;
 }
 
-export default function SidebarB2CMenu({ isActive, onClick }: SidebarB2CMenuProps) {
+export default function SidebarB2CMenu({ isActive, onClick, count }: SidebarB2CMenuProps) {
   return (
     <button
       onClick={onClick}
@@ -21,7 +22,14 @@ export default function SidebarB2CMenu({ isActive, onClick }: SidebarB2CMenuProp
         <Users className="w-5 h-5 mr-3" />
         <span>Étudiants</span>
       </div>
-      <ChevronRight className="w-4 h-4" />
+      <div className="flex items-center">
+        {count !== undefined && count > 0 && (
+          <span className="bg-yellow-500 text-black text-xs font-bold px-1.5 py-0.5 rounded-full mr-2">
+            {count}
+          </span>
+        )}
+        <ChevronRight className="w-4 h-4" />
+      </div>
     </button>
   );
 }

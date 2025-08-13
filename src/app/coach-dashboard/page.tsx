@@ -292,6 +292,10 @@ const CoachDashboard = () => {
     { id: 'settings', label: 'Settings', icon: Settings, active: activeTab === 'settings' },
   ];
 
+  // Notification counts for B2B and B2C sections
+  const b2bNotificationCount = 8; // Example count for Entreprises
+  const b2cNotificationCount = 5; // Example count for Étudiants
+
   // Sample data
   const recentActivities: StudentActivity[] = [
     {
@@ -763,6 +767,7 @@ const CoachDashboard = () => {
               <SidebarB2BMenu
                 isActive={activeTab === 'companies'}
                 onClick={handleB2BNavigation}
+                count={b2bNotificationCount}
               />
             </li>
 
@@ -771,6 +776,7 @@ const CoachDashboard = () => {
               <SidebarB2CMenu
                 isActive={activeTab === 'students'}
                 onClick={handleB2CNavigation}
+                count={b2cNotificationCount}
               />
             </li>
             
