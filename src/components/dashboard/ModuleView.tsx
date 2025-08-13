@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Lock, Check, Star } from 'lucide-react';
 
@@ -89,6 +90,8 @@ const getModuleData = (id: string): Module => {
 export default function ModuleView({ moduleId, onBack }: ModuleViewProps) {
   const moduleData = getModuleData(moduleId);
   const remainingLessons = moduleData.totalLessons - moduleData.completedLessons;
+  const [showVideo, setShowVideo] = useState(false);
+  const videoId = 'dQw4w9WgXcQ'; // placeholder, replace with real module video id
 
   return (
     <motion.div 
@@ -97,13 +100,14 @@ export default function ModuleView({ moduleId, onBack }: ModuleViewProps) {
       transition={{ duration: 0.5, delay: 0.1 }}
       className="bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-all"
     >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center">
+      {/* Header with inline progress */}
+      <div className="flex items-center justify-between gap-4 mb-6">
+        {/* Left: Back */}
+        <div className="min-w-0 flex items-center">
           {onBack && (
             <button 
               onClick={onBack}
-              className="flex items-center text-gray-300 hover:text-white transition-colors text-sm mr-4"
+              className="flex items-center text-gray-300 hover:text-white transition-colors text-sm mr-4 whitespace-nowrap"
             >
               <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -111,76 +115,82 @@ export default function ModuleView({ moduleId, onBack }: ModuleViewProps) {
               <span>Retour</span>
             </button>
           )}
-          <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 to-amber-400">
+        </div>
+
+        {/* Center: Title + Compact Progress */}
+        <div className="flex-1 flex flex-col items-center min-w-0">
+          <h1 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 to-amber-400 truncate">
             Module {moduleId}
           </h1>
+          <div className="mt-1 flex items-center gap-3 text-xs text-gray-300">
+            <span className="whitespace-nowrap text-yellow-300 font-medium">
+              {moduleData.completedLessons}/{moduleData.totalLessons} leçons
+            </span>
+            <div className="w-28 bg-gray-700 rounded-full h-1.5 overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full" 
+                style={{ width: `${moduleData.progress}%` }}
+              />
+            </div>
+            <span className="whitespace-nowrap">{moduleData.progress}%</span>
+          </div>
         </div>
-        <button className="text-gray-300 hover:text-yellow-400 transition-colors p-1">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-          </svg>
-        </button>
+
+        {/* Right: Continue + Heart */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowVideo(true)}
+            className="hidden sm:flex text-xs bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-gray-900 font-medium py-2 px-3 rounded-lg shadow-md hover:shadow-yellow-500/20 transition-all items-center"
+          >
+            <Play className="w-3.5 h-3.5 mr-1.5" />
+            Continuer
+          </button>
+          <button className="text-gray-300 hover:text-yellow-400 transition-colors p-1">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </button>
+        </div>
       </div>
 
-      {/* Module Hero and Progress Side by Side */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        {/* Module Hero - Compact */}
+      {/* Video Full Row */}
+      <div className="grid grid-cols-1 items-start gap-6 mb-8">
+        {/* Video Card - Large */}
         <motion.div 
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="relative bg-gradient-to-r from-yellow-400 to-amber-500 rounded-2xl p-5 overflow-hidden shadow-lg h-full"
+          className="relative rounded-2xl overflow-hidden shadow-xl h-[230px] sm:h-[320px] md:h-[380px] bg-gray-900/60 border border-gray-700 w-full md:col-span-2"
         >
-          <div className="absolute top-3 right-3 bg-black/20 rounded-full p-1.5">
-            <Play className="w-4 h-4 text-white" />
-          </div>
-          
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">{moduleData.title}</h1>
-          <p className="text-gray-800 text-sm mb-4">{moduleData.description}</p>
-          
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-1">
-              <svg className="w-4 h-4 text-gray-900" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd"/>
-              </svg>
-              <span className="text-gray-900 text-sm font-medium">{moduleData.duration}</span>
+          {/* Video thumbnail placeholder with overlay */}
+          <button
+            onClick={() => setShowVideo(true)}
+            className="group relative w-full h-full grid place-items-center"
+            aria-label="Lire la vidéo"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 via-amber-500/10 to-transparent" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(250,204,21,0.25),transparent_40%),radial-gradient(circle_at_70%_60%,rgba(245,158,11,0.18),transparent_45%)]" />
+
+            <div className="relative z-10 flex flex-col items-center">
+              <div className="rounded-full bg-white/10 border border-white/20 p-5 sm:p-6 group-hover:bg-white/20 transition-colors">
+                <Play className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-400" />
+              </div>
+              <p className="mt-3 text-sm text-gray-300">{moduleData.title}</p>
             </div>
-            <div className="flex items-center space-x-1">
-              <Star className="w-4 h-4 text-gray-900 fill-current" />
-              <span className="text-gray-900 text-sm font-medium">{moduleData.rating}/5</span>
-            </div>
+          </button>
+
+          {/* Badges */}
+          <div className="absolute top-3 left-3 flex items-center gap-2 z-10">
+            <span className="text-xs bg-black/50 border border-white/10 text-white px-2 py-0.5 rounded-full">
+              {moduleData.duration}
+            </span>
+            <span className="text-xs bg-black/50 border border-white/10 text-yellow-300 px-2 py-0.5 rounded-full flex items-center gap-1">
+              <Star className="w-3 h-3 fill-current" /> {moduleData.rating}
+            </span>
           </div>
-          
-          <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-yellow-300 rounded-full opacity-20"></div>
-          <div className="absolute -top-6 -left-6 w-24 h-24 bg-amber-400 rounded-full opacity-20"></div>
         </motion.div>
 
-        {/* Progress Overview - Compact */}
-        <motion.div 
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="bg-gray-700/50 backdrop-blur-sm rounded-xl p-5 border border-gray-600 h-full"
-        >
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-base font-semibold">Votre Progrès</h2>
-            <span className="text-yellow-400 font-medium text-sm">{moduleData.completedLessons}/{moduleData.totalLessons} leçons</span>
-          </div>
-          
-          <div className="w-full bg-gray-700 rounded-full h-2.5 mb-2 overflow-hidden">
-            <motion.div 
-              className="h-full bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${moduleData.progress}%` }}
-              transition={{ duration: 1, ease: "easeOut" }}
-            />
-          </div>
-          
-          <div className="flex justify-between text-xs">
-            <span className="text-gray-300">{moduleData.progress}% Terminé</span>
-            <span className="text-gray-400">{remainingLessons} {remainingLessons > 1 ? 'leçons' : 'leçon'} restante{remainingLessons > 1 ? 's' : ''}</span>
-          </div>
-        </motion.div>
+        {/* Progress card removed - contents moved to header */}
       </div>
 
       {/* Lessons List */}
@@ -294,42 +304,37 @@ export default function ModuleView({ moduleId, onBack }: ModuleViewProps) {
         ))}
       </motion.div>
       
-      {/* Sticky Bottom CTA - Compact */}
-      <motion.div 
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.3, delay: 0.2 }}
-        className="sticky bottom-0 bg-gray-900/90 backdrop-blur-md border-t border-gray-700/50 py-2 mt-6"
-      >
-        <div className="max-w-4xl mx-auto px-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <span className="text-xs text-gray-400">Progression: {moduleData.progress}%</span>
-            <div className="w-16 bg-gray-700 rounded-full h-1.5 overflow-hidden">
-              <div 
-                className="h-full bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full" 
-                style={{ width: `${moduleData.progress}%` }}
-              ></div>
-            </div>
-          </div>
-          
-          <div className="flex space-x-2">
-            <button className="text-xs bg-gray-700/50 hover:bg-gray-600/50 text-white font-medium py-2 px-3 rounded-lg border border-gray-600/50 transition-colors flex items-center">
-              <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Reprendre
-            </button>
-            <button className="text-xs bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-gray-900 font-medium py-2 px-3 rounded-lg shadow-md hover:shadow-yellow-500/20 transition-all flex items-center">
-              <Play className="w-3.5 h-3.5 mr-1.5" />
-              Continuer
+      {/* Video Modal */}
+      {showVideo && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4"
+          onClick={() => setShowVideo(false)}
+        >
+          <div
+            className="relative w-full max-w-3xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <iframe
+              className="absolute inset-0 w-full h-full"
+              src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`}
+              title="YouTube video player"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+            <button
+              onClick={() => setShowVideo(false)}
+              className="absolute top-2 right-2 text-white/80 hover:text-white bg-black/40 rounded-md px-2 py-1 text-xs border border-white/20"
+              aria-label="Fermer la vidéo"
+            >
+              Fermer
             </button>
           </div>
         </div>
-      </motion.div>
-      
-      {/* Add padding to account for sticky bottom CTA */}
-      <div className="pb-4"></div>
+      )}
+
+      {/* Footer CTA removed; Continue button moved to progress card */}
     </motion.div>
   );
 }
