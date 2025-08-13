@@ -55,20 +55,51 @@ export default function EmotionRecognitionPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white">
-      {/* Header */}
+      {/* Header with actions inline */}
       <header className="bg-black/50 backdrop-blur-sm border-b border-gray-800 p-3">
-        <div className="max-w-md mx-auto flex justify-between items-center">
-          <Link href="/dashboard" className="text-white hover:text-gray-300 transition-colors">
+        <div className="max-w-2xl mx-auto flex items-center justify-between gap-3">
+          {/* Left: Back */}
+          <Link href="/dashboard" className="text-white hover:text-gray-300 transition-colors whitespace-nowrap">
             <ChevronLeft className="w-5 h-5" />
           </Link>
-          <h1 className="text-lg font-semibold">Analyse des Émotions</h1>
+          {/* Center: Title + CTA on same line */}
+          <div className="flex-1 flex items-center justify-center gap-3 min-w-0">
+            <h1 className="text-base sm:text-lg font-semibold whitespace-nowrap">Analyse des Émotions</h1>
+            <div className="flex items-center gap-2">
+              <button 
+                className="bg-gradient-to-r from-purple-500 to-purple-600 text-white text-xs sm:text-sm font-medium py-2 px-3 sm:px-4 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center space-x-2"
+                onClick={startAnalysis}
+                disabled={isAnalyzing}
+              >
+                {isAnalyzing ? (
+                  <>
+                    <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <span>Analyse...</span>
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-3.5 h-3.5" />
+                    <span>Démarrer</span>
+                  </>
+                )}
+              </button>
+              <button 
+                className="bg-white/5 text-white text-xs sm:text-sm font-medium py-2 px-3 sm:px-4 rounded-lg border border-white/10 hover:bg-white/10 transition-colors flex items-center justify-center space-x-2"
+                onClick={() => window.location.reload()}
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Recommencer</span>
+              </button>
+            </div>
+          </div>
+          {/* Right: Share */}
           <button className="text-white hover:text-gray-300 transition-colors">
             <Share2 className="w-4 h-4" />
           </button>
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 py-4 pb-24">
+      <main className="max-w-2xl mx-auto px-4 py-4 pb-8">
         <div className="grid grid-cols-2 gap-4 mb-4">
           {/* Real-time Analysis Card */}
           <motion.div 
@@ -89,14 +120,14 @@ export default function EmotionRecognitionPage() {
           </motion.div>
         </div>
 
-        {/* Face Detection */}
+        {/* Face Detection - Enlarged */}
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
           className="relative bg-gray-900 rounded-xl overflow-hidden mb-4 border border-gray-700"
         >
-          <div className="aspect-video bg-gray-800 flex items-center justify-center p-4">
+          <div className="bg-gray-800 flex items-center justify-center p-6 h-[420px] sm:h-[520px]">
             {isAnalyzing ? (
               <div className="text-center p-4">
                 <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
@@ -107,20 +138,20 @@ export default function EmotionRecognitionPage() {
                 <img 
                   src={userImageUrl} 
                   alt="Face detection" 
-                  className="h-48 w-48 rounded-full object-cover border-2 border-yellow-400"
+                  className="h-72 w-72 sm:h-80 sm:w-80 rounded-full object-cover border-2 border-yellow-400 shadow-lg"
                 />
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-40 h-48 border-2 border-yellow-400 rounded-lg relative face-scan">
-                    <div className="absolute top-6 left-8 w-1.5 h-1.5 bg-green-400 rounded-full"></div>
-                    <div className="absolute top-6 right-8 w-1.5 h-1.5 bg-green-400 rounded-full"></div>
-                    <div className="absolute top-16 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
-                    <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 w-8 h-1.5 bg-yellow-400 rounded-full"></div>
+                  <div className="w-56 h-72 sm:w-64 sm:h-80 border-2 border-yellow-400 rounded-lg relative face-scan">
+                    <div className="absolute top-8 left-10 w-1.5 h-1.5 bg-green-400 rounded-full"></div>
+                    <div className="absolute top-8 right-10 w-1.5 h-1.5 bg-green-400 rounded-full"></div>
+                    <div className="absolute top-24 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
+                    <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 w-10 h-1.5 bg-yellow-400 rounded-full"></div>
                   </div>
                 </div>
                 <div className="absolute top-3 right-3 bg-black/70 text-white px-2 py-1 rounded-md text-xs font-medium flex items-center">
                   <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-1.5"></div>
-                  {currentEmotion.name}
-                  <span className="ml-1.5 text-green-400 text-xs">{currentEmotion.level}%</span>
+                  Confident
+                  <span className="ml-1.5 text-green-400 text-xs">87%</span>
                 </div>
               </div>
             )}
@@ -201,7 +232,7 @@ export default function EmotionRecognitionPage() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.4 }}
-          className="mb-20"
+          className="mb-6"
         >
           <h3 className="text-base font-semibold text-white mb-3">Conseils IA</h3>
           <div className="grid grid-cols-2 gap-3">
@@ -233,35 +264,7 @@ export default function EmotionRecognitionPage() {
         </motion.div>
       </main>
 
-      {/* Action Buttons - Fixed at bottom with more spacing */}
-      <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-black/95 via-black/90 to-transparent p-4 pt-8 pb-6">
-        <div className="max-w-md mx-auto grid grid-cols-2 gap-3">
-          <button 
-            className="bg-gradient-to-r from-purple-500 to-purple-600 text-white text-sm font-medium py-3 px-4 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center space-x-2"
-            onClick={startAnalysis}
-            disabled={isAnalyzing}
-          >
-            {isAnalyzing ? (
-              <>
-                <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                <span>Analyse...</span>
-              </>
-            ) : (
-              <>
-                <Zap className="w-3.5 h-3.5" />
-                <span>Démarrer</span>
-              </>
-            )}
-          </button>
-          <button 
-            className="bg-white/5 text-white text-sm font-medium py-3 px-4 rounded-lg border border-white/10 hover:bg-white/10 transition-colors flex items-center justify-center space-x-2"
-            onClick={() => window.location.reload()}
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            <span>Recommencer</span>
-          </button>
-        </div>
-      </div>
+      {/* Bottom actions removed - moved to header */}
     </div>
   );
 }
