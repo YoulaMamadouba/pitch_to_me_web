@@ -1,0 +1,138 @@
+{
+  "header": {
+    "logo": "Pitch to Me",
+    "login": "Connexion",
+    "signup": "Inscription"
+  },
+  "hero": {
+    "title": {
+      "line1": "Transformez votre voix",
+      "line2": "en pouvoir"
+    },
+    "subtitle": "Maîtrisez l'art de la persuasion avec un entraînement alimenté par l'IA, des expériences VR et une communauté mondiale d'orateurs.",
+    "buttons": {
+      "individual": "Je suis un particulier",
+      "company": "Je suis une entreprise"
+    },
+    "drawer": {
+      "title": "Choisissez votre parcours",
+      "subtitle": "Découvrez nos solutions adaptées à votre entreprise",
+      "client": {
+        "title": "Vous êtes client ?",
+        "description": "Accédez à votre espace personnel et continuez votre formation"
+      },
+      "notClient": {
+        "title": "Vous n'êtes pas client ?",
+        "description": "Demandez un devis personnalisé pour votre entreprise"
+      },
+      "stats": {
+        "companies": "Entreprises satisfaites",
+        "response": "Délai de réponse",
+        "success": "Taux de réussite"
+      }
+    }
+  },
+      "footer": {
+      "description": "Transformez votre voix en opportunités avec notre plateforme d'entraînement au pitch ultime.",
+      "navigation": {
+        "title": "Navigation",
+        "links": {
+          "home": "Accueil",
+          "features": "Fonctionnalités",
+          "pricing": "Tarifs",
+          "testimonials": "Témoignages"
+        }
+      },
+      "company": {
+        "title": "Entreprise",
+        "links": {
+          "about": "À propos",
+          "careers": "Carrières",
+          "press": "Presse",
+          "contact": "Contact"
+        }
+      },
+      "legal": {
+        "title": "Légal",
+        "links": {
+          "privacy": "Confidentialité",
+          "terms": "CGU",
+          "legal": "Mentions légales",
+          "cookies": "Cookies"
+        }
+      },
+      "copyright": "© {year} Pitch to Me. Tous droits réservés.",
+      "bottomLinks": {
+        "privacy": "Confidentialité",
+        "terms": "Conditions d'utilisation",
+        "cookies": "Préférences de cookies"
+      }
+    },
+    "features": {
+      "title": "Pourquoi choisir",
+      "subtitle": "Découvrez les fonctionnalités qui font de notre plateforme la solution ultime pour maîtriser l'art de la prise de parole en public.",
+      "items": {
+        "ai": {
+          "title": "Entraînement IA",
+          "description": "Coaching personnalisé avec analyse vocale et feedback en temps réel"
+        },
+        "vr": {
+          "title": "Expérience VR",
+          "description": "Environnements d'entraînement immersifs pour des scénarios réalistes"
+        },
+        "community": {
+          "title": "Communauté mondiale",
+          "description": "Connectez-vous avec des orateurs du monde entier et partagez vos expériences"
+        },
+        "certification": {
+          "title": "Certification",
+          "description": "Obtenez des certificats et suivez vos progrès avec des analyses détaillées"
+        }
+      }
+    },
+    "b2c": {
+      "title": "Maîtrisez votre voix avec notre",
+      "highlight": "formation individuelle",
+      "subtitle": "12 modules complets pour transformer votre prise de parole en public et devenir un orateur confident",
+      "video": {
+        "alt": "Mawa SIMBA - Expert Coach en prise de parole",
+        "live": "EN DIRECT"
+      },
+             "plans": {
+         "standard": {
+           "name": "Formation Standard",
+           "description": "Expérience web interactive",
+           "features": {
+             "0": "12 modules complets",
+             "1": "Analyse vocale IA",
+             "2": "Accès à la communauté",
+             "3": "Suivi des progrès",
+             "4": "Feedback de base"
+           }
+         },
+         "premium": {
+           "name": "Immersion VR",
+           "description": "Expérience réalité virtuelle",
+           "features": {
+             "0": "Tout ce qui est inclus dans Standard",
+             "1": "Environnements d'entraînement VR",
+             "2": "Feedback en temps réel",
+             "3": "Sessions de coaching individuelles",
+             "4": "Analyses avancées"
+           }
+         }
+       },
+      "cta": {
+        "selected": "Sélectionné",
+        "choose": "Choisir",
+        "individual": "Je suis un particulier"
+      },
+      "stats": {
+        "join": "Rejoignez",
+        "speakers": "speakers qui ont transformé leur voix",
+        "rating": "4.9/5",
+        "reviews": "+1000 avis",
+        "guarantee": "Garantie 30 jours"
+      }
+    }
+}

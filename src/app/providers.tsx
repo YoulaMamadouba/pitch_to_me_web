@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { ModulesProvider } from '@/contexts/ModulesContext';
 import { CompaniesProvider } from '@/contexts/CompaniesContext';
 import { StudentsProvider } from '@/contexts/StudentsContext';
+import { LanguageProvider } from '@/contexts/LanguageContext';
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
@@ -18,12 +19,14 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <ModulesProvider>
-      <CompaniesProvider>
-        <StudentsProvider>
-          {children}
-        </StudentsProvider>
-      </CompaniesProvider>
-    </ModulesProvider>
+    <LanguageProvider>
+      <ModulesProvider>
+        <CompaniesProvider>
+          <StudentsProvider>
+            {children}
+          </StudentsProvider>
+        </CompaniesProvider>
+      </ModulesProvider>
+    </LanguageProvider>
   );
 }

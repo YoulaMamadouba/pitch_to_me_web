@@ -1,0 +1,138 @@
+{
+  "header": {
+    "logo": "Pitch to Me",
+    "login": "Login",
+    "signup": "Sign Up"
+  },
+  "hero": {
+    "title": {
+      "line1": "Transform Your Voice",
+      "line2": "Into Power"
+    },
+    "subtitle": "Master the art of persuasion with AI-powered training, VR experiences, and a global community of speakers.",
+    "buttons": {
+      "individual": "I am an individual",
+      "company": "I am a company"
+    },
+    "drawer": {
+      "title": "Choose your path",
+      "subtitle": "Discover our solutions tailored to your business",
+      "client": {
+        "title": "Are you a client?",
+        "description": "Access your personal space and continue your training"
+      },
+      "notClient": {
+        "title": "Not a client yet?",
+        "description": "Request a personalized quote for your company"
+      },
+      "stats": {
+        "companies": "Satisfied companies",
+        "response": "Response time",
+        "success": "Success rate"
+      }
+    }
+  },
+      "footer": {
+      "description": "Transform your voice into opportunities with our ultimate pitch training platform.",
+      "navigation": {
+        "title": "Navigation",
+        "links": {
+          "home": "Home",
+          "features": "Features",
+          "pricing": "Pricing",
+          "testimonials": "Testimonials"
+        }
+      },
+      "company": {
+        "title": "Company",
+        "links": {
+          "about": "About",
+          "careers": "Careers",
+          "press": "Press",
+          "contact": "Contact"
+        }
+      },
+      "legal": {
+        "title": "Legal",
+        "links": {
+          "privacy": "Privacy",
+          "terms": "Terms",
+          "legal": "Legal Notice",
+          "cookies": "Cookies"
+        }
+      },
+      "copyright": "© {year} Pitch to Me. All rights reserved.",
+      "bottomLinks": {
+        "privacy": "Privacy",
+        "terms": "Terms of Use",
+        "cookies": "Cookie Preferences"
+      }
+    },
+    "features": {
+      "title": "Why choose",
+      "subtitle": "Discover the features that make our platform the ultimate solution for mastering public speaking.",
+      "items": {
+        "ai": {
+          "title": "AI-Powered Training",
+          "description": "Personalized coaching with voice analysis and real-time feedback"
+        },
+        "vr": {
+          "title": "VR Experience",
+          "description": "Immersive practice environments for realistic training scenarios"
+        },
+        "community": {
+          "title": "Global Community",
+          "description": "Connect with speakers worldwide and share experiences"
+        },
+        "certification": {
+          "title": "Certification",
+          "description": "Earn certificates and track your progress with detailed analytics"
+        }
+      }
+    },
+    "b2c": {
+      "title": "Master your voice with our",
+      "highlight": "individual training",
+      "subtitle": "12 comprehensive modules to transform your public speaking and become a confident speaker",
+      "video": {
+        "alt": "Mawa SIMBA - Expert Speech Coach",
+        "live": "LIVE"
+      },
+             "plans": {
+         "standard": {
+           "name": "Standard Training",
+           "description": "Interactive web experience",
+           "features": {
+             "0": "12 comprehensive modules",
+             "1": "AI voice analysis",
+             "2": "Community access",
+             "3": "Progress tracking",
+             "4": "Basic feedback"
+           }
+         },
+         "premium": {
+           "name": "VR Immersive",
+           "description": "Virtual reality experience",
+           "features": {
+             "0": "Everything in Standard",
+             "1": "VR practice environments",
+             "2": "Real-time feedback",
+             "3": "1-on-1 coaching sessions",
+             "4": "Advanced analytics"
+           }
+         }
+       },
+      "cta": {
+        "selected": "Selected",
+        "choose": "Choose",
+        "individual": "I am an individual"
+      },
+      "stats": {
+        "join": "Join",
+        "speakers": "speakers who have transformed their voice",
+        "rating": "4.9/5",
+        "reviews": "+1000 reviews",
+        "guarantee": "30-day guarantee"
+      }
+    }
+}

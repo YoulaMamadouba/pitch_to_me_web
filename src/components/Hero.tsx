@@ -4,10 +4,12 @@ import Link from 'next/link';
 import { Play, User, Building, ChevronUp, CheckCircle, UserPlus, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
+import { useLanguageContext } from '@/contexts/LanguageContext';
 
 export default function Hero() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
+  const { t } = useLanguageContext();
 
   // Fermer le drawer quand on clique en dehors
   useEffect(() => {
@@ -64,7 +66,7 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.8 }}
             >
-              Transform Your Voice
+              {t('hero.title.line1')}
             </motion.span>
             <br />
             <motion.span 
@@ -73,12 +75,12 @@ export default function Hero() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.4, duration: 0.8, type: "spring", stiffness: 100 }}
             >
-              Into Power
+              {t('hero.title.line2')}
             </motion.span>
           </motion.h1>
           
           <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            Master the art of persuasion with AI-powered training, VR experiences, and a global community of speakers.
+            {t('hero.subtitle')}
           </p>
 
           {/* CTA Buttons with Play Button Above */}
@@ -110,7 +112,7 @@ export default function Hero() {
                   className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-semibold py-2 px-4 rounded-lg hover:shadow-xl transition-all flex items-center justify-center space-x-2 text-xs"
                 >
                   <User className="w-5 h-5" />
-                  <span>Je suis un particulier</span>
+                  <span>{t('hero.buttons.individual')}</span>
                 </Link>
               </motion.div>
               
@@ -124,7 +126,7 @@ export default function Hero() {
                   className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:shadow-xl transition-all flex items-center justify-center space-x-2 text-xs group"
                 >
                   <Building className="w-5 h-5" />
-                  <span>Je suis une entreprise</span>
+                  <span>{t('hero.buttons.company')}</span>
                   <ChevronUp className="w-4 h-4 transition-transform duration-200 group-hover:translate-y-1" />
                 </button>
               </motion.div>
@@ -213,10 +215,10 @@ export default function Hero() {
                   {/* Title */}
                   <div className="text-center mb-8">
                     <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                      Choisissez votre parcours
+                      {t('hero.drawer.title')}
                     </h2>
                     <p className="text-gray-300 text-lg">
-                      Découvrez nos solutions adaptées à votre entreprise
+                      {t('hero.drawer.subtitle')}
                     </p>
                   </div>
 
@@ -239,8 +241,8 @@ export default function Hero() {
                               <CheckCircle className="w-8 h-8 text-green-400" />
                             </div>
                             <div className="flex-1 text-left">
-                              <h3 className="text-xl font-semibold text-white mb-1">Vous êtes client ?</h3>
-                              <p className="text-gray-300">Accédez à votre espace personnel et continuez votre formation</p>
+                              <h3 className="text-xl font-semibold text-white mb-1">{t('hero.drawer.client.title')}</h3>
+                              <p className="text-gray-300">{t('hero.drawer.client.description')}</p>
                             </div>
                             <div className="w-3 h-3 bg-green-500 rounded-full group-hover:scale-125 transition-transform duration-300"></div>
                           </div>
@@ -265,8 +267,8 @@ export default function Hero() {
                               <UserPlus className="w-8 h-8 text-blue-400" />
                             </div>
                             <div className="flex-1 text-left">
-                              <h3 className="text-xl font-semibold text-white mb-1">Vous n'êtes pas client ?</h3>
-                              <p className="text-gray-300">Demandez un devis personnalisé pour votre entreprise</p>
+                              <h3 className="text-xl font-semibold text-white mb-1">{t('hero.drawer.notClient.title')}</h3>
+                              <p className="text-gray-300">{t('hero.drawer.notClient.description')}</p>
                             </div>
                             <div className="w-3 h-3 bg-blue-500 rounded-full group-hover:scale-125 transition-transform duration-300"></div>
                           </div>
@@ -285,15 +287,15 @@ export default function Hero() {
                     <div className="grid grid-cols-3 gap-4 text-center">
                       <div>
                         <div className="text-2xl font-bold text-yellow-400">500+</div>
-                        <div className="text-sm text-gray-400">Entreprises satisfaites</div>
+                        <div className="text-sm text-gray-400">{t('hero.drawer.stats.companies')}</div>
                       </div>
                       <div>
                         <div className="text-2xl font-bold text-cyan-400">24h</div>
-                        <div className="text-sm text-gray-400">Délai de réponse</div>
+                        <div className="text-sm text-gray-400">{t('hero.drawer.stats.response')}</div>
                       </div>
                       <div>
                         <div className="text-2xl font-bold text-green-400">98%</div>
-                        <div className="text-sm text-gray-400">Taux de réussite</div>
+                        <div className="text-sm text-gray-400">{t('hero.drawer.stats.success')}</div>
                       </div>
                     </div>
                   </motion.div>

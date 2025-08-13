@@ -4,24 +4,26 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Play, Check, Star, Zap, ArrowRight, Sparkles, Crown, Target, Zap as ZapIcon, Eye, EyeOff, Video } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useLanguageContext } from '@/contexts/LanguageContext';
 
 export default function B2CSection() {
   const [selectedPlan, setSelectedPlan] = useState<'standard' | 'premium'>('standard');
   const [hoveredPlan, setHoveredPlan] = useState<string | null>(null);
+  const { t } = useLanguageContext();
 
   const plans = [
     {
       id: 'standard',
-      name: 'Standard Training',
-      description: 'Interactive web experience',
+      name: t('b2c.plans.standard.name'),
+      description: t('b2c.plans.standard.description'),
       price: '99',
       period: 'one-time',
       features: [
-        '12 comprehensive modules',
-        'AI voice analysis',
-        'Community access',
-        'Progress tracking',
-        'Basic feedback'
+        t('b2c.plans.standard.features.0'),
+        t('b2c.plans.standard.features.1'),
+        t('b2c.plans.standard.features.2'),
+        t('b2c.plans.standard.features.3'),
+        t('b2c.plans.standard.features.4')
       ],
       gradient: 'from-gray-700 to-gray-800',
       border: 'border-gray-700',
@@ -30,16 +32,16 @@ export default function B2CSection() {
     },
     {
       id: 'premium',
-      name: 'VR Immersive',
-      description: 'Virtual reality experience',
+      name: t('b2c.plans.premium.name'),
+      description: t('b2c.plans.premium.description'),
       price: '299',
       period: 'one-time',
       features: [
-        'Everything in Standard',
-        'VR practice environments',
-        'Real-time feedback',
-        '1-on-1 coaching sessions',
-        'Advanced analytics'
+        t('b2c.plans.premium.features.0'),
+        t('b2c.plans.premium.features.1'),
+        t('b2c.plans.premium.features.2'),
+        t('b2c.plans.premium.features.3'),
+        t('b2c.plans.premium.features.4')
       ],
       gradient: 'from-yellow-400 to-yellow-500',
       border: 'border-yellow-400',
@@ -61,20 +63,20 @@ export default function B2CSection() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
-            Maîtrisez votre voix avec notre{' '}
+            {t('b2c.title')}{' '}
             <span className="text-yellow-400">
-              formation individuelle
+              {t('b2c.highlight')}
             </span>
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-12 leading-relaxed">
-            12 modules complets pour transformer votre prise de parole en public et devenir un orateur confiant
+            {t('b2c.subtitle')}
           </p>
 
           {/* Video Preview */}
           <div className="relative bg-gray-900 rounded-xl overflow-hidden mb-12 max-w-2xl mx-auto">
             <img 
               src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1600&h=900&fit=crop&crop=faces&q=80" 
-              alt="Mawa SIMBA - Expert Coach en prise de parole" 
+              alt={t('b2c.video.alt')} 
               className="w-full h-48 md:h-64 object-cover object-center"
               style={{ objectPosition: 'center 25%' }}
             />
@@ -88,7 +90,7 @@ export default function B2CSection() {
             </div>
             <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black text-xs font-medium px-3 py-1.5 rounded-full flex items-center space-x-1.5 shadow-md">
               <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-              <span>EN DIRECT</span>
+              <span>{t('b2c.video.live')}</span>
             </div>
           </div>
         </motion.div>
@@ -163,7 +165,7 @@ export default function B2CSection() {
                 </div>
 
                 <div className="space-y-3 mb-8">
-                  {plan.features.map((feature, featureIndex) => (
+                  {Array.isArray(plan.features) ? plan.features.map((feature, featureIndex) => (
                     <motion.div 
                       key={featureIndex} 
                       className="flex items-center space-x-3"
@@ -176,7 +178,7 @@ export default function B2CSection() {
                       </div>
                       <span className="text-gray-300 text-sm">{feature}</span>
                     </motion.div>
-                  ))}
+                  )) : null}
                 </div>
 
                 <motion.button
@@ -190,7 +192,7 @@ export default function B2CSection() {
                   whileTap={{ scale: 0.98 }}
                 >
                   <span className="relative z-10">
-                    {selectedPlan === plan.id ? 'Sélectionné' : `Choisir ${plan.name}`}
+                    {selectedPlan === plan.id ? t('b2c.cta.selected') : `${t('b2c.cta.choose')} ${plan.name}`}
                   </span>
                   {hoveredPlan === plan.id && (
                     <motion.div
@@ -222,7 +224,7 @@ export default function B2CSection() {
               transition={{ delay: 0.8 }}
               viewport={{ once: true }}
             >
-              Rejoignez <span className="text-yellow-400 font-bold">10,000+</span> speakers qui ont transformé leur voix
+              {t('b2c.stats.join')} <span className="text-yellow-400 font-bold">10,000+</span> {t('b2c.stats.speakers')}
             </motion.p>
             
             <motion.div 
@@ -237,12 +239,12 @@ export default function B2CSection() {
                 whileHover={{ scale: 1.05 }}
               >
                 <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                <span>4.9/5</span>
+                <span>{t('b2c.stats.rating')}</span>
               </motion.div>
               <span>•</span>
-              <motion.span whileHover={{ scale: 1.05 }}>+1000 avis</motion.span>
+              <motion.span whileHover={{ scale: 1.05 }}>{t('b2c.stats.reviews')}</motion.span>
               <span>•</span>
-              <motion.span whileHover={{ scale: 1.05 }}>Garantie 30 jours</motion.span>
+              <motion.span whileHover={{ scale: 1.05 }}>{t('b2c.stats.guarantee')}</motion.span>
             </motion.div>
           </div>
           
@@ -255,7 +257,7 @@ export default function B2CSection() {
               className="inline-flex items-center space-x-2 bg-gradient-to-r from-cyan-400 to-cyan-500 text-black font-medium py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-200 text-sm relative overflow-hidden group"
             >
               <Zap className="w-5 h-5 group-hover:rotate-12 transition-transform duration-200" />
-              <span className="text-base">Je suis un particulier</span>
+              <span className="text-base">{t('b2c.cta.individual')}</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" />
               
               {/* Animated background */}
