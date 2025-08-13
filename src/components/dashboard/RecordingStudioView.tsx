@@ -6,15 +6,33 @@ import { motion } from 'framer-motion';
 
 interface RecordingStudioViewProps {
   onBack?: () => void;
+  // When false, removes outer container styles to blend into dashboard
+  showChrome?: boolean;
+  // Controlled recording state (optional)
+  isRecording?: boolean;
+  isPaused?: boolean;
+  recordingTime?: number;
+  onToggleRecording?: () => void;
+  onTogglePause?: () => void;
 }
 
-export default function RecordingStudioView({ onBack }: RecordingStudioViewProps) {
+export default function RecordingStudioView({ 
+  onBack,
+  showChrome = false,
+  isRecording: cIsRecording,
+  isPaused: cIsPaused,
+  recordingTime: cRecordingTime,
+  onToggleRecording,
+  onTogglePause,
+}: RecordingStudioViewProps) {
+  const isControlled =
+    cIsRecording !== undefined || cIsPaused !== undefined || cRecordingTime !== undefined;
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [activeCamera, setActiveCamera] = useState('main');
   const [activeAngle, setActiveAngle] = useState('front');
   const [recordingTime, setRecordingTime] = useState(0);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Format time as MM:SS
   const formatTime = (seconds: number) => {
@@ -23,10 +41,13 @@ export default function RecordingStudioView({ onBack }: RecordingStudioViewProps
     return `${mins}:${secs}`;
   };
 
-  // Toggle recording
+  // Toggle recording (uncontrolled fallback)
   const toggleRecording = () => {
+    if (isControlled) {
+      onToggleRecording?.();
+      return;
+    }
     if (isRecording) {
-      // Stop recording
       setIsRecording(false);
       setIsPaused(false);
       if (timerRef.current) {
@@ -35,7 +56,6 @@ export default function RecordingStudioView({ onBack }: RecordingStudioViewProps
       }
       setRecordingTime(0);
     } else {
-      // Start recording
       setIsRecording(true);
       timerRef.current = setInterval(() => {
         setRecordingTime(prev => prev + 1);
@@ -43,10 +63,13 @@ export default function RecordingStudioView({ onBack }: RecordingStudioViewProps
     }
   };
 
-  // Toggle pause
+  // Toggle pause (uncontrolled fallback)
   const togglePause = () => {
+    if (isControlled) {
+      onTogglePause?.();
+      return;
+    }
     if (!isRecording) return;
-    
     setIsPaused(!isPaused);
     if (isPaused) {
       // Resume
@@ -82,45 +105,89 @@ export default function RecordingStudioView({ onBack }: RecordingStudioViewProps
   const audioLevels = [20, 40, 60, 80, 70, 90, 60, 40];
   const maxLevel = Math.max(...audioLevels);
 
+  // Use controlled values if provided
+  const displayIsRecording = cIsRecording ?? isRecording;
+  const displayIsPaused = cIsPaused ?? isPaused;
+  const displayRecordingTime = cRecordingTime ?? recordingTime;
+
+  const wrapperClass = showChrome
+    ? 'bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-all'
+    : '';
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.1 }}
-      className="bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-all"
+      className={wrapperClass}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center">
+      {/* Top Header with inline controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+        <div className="flex items-center mb-3 sm:mb-0">
           {onBack && (
             <button 
               onClick={onBack}
-              className="flex items-center text-gray-300 hover:text-white transition-colors text-sm mr-4"
+              className="flex items-center text-gray-300 hover:text-white transition-colors text-sm mr-3"
             >
               <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-              <span>Retour</span>
+              <span>Retour Recording Studio</span>
             </button>
           )}
-          <h1 className="text-xl font-bold text-white">Recording Studio</h1>
+          <h1 className="text-lg font-semibold text-white">Recording Studio</h1>
         </div>
-        <button className="text-gray-300 hover:text-white transition-colors">
-          <Settings className="w-6 h-6" />
-        </button>
+        <div className="flex items-center justify-center space-x-3">
+          {/* Record/Stop */}
+          <button 
+            onClick={toggleRecording}
+            className="p-2.5 rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
+            title={displayIsRecording ? 'Stop' : 'Record'}
+          >
+            {displayIsRecording ? <Square className="w-4 h-4" /> : <div className="w-4 h-4 rounded-sm bg-white"></div>}
+          </button>
+          {/* Pause/Resume */}
+          <button 
+            onClick={togglePause}
+            disabled={!displayIsRecording}
+            className={`p-2.5 rounded-full ${displayIsRecording ? 'bg-yellow-500 hover:bg-yellow-600 text-black' : 'bg-gray-700 text-white cursor-not-allowed'}`}
+            title={displayIsPaused ? 'Resume' : 'Pause'}
+          >
+            {displayIsPaused ? <Video className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+          </button>
+          {/* Switch Camera */}
+          <button 
+            onClick={() => setActiveCamera(prev => prev === 'main' ? 'front' : 'main')}
+            className="p-2.5 rounded-full bg-gray-700 hover:bg-gray-600 text-white transition-colors" 
+            title="Switch Camera"
+          >
+            <RefreshCw className="w-4 h-4" />
+          </button>
+          {/* Draft and Finish */}
+          <button className="py-1.5 px-3 text-xs bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg border border-gray-600 transition-colors">
+            Enregistrer le brouillon
+          </button>
+          <button className="py-1.5 px-3 text-xs bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-gray-900 font-semibold rounded-lg transition-colors">
+            Terminer & Analyser
+          </button>
+          {/* Settings */}
+          <button className="p-2.5 rounded-full text-gray-300 hover:text-white hover:bg-gray-800/50" title="Settings">
+            <Settings className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       {/* Main Content */}
-      <div className="pb-24">
+      <div>
         {/* Recording Status */}
-        {isRecording && (
+        {displayIsRecording && (
           <div className="bg-red-900/30 border border-red-600 rounded-xl p-4 mb-6 animate-pulse">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="w-3 h-3 bg-red-500 rounded-full"></div>
                 <span className="font-semibold text-white">ENREGISTREMENT</span>
               </div>
-              <div className="font-mono text-xl text-white">{formatTime(recordingTime)}</div>
+              <div className="font-mono text-xl text-white">{formatTime(displayRecordingTime)}</div>
             </div>
             <div className="mt-3">
               <div className="text-sm mb-2 text-white">Session: Entraînement Pitch</div>
@@ -224,7 +291,7 @@ export default function RecordingStudioView({ onBack }: RecordingStudioViewProps
           </div>
         </div>
 
-        {/* Audio Levels - Reduced margin bottom */}
+        {/* Audio Levels */}
         <div className="bg-gray-700/50 rounded-xl p-4 border border-gray-600 mb-4">
           <div className="flex justify-between items-center mb-3">
             <h2 className="text-lg font-semibold text-white">Niveaux audio</h2>
@@ -262,68 +329,6 @@ export default function RecordingStudioView({ onBack }: RecordingStudioViewProps
           </div>
         </div>
       </div>
-
-              {/* Sticky Bottom Controls - More compact */}
-        <div className="sticky bottom-0 bg-gray-900/95 backdrop-blur-md border-t border-gray-800 py-3 px-4 mt-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-center space-x-6 mb-3">
-            {/* Stop Button - Smaller */}
-            <button 
-              onClick={toggleRecording}
-              className={`p-3 rounded-full ${
-                isRecording 
-                  ? 'bg-red-600 hover:bg-red-700' 
-                  : 'bg-red-600 hover:bg-red-700'
-              } text-white transition-colors`}
-            >
-              {isRecording ? (
-                <Square className="w-5 h-5" />
-              ) : (
-                <div className="w-5 h-5 rounded-sm bg-white"></div>
-              )}
-            </button>
-
-            {/* Pause/Resume Button - Smaller */}
-            <button 
-              onClick={togglePause}
-              disabled={!isRecording}
-              className={`p-4 rounded-full ${
-                isRecording && isPaused 
-                  ? 'bg-yellow-500 hover:bg-yellow-600' 
-                  : isRecording 
-                    ? 'bg-yellow-500 hover:bg-yellow-600' 
-                    : 'bg-gray-700 cursor-not-allowed'
-              } text-white transition-colors`}
-            >
-              {isPaused ? (
-                <Video className="w-5 h-5" />
-              ) : (
-                <Pause className="w-5 h-5" />
-              )}
-            </button>
-
-            {/* Switch Camera Button - Smaller */}
-            <button 
-              onClick={() => setActiveCamera(prev => prev === 'main' ? 'front' : 'main')}
-              className="p-3 rounded-full bg-gray-700 hover:bg-gray-600 text-white transition-colors"
-            >
-              <RefreshCw className="w-5 h-5" />
-            </button>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 max-w-xs mx-auto">
-            <button className="py-1.5 px-3 text-xs bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg border border-gray-600 transition-colors">
-              Enregistrer le brouillon
-            </button>
-            <button className="py-1.5 px-3 text-xs bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-gray-900 font-semibold rounded-lg transition-colors">
-              Terminer & Analyser
-            </button>
-          </div>
-        </div>
-      </div>
-
-              {/* Add padding to prevent content from being hidden behind sticky controls */}
-        <div className="pb-4"></div>
     </motion.div>
   );
 }

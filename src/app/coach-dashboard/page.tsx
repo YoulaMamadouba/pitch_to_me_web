@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -50,6 +50,7 @@ import { useStudents } from '@/contexts/StudentsContext';
 import { Module } from '@/components/dashboard/ModuleCard';
 import { Company } from '@/components/dashboard-coach/CompanyCard';
 import { Student } from '@/components/dashboard-coach/StudentCard';
+import RecordingStudioView from '@/components/dashboard/RecordingStudioView';
 
 // Types
 type NavigationItem = {
@@ -225,10 +226,66 @@ const CoachDashboard = () => {
     setMounted(true);
   }, []);
 
+  // Recording Studio (header-controlled) state
+  const [isRecording, setIsRecording] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const startTimer = () => {
+    if (recordingTimerRef.current) return;
+    recordingTimerRef.current = setInterval(() => {
+      setRecordingTime((t) => t + 1);
+    }, 1000);
+  };
+
+  const stopTimer = () => {
+    if (recordingTimerRef.current) {
+      clearInterval(recordingTimerRef.current);
+      recordingTimerRef.current = null;
+    }
+  };
+
+  const handleToggleRecording = () => {
+    if (isRecording) {
+      // Stop
+      setIsRecording(false);
+      setIsPaused(false);
+      stopTimer();
+      setRecordingTime(0);
+    } else {
+      // Start
+      setIsRecording(true);
+      setIsPaused(false);
+      startTimer();
+    }
+  };
+
+  const handleTogglePause = () => {
+    if (!isRecording) return;
+    if (isPaused) {
+      // Resume
+      setIsPaused(false);
+      startTimer();
+    } else {
+      // Pause
+      setIsPaused(true);
+      stopTimer();
+    }
+  };
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      stopTimer();
+    };
+  }, []);
+
   // Navigation items
   const navigation: NavigationItem[] = [
     { id: 'dashboard', label: 'Dashboard', icon: Home, active: activeTab === 'dashboard' },
     { id: 'sessions', label: 'Sessions', icon: Video, active: activeTab === 'sessions', count: 5 },
+    { id: 'recording-studio', label: 'Recording Studio', icon: Video, active: activeTab === 'recording-studio' },
     { id: 'students', label: 'Students', icon: Users, active: activeTab === 'students', count: 12 },
     { id: 'analytics', label: 'Analytics', icon: BarChart2, active: activeTab === 'analytics' },
     { id: 'messages', label: 'Messages', icon: MessageSquare, active: activeTab === 'messages', count: 3 },
@@ -435,6 +492,20 @@ const CoachDashboard = () => {
         <StudentList
           students={students}
           onViewStudent={handleViewStudent}
+        />
+      );
+    }
+
+    if (activeTab === 'recording-studio') {
+      return (
+        <RecordingStudioView 
+          onBack={() => setActiveTab('dashboard')}
+          showChrome={false}
+          isRecording={isRecording}
+          isPaused={isPaused}
+          recordingTime={recordingTime}
+          onToggleRecording={handleToggleRecording}
+          onTogglePause={handleTogglePause}
         />
       );
     }
@@ -760,7 +831,6 @@ const CoachDashboard = () => {
                 }
               </h1>
             </div>
-            
             <div className="flex items-center space-x-4">
               <button className="relative p-2 text-gray-400 hover:text-white rounded-full hover:bg-gray-800/50">
                 <Bell className="w-5 h-5" />
@@ -768,9 +838,7 @@ const CoachDashboard = () => {
                   <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
                 )}
               </button>
-              
               <div className="h-8 w-px bg-gray-700"></div>
-              
               <div className="flex items-center space-x-2">
                 <div className="text-right hidden md:block">
                   <p className="text-sm font-medium text-white">Mawa SIMBA</p>
@@ -778,12 +846,12 @@ const CoachDashboard = () => {
                 </div>
                 <div className="relative">
                   <Image 
-                  src="https://i.pravatar.cc/150?u=coach1" 
-                  alt="Mawa SIMBA" 
-                  width={36} 
-                  height={36}
-                  className="w-9 h-9 rounded-full border-2 border-yellow-400 object-cover"
-                />
+                    src="https://i.pravatar.cc/150?u=coach1" 
+                    alt="Mawa SIMBA" 
+                    width={36} 
+                    height={36}
+                    className="w-9 h-9 rounded-full border-2 border-yellow-400 object-cover"
+                  />
                   <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 rounded-full border-2 border-gray-900"></div>
                 </div>
               </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import type React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
@@ -63,10 +64,6 @@ const VoiceAnalysisView = dynamic(() => import('@/components/dashboard/VoiceAnal
   loading: () => <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div></div>
 });
 
-const RecordingStudioView = dynamic(() => import('@/components/dashboard/RecordingStudioView'), {
-  loading: () => <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div></div>
-});
-
 const EmotionRecognitionView = dynamic(() => import('@/components/dashboard/EmotionRecognitionView'), {
   loading: () => <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div></div>
 });
@@ -83,7 +80,7 @@ interface NavigationItem {
   className?: string;
   active?: boolean;
   onClick?: () => void;
-};
+}
 
 type ViewType = 
   | 'dashboard' 
@@ -94,7 +91,6 @@ type ViewType =
   | 'vr-scene'
   | 'vr-session'
   | 'voice-analysis'
-  | 'recording-studio'
   | 'emotion-recognition';
 
 type Module = {
@@ -221,13 +217,6 @@ export default function DashboardPage() {
       onClick: () => setActiveView('voice-analysis')
     },
     { 
-      id: 'recording-studio', 
-      label: 'Recording Studio', 
-      icon: Video, 
-      active: activeView === 'recording-studio',
-      onClick: () => setActiveView('recording-studio')
-    },
-    { 
       id: 'emotion-recognition', 
       label: 'Analyse des Émotions', 
       icon: Smile, 
@@ -346,7 +335,7 @@ export default function DashboardPage() {
         <header className="bg-gray-900 border-b border-gray-800 sticky top-0 z-10 py-2">
           <div className="flex items-center justify-between px-4 h-14">
             <div className="flex items-center">
-              <motion.h1 
+              <motion.h1
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5 }}
@@ -358,7 +347,7 @@ export default function DashboardPage() {
                 {activeView === 'vr-scene' && 'S\'entraîner en VR'}
                 {activeView === 'vr-session' && 'Session VR'}
                 {activeView === 'voice-analysis' && 'Analyse Vocale'}
-                {activeView === 'recording-studio' && 'Recording Studio'}
+                
                 {activeView === 'emotion-recognition' && 'Analyse des Émotions'}
                 {activeView === 'vrcalibration' && 'VR Calibration'}
                 {activeView === 'module' && `Module ${selectedModuleId}`}
@@ -433,10 +422,6 @@ export default function DashboardPage() {
             />
           ) : activeView === 'voice-analysis' ? (
             <VoiceAnalysisView 
-              onBack={() => setActiveView('dashboard')} 
-            />
-          ) : activeView === 'recording-studio' ? (
-            <RecordingStudioView 
               onBack={() => setActiveView('dashboard')} 
             />
           ) : activeView === 'emotion-recognition' ? (
