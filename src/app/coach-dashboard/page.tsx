@@ -240,8 +240,8 @@ const CoachDashboard = () => {
   const recentActivities: StudentActivity[] = [
     {
       id: 1,
-      name: 'Alex Martin',
-      avatar: 'https://i.pravatar.cc/150?u=alex',
+      name: 'Sophie Ndiaye',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=faces&q=80',
       action: 'Completed',
       module: 'Module 6: Body Language',
       time: '2 min ago',
@@ -250,16 +250,16 @@ const CoachDashboard = () => {
     },
     {
       id: 2,
-      name: 'Sarah Johnson',
-      avatar: 'https://i.pravatar.cc/150?u=sarah',
+      name: 'Aïssatou Diallo',
+      avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&crop=faces&q=80',
       action: 'Requested VR coaching session',
       time: '5 min ago',
       status: 'pending'
     },
     {
       id: 3,
-      name: 'David Chen',
-      avatar: 'https://i.pravatar.cc/150?u=david',
+      name: 'Fatoumata Bâ',
+      avatar: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=200&h=200&fit=crop&crop=faces&q=80',
       action: 'Left feedback on',
       module: 'Module 8',
       time: '12 min ago',

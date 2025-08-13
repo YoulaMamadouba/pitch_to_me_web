@@ -71,19 +71,24 @@ export default function B2CSection() {
           </p>
 
           {/* Video Preview */}
-          <div className="relative bg-gray-800 rounded-xl overflow-hidden mb-12 max-w-2xl mx-auto">
+          <div className="relative bg-gray-900 rounded-xl overflow-hidden mb-12 max-w-2xl mx-auto">
             <img 
-              src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800&h=400&fit=crop" 
-              alt="Training preview" 
-              className="w-full h-48 md:h-64 object-cover"
+              src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1600&h=900&fit=crop&crop=faces&q=80" 
+              alt="Mawa SIMBA - Expert Coach en prise de parole" 
+              className="w-full h-48 md:h-64 object-cover object-center"
+              style={{ objectPosition: 'center 25%' }}
             />
-            <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-              <button className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:scale-110 transition-transform">
-                <Play className="w-6 h-6 text-white ml-1" fill="currentColor" />
-              </button>
+            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+              <div className="relative w-14 h-14">
+                <button className="w-full h-full bg-yellow-400 bg-opacity-90 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300 group absolute inset-0">
+                  <Play className="w-6 h-6 text-black ml-0.5 group-hover:scale-110 transition-transform" fill="currentColor" />
+                  <div className="absolute inset-0 rounded-full border-4 border-yellow-300 opacity-0 group-hover:opacity-100 animate-ping-slow"></div>
+                </button>
+              </div>
             </div>
-            <div className="absolute top-4 right-4 bg-red-500 text-white text-xs px-3 py-1 rounded-full font-bold">
-              LIVE
+            <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black text-xs font-medium px-3 py-1.5 rounded-full flex items-center space-x-1.5 shadow-md">
+              <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+              <span>EN DIRECT</span>
             </div>
           </div>
         </motion.div>
