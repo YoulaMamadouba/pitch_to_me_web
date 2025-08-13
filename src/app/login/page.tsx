@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import AuthPageHeader from '@/components/ui/AuthPageHeader';
 import RoleSelector from '@/components/auth/RoleSelector';
 import RoleBasedFields from '@/components/auth/RoleBasedFields';
+import { useLanguageContext } from '@/contexts/LanguageContext';
 
 type UserRole = 'learner' | 'coach' | 'hr';
 
@@ -27,43 +28,34 @@ interface FormData {
 }
 
 const getDefaultFormData = (role: UserRole): FormData => {
-  const baseData = {
+  // Start with empty values so placeholders are visible and translate correctly
+  const baseData: FormData = {
     email: '',
     password: '',
     rememberMe: false,
+    learningGoal: '',
+    currentLevel: '',
+    specialization: '',
+    yearsOfExperience: undefined as unknown as number,
+    company: '',
+    department: ''
   };
 
+  // Optionally customize per role later without hardcoded demo texts
   switch (role) {
     case 'coach':
-      return {
-        ...baseData,
-        email: 'coach@example.com',
-        password: 'coach123',
-        specialization: 'Prise de parole en public',
-        yearsOfExperience: 5,
-      };
+      return { ...baseData };
     case 'hr':
-      return {
-        ...baseData,
-        email: 'rh@example.com',
-        password: 'rh123',
-        company: 'Entreprise XYZ',
-        department: 'Ressources Humaines',
-      };
+      return { ...baseData };
     case 'learner':
     default:
-      return {
-        ...baseData,
-        email: 'apprenant@example.com',
-        password: 'apprenant123',
-        learningGoal: 'Améliorer mes présentations professionnelles',
-        currentLevel: 'Intermédiaire',
-      };
+      return { ...baseData };
   }
 };
 
 export default function LoginPage() {
   const router = useRouter();
+  const { t } = useLanguageContext();
   const [showPassword, setShowPassword] = useState(false);
   const [selectedRole, setSelectedRole] = useState<UserRole>('learner');
   const [formData, setFormData] = useState<FormData>(getDefaultFormData('learner'));
@@ -106,13 +98,13 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 flex flex-col">
       {/* Auth Page Header */}
-      <AuthPageHeader pageTitle="Connexion" />
+      <AuthPageHeader pageTitle={t('header.login')} />
       
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center p-4 pt-24">
         <AuthCard
-          title="Bienvenue !"
-          subtitle="Accédez à votre espace personnel"
+          title={t('auth.login.card.title')}
+          subtitle={t('auth.login.card.subtitle')}
           icon={<Home className="w-8 h-8 text-white" />}
         >
           {/* Quick Stats */}
@@ -120,15 +112,15 @@ export default function LoginPage() {
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
                 <div className="text-lg font-bold text-yellow-400">50k+</div>
-                <div className="text-xs text-gray-400">Utilisateurs actifs</div>
+                <div className="text-xs text-gray-400">{t('auth.login.stats.users')}</div>
               </div>
               <div>
                 <div className="text-lg font-bold text-cyan-400">12</div>
-                <div className="text-xs text-gray-400">Modules</div>
+                <div className="text-xs text-gray-400">{t('auth.login.stats.modules')}</div>
               </div>
               <div>
                 <div className="text-lg font-bold text-green-400">95%</div>
-                <div className="text-xs text-gray-400">Taux de réussite</div>
+                <div className="text-xs text-gray-400">{t('auth.login.stats.success')}</div>
               </div>
             </div>
           </div>
@@ -164,10 +156,10 @@ export default function LoginPage() {
                 }`}
               >
                 {selectedRole === 'coach' 
-                  ? 'Accéder au tableau de bord Coach'
+                  ? t('auth.login.cta.coach')
                   : selectedRole === 'hr'
-                  ? 'Accéder au tableau de bord RH'
-                  : 'Se connecter'}
+                  ? t('auth.login.cta.hr')
+                  : t('auth.login.cta.default')}
               </button>
             </div>
           </form>
@@ -178,7 +170,7 @@ export default function LoginPage() {
               <div className="w-full border-t border-gray-600"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-gray-800 text-gray-400">Ou continuer avec</span>
+              <span className="px-2 bg-gray-800 text-gray-400">{t('auth.login.divider')}</span>
             </div>
           </div>
 
@@ -217,9 +209,9 @@ export default function LoginPage() {
 
           <div className="mt-6 text-center text-sm">
             <p className="text-gray-400">
-              Pas encore de compte ?{' '}
+              {t('auth.login.noAccount')}{' '}
               <Link href="/signup" className="font-medium text-yellow-400 hover:text-yellow-300">
-                S'inscrire
+                {t('auth.login.signup')}
               </Link>
             </p>
           </div>

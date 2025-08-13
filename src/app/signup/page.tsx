@@ -6,8 +6,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import AuthCard from '@/components/ui/AuthCard';
 import OtpModal from '@/components/ui/OtpModal';
 import AuthPageHeader from '@/components/ui/AuthPageHeader';
+import { useLanguageContext } from '@/contexts/LanguageContext';
 
 export default function SignupPage() {
+  const { t } = useLanguageContext();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
@@ -42,13 +44,13 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 flex flex-col">
       {/* Auth Page Header */}
-      <AuthPageHeader pageTitle="Inscription" />
+      <AuthPageHeader pageTitle={t('header.signup')} />
       
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center p-4 pt-24">
         <AuthCard
-          title="Join Pitch to Me"
-          subtitle="Start your journey to speaking mastery"
+          title={t('auth.signup.card.title')}
+          subtitle={t('auth.signup.card.subtitle')}
           icon={<User className="w-8 h-8 text-black" />}
           showProgress={true}
           currentStep={1}
@@ -67,7 +69,7 @@ export default function SignupPage() {
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
               </svg>
-              <span>Continue with Google</span>
+              <span>{t('auth.signup.social.continueWithGoogle')}</span>
             </button>
 
             <button 
@@ -77,7 +79,7 @@ export default function SignupPage() {
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
               </svg>
-              <span>Continue with Facebook</span>
+              <span>{t('auth.signup.social.continueWithFacebook')}</span>
             </button>
 
             <button 
@@ -300,7 +302,7 @@ export default function SignupPage() {
             {/* Country Selector */}
             <div>
               <label htmlFor="country" className="block text-gray-300 text-sm font-medium mb-2">
-                Country/Region
+                {t('auth.signup.country.label')}
               </label>
               <div className="relative">
                 <select
@@ -310,7 +312,7 @@ export default function SignupPage() {
                   className="w-full bg-gray-700 bg-opacity-50 border border-gray-600 rounded-lg pl-3 pr-10 py-3 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400 transition-all"
                   required
                 >
-                  <option value="">Select your country</option>
+                  <option value="">{t('auth.signup.country.placeholder')}</option>
                   <option value="US">🇺🇸 United States</option>
                   <option value="FR">🇫🇷 France</option>
                   <option value="CI">🇨🇮 Côte d'Ivoire</option>
@@ -338,8 +340,10 @@ export default function SignupPage() {
                 required
               />
               <label htmlFor="terms" className="text-gray-400 text-sm">
-                I agree to the <a href="/terms" className="text-yellow-400 underline hover:text-yellow-300">Terms of Service</a> and 
-                <a href="/privacy" className="text-yellow-400 underline hover:text-yellow-300"> Privacy Policy</a>
+                {t('auth.signup.terms.agree')}
+                <a href="/terms" className="text-yellow-400 underline hover:text-yellow-300">{t('auth.signup.terms.tos')}</a>
+                {t('auth.signup.terms.and')}
+                <a href="/privacy" className="text-yellow-400 underline hover:text-yellow-300">{t('auth.signup.terms.privacy')}</a>
               </label>
             </div>
             
@@ -347,14 +351,14 @@ export default function SignupPage() {
               type="submit"
               className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-semibold py-3 rounded-xl hover:from-yellow-300 hover:to-yellow-400 transition-all duration-300 shadow-lg shadow-yellow-400/25 mb-4"
             >
-              Create Account
+              {t('auth.signup.createAccount')}
             </button>
             
             <div className="text-center">
               <p className="text-gray-400 text-sm">
-                Already have an account?{' '}
+                {t('auth.signup.haveAccount')}{' '}
                 <Link href="/login" className="text-yellow-400 underline hover:text-yellow-300">
-                  Sign In
+                  {t('auth.signup.signin')}
                 </Link>
               </p>
             </div>
@@ -386,7 +390,7 @@ export default function SignupPage() {
                 >
                   <ArrowLeft className="w-6 h-6" />
                 </button>
-                <div className="text-lg font-bold text-white">Verification</div>
+                <div className="text-lg font-bold text-white">{t('auth.signup.otp.verification')}</div>
                 <div className="w-6"></div>
               </div>
 
@@ -396,15 +400,15 @@ export default function SignupPage() {
                 <div className="w-8 h-1 bg-yellow-400 rounded-full"></div>
                 <div className="w-8 h-1 bg-gray-600 rounded-full"></div>
               </div>
-              <p className="text-center text-gray-400 text-sm mb-6">Step 2 of 3</p>
+              <p className="text-center text-gray-400 text-sm mb-6">{t('auth.signup.otp.step', { current: 2, total: 3 })}</p>
 
               {/* Hero Section */}
               <div className="text-center mb-6">
                 <div className="w-20 h-20 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full mx-auto mb-4 flex items-center justify-center animate-pulse">
                   <Phone className="w-10 h-10 text-black" />
                 </div>
-                <h1 className="text-xl font-bold text-white mb-2">Verify Your Phone</h1>
-                <p className="text-gray-300 text-xs mb-1">We've sent a 6-digit code to</p>
+                <h1 className="text-xl font-bold text-white mb-2">{t('auth.signup.otp.verifyPhone')}</h1>
+                <p className="text-gray-300 text-xs mb-1">{t('auth.signup.otp.sentCode')}</p>
                 <p className="text-yellow-400 font-medium text-sm">{formData.phone}</p>
               </div>
 
@@ -423,8 +427,8 @@ export default function SignupPage() {
                 </div>
 
                 <div className="text-center">
-                  <p className="text-gray-400 text-xs mb-2">Didn't receive the code? <button className="text-yellow-400 font-medium hover:underline hover:text-yellow-300">Resend Code</button></p>
-                  <p className="text-xs text-gray-500 mt-2">Code expires in 04:59</p>
+                  <p className="text-gray-400 text-xs mb-2">{t('auth.signup.otp.didntReceive')} <button className="text-yellow-400 font-medium hover:underline hover:text-yellow-300">{t('auth.signup.otp.resend')}</button></p>
+                  <p className="text-xs text-gray-500 mt-2">{t('auth.signup.otp.expires', { time: '04:59' })}</p>
                 </div>
               </div>
 
@@ -433,7 +437,7 @@ export default function SignupPage() {
                 onClick={handleOtpSubmit}
                 className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-semibold py-4 rounded-xl hover:from-yellow-300 hover:to-yellow-400 transition-all duration-300"
               >
-                Continue
+                {t('auth.signup.otp.continue')}
               </button>
             </motion.div>
           </motion.div>

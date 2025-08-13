@@ -1,6 +1,8 @@
+"use client";
 import Link from 'next/link';
 import { ArrowLeft, Mic } from 'lucide-react';
 import { motion } from 'framer-motion';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 interface AuthPageHeaderProps {
   pageTitle: string;
@@ -22,8 +24,9 @@ export default function AuthPageHeader({ pageTitle }: AuthPageHeaderProps) {
         <span className="text-lg font-bold text-white">Pitch to Me</span>
       </div>
       
-      <div className="text-white font-medium">
-        {pageTitle}
+      <div className="flex items-center space-x-4">
+        <div className="hidden sm:block text-white font-medium">{pageTitle}</div>
+        <LanguageSwitcher />
       </div>
     </div>
   );

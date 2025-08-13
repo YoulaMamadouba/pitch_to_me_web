@@ -10,6 +10,103 @@ const frTranslations = {
     "login": "Connexion",
     "signup": "Inscription"
   },
+  "auth": {
+    "login": {
+      "card": {
+        "title": "Bienvenue !",
+        "subtitle": "Accédez à votre espace personnel"
+      },
+      "roleSelector": {
+        "label": "Je me connecte en tant que",
+        "roles": {
+          "learner": "Apprenant",
+          "coach": "Coach",
+          "hr": "Ressources Humaines"
+        }
+      },
+      "fields": {
+        "email": {
+          "label": "Email",
+          "placeholder": "votre@email.com"
+        },
+        "password": {
+          "label": "Mot de passe",
+          "placeholder": "••••••••"
+        },
+        "learningGoal": {
+          "label": "Objectif d'apprentissage",
+          "placeholder": "Votre objectif d'apprentissage"
+        },
+        "specialization": {
+          "label": "Spécialisation",
+          "placeholder": "Ex: Prise de parole en public"
+        },
+        "yearsOfExperience": {
+          "label": "Années d'expérience",
+          "placeholder": "Nombre d'années d'expérience"
+        },
+        "company": {
+          "label": "Entreprise",
+          "placeholder": "Nom de l'entreprise"
+        },
+        "department": {
+          "label": "Département",
+          "placeholder": "Votre département"
+        }
+      },
+      "stats": {
+        "users": "Utilisateurs actifs",
+        "modules": "Modules",
+        "success": "Taux de réussite"
+      },
+      "divider": "Ou continuer avec",
+      "cta": {
+        "coach": "Accéder au tableau de bord Coach",
+        "hr": "Accéder au tableau de bord RH",
+        "default": "Se connecter"
+      },
+      "rememberMe": "Se souvenir de moi",
+      "forgotPassword": "Mot de passe oublié ?",
+      "noAccount": "Pas encore de compte ?",
+      "signup": "S'inscrire"
+    },
+    "signup": {
+      "header": {
+        "title": "Inscription"
+      },
+      "card": {
+        "title": "Rejoignez Pitch to Me",
+        "subtitle": "Commencez votre parcours vers l'excellence oratoire"
+      },
+      "social": {
+        "continueWithGoogle": "Continuer avec Google",
+        "continueWithFacebook": "Continuer avec Facebook"
+      },
+      "country": {
+        "label": "Pays/Région",
+        "placeholder": "Sélectionnez votre pays"
+      },
+      "terms": {
+        "agree": "J'accepte les ",
+        "tos": "Conditions d'utilisation",
+        "and": " et ",
+        "privacy": "Politique de confidentialité"
+      },
+      "createAccount": "Créer un compte",
+      "otp": {
+        "verification": "Vérification",
+        "step": "Étape {current} sur {total}",
+        "verifyPhone": "Vérifiez votre téléphone",
+        "sentCode": "Nous avons envoyé un code à 6 chiffres à",
+        "didntReceive": "Vous n'avez pas reçu le code ?",
+        "resend": "Renvoyer le code",
+        "expires": "Le code expire dans {time}",
+        "continue": "Continuer"
+      },
+      "haveAccount": "Vous avez déjà un compte ?",
+      "signin": "Se connecter"
+    }
+  },
   "hero": {
     "title": {
       "line1": "Transformez votre voix",
@@ -148,6 +245,103 @@ const enTranslations = {
     "logo": "Pitch to Me",
     "login": "Login",
     "signup": "Sign Up"
+  },
+  "auth": {
+    "login": {
+      "card": {
+        "title": "Welcome!",
+        "subtitle": "Access your personal space"
+      },
+      "roleSelector": {
+        "label": "I am logging in as",
+        "roles": {
+          "learner": "Learner",
+          "coach": "Coach",
+          "hr": "Human Resources"
+        }
+      },
+      "fields": {
+        "email": {
+          "label": "Email",
+          "placeholder": "your@email.com"
+        },
+        "password": {
+          "label": "Password",
+          "placeholder": "••••••••"
+        },
+        "learningGoal": {
+          "label": "Learning goal",
+          "placeholder": "Your learning goal"
+        },
+        "specialization": {
+          "label": "Specialization",
+          "placeholder": "e.g., Public speaking"
+        },
+        "yearsOfExperience": {
+          "label": "Years of experience",
+          "placeholder": "Number of years of experience"
+        },
+        "company": {
+          "label": "Company",
+          "placeholder": "Company name"
+        },
+        "department": {
+          "label": "Department",
+          "placeholder": "Your department"
+        }
+      },
+      "stats": {
+        "users": "Active users",
+        "modules": "Modules",
+        "success": "Success rate"
+      },
+      "divider": "Or continue with",
+      "cta": {
+        "coach": "Go to Coach dashboard",
+        "hr": "Go to HR dashboard",
+        "default": "Sign in"
+      },
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "noAccount": "Don't have an account?",
+      "signup": "Sign Up"
+    },
+    "signup": {
+      "header": {
+        "title": "Sign Up"
+      },
+      "card": {
+        "title": "Join Pitch to Me",
+        "subtitle": "Start your journey to speaking mastery"
+      },
+      "social": {
+        "continueWithGoogle": "Continue with Google",
+        "continueWithFacebook": "Continue with Facebook"
+      },
+      "country": {
+        "label": "Country/Region",
+        "placeholder": "Select your country"
+      },
+      "terms": {
+        "agree": "I agree to the ",
+        "tos": "Terms of Service",
+        "and": " and ",
+        "privacy": "Privacy Policy"
+      },
+      "createAccount": "Create Account",
+      "otp": {
+        "verification": "Verification",
+        "step": "Step {current} of {total}",
+        "verifyPhone": "Verify Your Phone",
+        "sentCode": "We've sent a 6-digit code to",
+        "didntReceive": "Didn't receive the code?",
+        "resend": "Resend Code",
+        "expires": "Code expires in {time}",
+        "continue": "Continue"
+      },
+      "haveAccount": "Already have an account?",
+      "signin": "Sign In"
+    }
   },
   "hero": {
     "title": {

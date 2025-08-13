@@ -1,5 +1,6 @@
 import { User, Briefcase, Award, BookOpen, Clock, Mail, Lock, Eye, EyeOff, Users } from 'lucide-react';
 import { useState } from 'react';
+import { useLanguageContext } from '@/contexts/LanguageContext';
 
 type UserRole = 'learner' | 'coach' | 'hr';
 
@@ -24,13 +25,14 @@ export default function RoleBasedFields({
   showPassword,
   setShowPassword,
 }: RoleBasedFieldsProps) {
+  const { t } = useLanguageContext();
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const getDefaultFields = () => (
     <>
       <div>
         <label htmlFor="email" className="block text-gray-300 text-sm font-medium mb-2">
-          Email
+          {t('auth.login.fields.email.label')}
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -40,7 +42,7 @@ export default function RoleBasedFields({
             id="email"
             name="email"
             type="email"
-            placeholder="votre@email.com"
+            placeholder={t('auth.login.fields.email.placeholder')}
             value={formData.email}
             onChange={onInputChange}
             className="w-full bg-gray-700 bg-opacity-50 border border-gray-600 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400 transition-all"
@@ -51,7 +53,7 @@ export default function RoleBasedFields({
 
       <div>
         <label htmlFor="password" className="block text-gray-300 text-sm font-medium mb-2">
-          Mot de passe
+          {t('auth.login.fields.password.label')}
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -61,7 +63,7 @@ export default function RoleBasedFields({
             id="password"
             name="password"
             type={showPassword ? 'text' : 'password'}
-            placeholder="••••••••"
+            placeholder={t('auth.login.fields.password.placeholder')}
             value={formData.password}
             onChange={onInputChange}
             className="w-full bg-gray-700 bg-opacity-50 border border-gray-600 rounded-lg pl-10 pr-10 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400 transition-all"
@@ -89,7 +91,7 @@ export default function RoleBasedFields({
       
       <div>
         <label htmlFor="learningGoal" className="block text-gray-300 text-sm font-medium mb-2">
-          Objectif d'apprentissage
+          {t('auth.login.fields.learningGoal.label')}
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -99,7 +101,7 @@ export default function RoleBasedFields({
             id="learningGoal"
             name="learningGoal"
             type="text"
-            placeholder="Votre objectif d'apprentissage"
+            placeholder={t('auth.login.fields.learningGoal.placeholder')}
             value={formData.learningGoal || ''}
             onChange={onInputChange}
             className="w-full bg-gray-700 bg-opacity-50 border border-gray-600 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400 transition-all"
@@ -115,7 +117,7 @@ export default function RoleBasedFields({
       
       <div>
         <label htmlFor="specialization" className="block text-gray-300 text-sm font-medium mb-2">
-          Spécialisation
+          {t('auth.login.fields.specialization.label')}
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -125,7 +127,7 @@ export default function RoleBasedFields({
             id="specialization"
             name="specialization"
             type="text"
-            placeholder="Votre domaine d'expertise"
+            placeholder={t('auth.login.fields.specialization.placeholder')}
             value={formData.specialization || ''}
             onChange={onInputChange}
             className="w-full bg-gray-700 bg-opacity-50 border border-gray-600 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400 transition-all"
@@ -135,7 +137,7 @@ export default function RoleBasedFields({
 
       <div>
         <label htmlFor="yearsOfExperience" className="block text-gray-300 text-sm font-medium mb-2">
-          Années d'expérience
+          {t('auth.login.fields.yearsOfExperience.label')}
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -146,7 +148,7 @@ export default function RoleBasedFields({
             name="yearsOfExperience"
             type="number"
             min="0"
-            placeholder="Nombre d'années d'expérience"
+            placeholder={t('auth.login.fields.yearsOfExperience.placeholder')}
             value={formData.yearsOfExperience || ''}
             onChange={onInputChange}
             className="w-full bg-gray-700 bg-opacity-50 border border-gray-600 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400 transition-all"
@@ -162,7 +164,7 @@ export default function RoleBasedFields({
       
       <div>
         <label htmlFor="company" className="block text-gray-300 text-sm font-medium mb-2">
-          Entreprise
+          {t('auth.login.fields.company.label')}
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -172,7 +174,7 @@ export default function RoleBasedFields({
             id="company"
             name="company"
             type="text"
-            placeholder="Nom de l'entreprise"
+            placeholder={t('auth.login.fields.company.placeholder')}
             value={formData.company || ''}
             onChange={onInputChange}
             className="w-full bg-gray-700 bg-opacity-50 border border-gray-600 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400/30 focus:border-purple-400 transition-all"
@@ -182,7 +184,7 @@ export default function RoleBasedFields({
 
       <div>
         <label htmlFor="department" className="block text-gray-300 text-sm font-medium mb-2">
-          Département
+          {t('auth.login.fields.department.label')}
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -192,7 +194,7 @@ export default function RoleBasedFields({
             id="department"
             name="department"
             type="text"
-            placeholder="Votre département"
+            placeholder={t('auth.login.fields.department.placeholder')}
             value={formData.department || ''}
             onChange={onInputChange}
             className="w-full bg-gray-700 bg-opacity-50 border border-gray-600 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400/30 focus:border-purple-400 transition-all"
@@ -229,13 +231,13 @@ export default function RoleBasedFields({
             className="h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-gray-600 rounded bg-gray-700"
           />
           <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-300">
-            Se souvenir de moi
+            {t('auth.login.rememberMe')}
           </label>
         </div>
 
         <div className="text-sm">
           <a href="/forgot-password" className="font-medium text-yellow-400 hover:text-yellow-300">
-            Mot de passe oublié ?
+            {t('auth.login.forgotPassword')}
           </a>
         </div>
       </div>

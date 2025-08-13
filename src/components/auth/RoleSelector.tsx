@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { User, GraduationCap, Users } from 'lucide-react';
+import { useLanguageContext } from '@/contexts/LanguageContext';
 
 type UserRole = 'learner' | 'coach' | 'hr';
 
@@ -16,24 +17,25 @@ interface RoleSelectorProps {
 }
 
 export default function RoleSelector({ selectedRole, onRoleChange }: RoleSelectorProps) {
+  const { t } = useLanguageContext();
   const [showDropdown, setShowDropdown] = useState(false);
 
   const roleOptions: RoleOption[] = [
     {
       value: 'learner',
-      label: 'Apprenant',
+      label: t('auth.login.roleSelector.roles.learner'),
       icon: <GraduationCap className="w-5 h-5" />,
       color: 'text-blue-400',
     },
     {
       value: 'coach',
-      label: 'Coach',
+      label: t('auth.login.roleSelector.roles.coach'),
       icon: <User className="w-5 h-5" />,
       color: 'text-yellow-400',
     },
     {
       value: 'hr',
-      label: 'Ressources Humaines',
+      label: t('auth.login.roleSelector.roles.hr'),
       icon: <Users className="w-5 h-5" />,
       color: 'text-purple-400',
     },
@@ -43,7 +45,7 @@ export default function RoleSelector({ selectedRole, onRoleChange }: RoleSelecto
 
   return (
     <div className="relative w-full">
-      <label className="block text-gray-300 text-sm font-medium mb-2">Je me connecte en tant que</label>
+      <label className="block text-gray-300 text-sm font-medium mb-2">{t('auth.login.roleSelector.label')}</label>
       <button
         type="button"
         onClick={() => setShowDropdown(!showDropdown)}
