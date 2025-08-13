@@ -206,15 +206,15 @@ export default function RecordingStudioView({
           className={`relative rounded-2xl overflow-hidden mb-6 border bg-gradient-to-br from-gray-900 to-gray-800 shadow-xl ${
             displayIsRecording ? 'border-red-600/40 ring-2 ring-red-500/30' : 'border-gray-700/60'
           }`}
-          style={{ height: '460px' }}
+          style={{ height: '320px' }}
         >
           {/* Camera Feed from HTML design */}
           <div className="absolute inset-0">
             <img 
               src="https://i.pravatar.cc/800?u=coach1" 
               alt="Aperçu de la caméra" 
-              className="w-full h-full object-cover"
-              style={{ objectPosition: '50% 50%' }}
+              className="w-full h-full object-contain"
+              style={{ objectPosition: '50% 10%' }}
               onError={(e) => {
                 // Fallback si l'image ne charge pas
                 const target = e.target as HTMLImageElement;
