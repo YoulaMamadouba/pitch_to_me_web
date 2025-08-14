@@ -5,6 +5,7 @@ import { ModulesProvider } from '@/contexts/ModulesContext';
 import { CompaniesProvider } from '@/contexts/CompaniesContext';
 import { StudentsProvider } from '@/contexts/StudentsContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
+import { AuthProvider } from '@/contexts/AuthContext';
 import PitchLoader from '@/components/ui/PitchLoader';
 import { Mic } from 'lucide-react';
 
@@ -23,21 +24,23 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <LanguageProvider>
-      <ModulesProvider>
-        <CompaniesProvider>
-          <StudentsProvider>
-            {/* Global loader uses the same icon and brand color as the header */}
-            <PitchLoader
-              loading={!mounted || !minDelayDone}
-              icon={<Mic className="w-12 h-12" />}
-              siteName="Pitch to Me"
-              brandColorClass="text-yellow-400"
-            />
-            {children}
-          </StudentsProvider>
-        </CompaniesProvider>
-      </ModulesProvider>
-    </LanguageProvider>
+    <AuthProvider>
+      <LanguageProvider>
+        <ModulesProvider>
+          <CompaniesProvider>
+            <StudentsProvider>
+              {/* Global loader uses the same icon and brand color as the header */}
+              <PitchLoader
+                loading={!mounted || !minDelayDone}
+                icon={<Mic className="w-12 h-12" />}
+                siteName="Pitch to Me"
+                brandColorClass="text-yellow-400"
+              />
+              {children}
+            </StudentsProvider>
+          </CompaniesProvider>
+        </ModulesProvider>
+      </LanguageProvider>
+    </AuthProvider>
   );
 }

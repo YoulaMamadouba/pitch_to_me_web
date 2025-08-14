@@ -9,6 +9,7 @@ import AuthPageHeader from '@/components/ui/AuthPageHeader';
 import RoleSelector from '@/components/auth/RoleSelector';
 import RoleBasedFields from '@/components/auth/RoleBasedFields';
 import { useLanguageContext } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 type UserRole = 'learner' | 'coach' | 'hr';
 
@@ -56,26 +57,34 @@ const getDefaultFormData = (role: UserRole): FormData => {
 export default function LoginPage() {
   const router = useRouter();
   const { t } = useLanguageContext();
+  const { signIn, loading: authLoading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [selectedRole, setSelectedRole] = useState<UserRole>('learner');
   const [formData, setFormData] = useState<FormData>(getDefaultFormData('learner'));
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Mettre à jour les champs par défaut quand le rôle change
   useEffect(() => {
     setFormData(getDefaultFormData(selectedRole));
   }, [selectedRole]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login attempt:', { ...formData, role: selectedRole });
-    
-    // Redirection en fonction du rôle
-    if (selectedRole === 'coach') {
-      router.push('/coach-dashboard');
-    } else if (selectedRole === 'hr') {
-      router.push('/hr-dashboard');
-    } else {
-      router.push('/dashboard');
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const { error } = await signIn(formData.email, formData.password);
+      
+      if (error) {
+        setError(error.message);
+      }
+      // La redirection sera gérée automatiquement par le contexte d'authentification
+    } catch (err) {
+      setError('Une erreur inattendue s\'est produite');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -143,11 +152,19 @@ export default function LoginPage() {
               setShowPassword={setShowPassword}
             />
 
+            {/* Affichage des erreurs */}
+            {error && (
+              <div className="bg-red-500 bg-opacity-10 border border-red-500 rounded-lg p-3">
+                <p className="text-red-400 text-sm">{error}</p>
+              </div>
+            )}
+
             {/* Bouton de connexion */}
             <div>
               <button
                 type="submit"
-                className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-black focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 ${
+                disabled={isLoading || authLoading}
+                className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-black focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
                   selectedRole === 'coach'
                     ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-300 hover:to-yellow-400 focus:ring-yellow-500'
                     : selectedRole === 'hr'
@@ -155,11 +172,18 @@ export default function LoginPage() {
                     : 'bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-300 hover:to-blue-400 focus:ring-blue-500'
                 }`}
               >
-                {selectedRole === 'coach' 
-                  ? t('auth.login.cta.coach')
-                  : selectedRole === 'hr'
-                  ? t('auth.login.cta.hr')
-                  : t('auth.login.cta.default')}
+                {isLoading || authLoading ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mr-2"></div>
+                    Connexion...
+                  </div>
+                ) : (
+                  selectedRole === 'coach' 
+                    ? t('auth.login.cta.coach')
+                    : selectedRole === 'hr'
+                    ? t('auth.login.cta.hr')
+                    : t('auth.login.cta.default')
+                )}
               </button>
             </div>
           </form>

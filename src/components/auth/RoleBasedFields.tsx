@@ -88,73 +88,12 @@ export default function RoleBasedFields({
   const getLearnerFields = () => (
     <div className="space-y-4">
       {getDefaultFields()}
-      
-      <div>
-        <label htmlFor="learningGoal" className="block text-gray-300 text-sm font-medium mb-2">
-          {t('auth.login.fields.learningGoal.label')}
-        </label>
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <BookOpen className="h-4 w-4 text-blue-400" />
-          </div>
-          <input
-            id="learningGoal"
-            name="learningGoal"
-            type="text"
-            placeholder={t('auth.login.fields.learningGoal.placeholder')}
-            value={formData.learningGoal || ''}
-            onChange={onInputChange}
-            className="w-full bg-gray-700 bg-opacity-50 border border-gray-600 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400 transition-all"
-          />
-        </div>
-      </div>
     </div>
   );
 
   const getCoachFields = () => (
     <div className="space-y-4">
       {getDefaultFields()}
-      
-      <div>
-        <label htmlFor="specialization" className="block text-gray-300 text-sm font-medium mb-2">
-          {t('auth.login.fields.specialization.label')}
-        </label>
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Award className="h-4 w-4 text-yellow-400" />
-          </div>
-          <input
-            id="specialization"
-            name="specialization"
-            type="text"
-            placeholder={t('auth.login.fields.specialization.placeholder')}
-            value={formData.specialization || ''}
-            onChange={onInputChange}
-            className="w-full bg-gray-700 bg-opacity-50 border border-gray-600 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400 transition-all"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label htmlFor="yearsOfExperience" className="block text-gray-300 text-sm font-medium mb-2">
-          {t('auth.login.fields.yearsOfExperience.label')}
-        </label>
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Clock className="h-4 w-4 text-yellow-400" />
-          </div>
-          <input
-            id="yearsOfExperience"
-            name="yearsOfExperience"
-            type="number"
-            min="0"
-            placeholder={t('auth.login.fields.yearsOfExperience.placeholder')}
-            value={formData.yearsOfExperience || ''}
-            onChange={onInputChange}
-            className="w-full bg-gray-700 bg-opacity-50 border border-gray-600 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400 transition-all"
-          />
-        </div>
-      </div>
     </div>
   );
 
@@ -176,26 +115,6 @@ export default function RoleBasedFields({
             type="text"
             placeholder={t('auth.login.fields.company.placeholder')}
             value={formData.company || ''}
-            onChange={onInputChange}
-            className="w-full bg-gray-700 bg-opacity-50 border border-gray-600 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400/30 focus:border-purple-400 transition-all"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label htmlFor="department" className="block text-gray-300 text-sm font-medium mb-2">
-          {t('auth.login.fields.department.label')}
-        </label>
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Users className="h-4 w-4 text-purple-400" />
-          </div>
-          <input
-            id="department"
-            name="department"
-            type="text"
-            placeholder={t('auth.login.fields.department.placeholder')}
-            value={formData.department || ''}
             onChange={onInputChange}
             className="w-full bg-gray-700 bg-opacity-50 border border-gray-600 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400/30 focus:border-purple-400 transition-all"
           />
