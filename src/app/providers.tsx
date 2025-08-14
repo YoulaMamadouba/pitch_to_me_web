@@ -19,7 +19,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
 
   // Ensure the loader stays on screen long enough to enjoy the animations
   useEffect(() => {
-    const t = setTimeout(() => setMinDelayDone(true), 1600); // adjust duration to taste
+    const t = setTimeout(() => setMinDelayDone(true), 300); // réduit pour accélérer l'accès
     return () => clearTimeout(t);
   }, []);
 

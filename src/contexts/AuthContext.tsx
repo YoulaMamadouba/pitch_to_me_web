@@ -48,6 +48,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Redirection basée sur le rôle après connexion
         if (event === 'SIGNED_IN' && session?.user) {
           try {
+            const metadataRole = (session.user.user_metadata as any)?.role as string | undefined;
+            if (metadataRole) {
+              switch (metadataRole) {
+                case 'coach':
+                  router.push('/coach-dashboard');
+                  break;
+                case 'rh':
+                  router.push('/hr-dashboard');
+                  break;
+                case 'employee':
+                  router.push('/dashboard');
+                  break;
+                case 'individual':
+                  router.push('/dashboard');
+                  break;
+                default:
+                  router.push('/dashboard');
+              }
+              return;
+            }
+
             const supabase = getSupabase();
             if (!supabase) return;
             const { data: userData } = await supabase
