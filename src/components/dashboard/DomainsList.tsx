@@ -1,5 +1,5 @@
 'use client';
-
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Building, 
@@ -21,13 +21,18 @@ import {
   Leaf,
   Zap
 } from 'lucide-react';
+import DomainCard from './DomainCard';
+import ModuleForm from './ModuleForm';
 
-interface Domain {
+export interface Domain {
   id: string;
   name: string;
   description: string;
   icon: React.ComponentType<{ className?: string }>;
   moduleCount: number;
+  totalLessons: number;
+  totalDuration: number;
+  studentsCount: number;
   color: string;
 }
 
@@ -45,6 +50,9 @@ const b2bDomains: Domain[] = [
     description: 'Modules spécialisés pour les professionnels du secteur bancaire et financier',
     icon: BarChart3,
     moduleCount: 12,
+    totalLessons: 96,
+    totalDuration: 1440,
+    studentsCount: 245,
     color: 'from-green-500 to-green-600'
   },
   {
@@ -53,6 +61,9 @@ const b2bDomains: Domain[] = [
     description: 'Formation pour les secteurs miniers, pétroliers et énergétiques',
     icon: Wrench,
     moduleCount: 8,
+    totalLessons: 64,
+    totalDuration: 960,
+    studentsCount: 182,
     color: 'from-yellow-500 to-yellow-600'
   },
   {
@@ -61,6 +72,9 @@ const b2bDomains: Domain[] = [
     description: 'Modules adaptés aux fonctionnaires et employés du secteur public',
     icon: Shield,
     moduleCount: 15,
+    totalLessons: 120,
+    totalDuration: 1800,
+    studentsCount: 312,
     color: 'from-blue-500 to-blue-600'
   },
   {
@@ -69,6 +83,9 @@ const b2bDomains: Domain[] = [
     description: 'Formation pour les secteurs industriels et manufacturiers',
     icon: Factory,
     moduleCount: 10,
+    totalLessons: 80,
+    totalDuration: 1200,
+    studentsCount: 198,
     color: 'from-gray-500 to-gray-600'
   },
   {
@@ -77,6 +94,9 @@ const b2bDomains: Domain[] = [
     description: 'Modules pour les professionnels de l\'automobile et du transport',
     icon: Car,
     moduleCount: 7,
+    totalLessons: 56,
+    totalDuration: 840,
+    studentsCount: 156,
     color: 'from-red-500 to-red-600'
   },
   {
@@ -85,6 +105,9 @@ const b2bDomains: Domain[] = [
     description: 'Formation spécialisée pour l\'industrie aérospatiale',
     icon: Plane,
     moduleCount: 6,
+    totalLessons: 48,
+    totalDuration: 720,
+    studentsCount: 134,
     color: 'from-indigo-500 to-indigo-600'
   },
   {
@@ -93,6 +116,9 @@ const b2bDomains: Domain[] = [
     description: 'Modules pour les professionnels de la santé et du médical',
     icon: Heart,
     moduleCount: 14,
+    totalLessons: 112,
+    totalDuration: 1680,
+    studentsCount: 289,
     color: 'from-pink-500 to-pink-600'
   },
   {
@@ -101,6 +127,9 @@ const b2bDomains: Domain[] = [
     description: 'Formation pour les acteurs du secteur éducatif',
     icon: GraduationCap,
     moduleCount: 9,
+    totalLessons: 72,
+    totalDuration: 1080,
+    studentsCount: 201,
     color: 'from-purple-500 to-purple-600'
   },
   {
@@ -109,6 +138,9 @@ const b2bDomains: Domain[] = [
     description: 'Modules pour les professionnels du commerce et de la distribution',
     icon: ShoppingBag,
     moduleCount: 11,
+    totalLessons: 88,
+    totalDuration: 1320,
+    studentsCount: 223,
     color: 'from-orange-500 to-orange-600'
   },
   {
@@ -117,6 +149,9 @@ const b2bDomains: Domain[] = [
     description: 'Formation pour les professionnels de la technologie',
     icon: Zap,
     moduleCount: 18,
+    totalLessons: 144,
+    totalDuration: 2160,
+    studentsCount: 378,
     color: 'from-cyan-500 to-cyan-600'
   },
   {
@@ -125,6 +160,9 @@ const b2bDomains: Domain[] = [
     description: 'Modules pour les secteurs environnementaux et durables',
     icon: Leaf,
     moduleCount: 5,
+    totalLessons: 40,
+    totalDuration: 600,
+    studentsCount: 112,
     color: 'from-emerald-500 to-emerald-600'
   },
   {
@@ -133,11 +171,14 @@ const b2bDomains: Domain[] = [
     description: 'Formation pour les consultants et prestataires de services',
     icon: Briefcase,
     moduleCount: 13,
+    totalLessons: 104,
+    totalDuration: 1560,
+    studentsCount: 267,
     color: 'from-violet-500 to-violet-600'
   }
 ];
 
-// Domaines d'activités pour B2C (inchangés)
+// Domaines d'activités pour B2C
 const b2cDomains: Domain[] = [
   {
     id: 'personal-development',
@@ -145,6 +186,9 @@ const b2cDomains: Domain[] = [
     description: 'Modules pour améliorer la confiance en soi et les compétences personnelles',
     icon: Users,
     moduleCount: 8,
+    totalLessons: 64,
+    totalDuration: 960,
+    studentsCount: 189,
     color: 'from-purple-500 to-purple-600'
   },
   {
@@ -153,6 +197,9 @@ const b2cDomains: Domain[] = [
     description: 'Formation pour réussir sa carrière professionnelle',
     icon: Target,
     moduleCount: 12,
+    totalLessons: 96,
+    totalDuration: 1440,
+    studentsCount: 234,
     color: 'from-blue-500 to-blue-600'
   },
   {
@@ -161,6 +208,9 @@ const b2cDomains: Domain[] = [
     description: 'Modules pour maîtriser l\'art de la communication orale',
     icon: TrendingUp,
     moduleCount: 6,
+    totalLessons: 48,
+    totalDuration: 720,
+    studentsCount: 167,
     color: 'from-green-500 to-green-600'
   },
   {
@@ -169,6 +219,9 @@ const b2cDomains: Domain[] = [
     description: 'Formation pour développer son réseau professionnel',
     icon: Globe,
     moduleCount: 4,
+    totalLessons: 32,
+    totalDuration: 480,
+    studentsCount: 98,
     color: 'from-yellow-500 to-yellow-600'
   },
   {
@@ -177,11 +230,15 @@ const b2cDomains: Domain[] = [
     description: 'Modules pour créer et développer son entreprise',
     icon: Building,
     moduleCount: 10,
+    totalLessons: 80,
+    totalDuration: 1200,
+    studentsCount: 201,
     color: 'from-red-500 to-red-600'
   }
 ];
 
 export default function DomainsList({ moduleType, onDomainSelect, onCreateModule }: DomainsListProps) {
+  const [showModuleForm, setShowModuleForm] = useState(false);
   const domains = moduleType === 'b2b' ? b2bDomains : b2cDomains;
   const totalModules = domains.reduce((total, domain) => total + domain.moduleCount, 0);
 
@@ -193,15 +250,10 @@ export default function DomainsList({ moduleType, onDomainSelect, onCreateModule
           <h2 className="text-2xl font-bold text-white mb-2">
             Domaines {moduleType === 'b2b' ? 'Métiers' : 'd\'Activité'} {moduleType.toUpperCase()}
           </h2>
-          <p className="text-gray-400">
-            {moduleType === 'b2b' 
-              ? 'Sélectionnez un domaine métier pour voir les modules disponibles'
-              : 'Choisissez un domaine d\'activité pour vos formations personnelles'
-            }
-          </p>
+
         </div>
         <button
-          onClick={onCreateModule}
+          onClick={() => setShowModuleForm(true)}
           className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-semibold px-6 py-3 rounded-lg hover:shadow-lg transition-all flex items-center space-x-2"
         >
           <Plus className="w-5 h-5" />
@@ -270,44 +322,12 @@ export default function DomainsList({ moduleType, onDomainSelect, onCreateModule
       {/* Domains Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {domains.map((domain, index) => (
-          <motion.div
+          <DomainCard
             key={domain.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 * (index + 1) }}
-            whileHover={{ y: -4, scale: 1.02 }}
+            domain={domain}
             onClick={() => onDomainSelect(domain)}
-            className="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 hover:border-yellow-400/30 transition-all cursor-pointer group overflow-hidden"
-          >
-            <div className="p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${domain.color} flex items-center justify-center`}>
-                  <domain.icon className="w-6 h-6 text-white" />
-                </div>
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-yellow-400">{domain.moduleCount}</div>
-                  <div className="text-xs text-gray-400">modules</div>
-                </div>
-              </div>
-              
-              <h3 className="text-xl font-semibold text-white group-hover:text-yellow-400 transition-colors mb-2">
-                {domain.name}
-              </h3>
-              <p className="text-gray-400 text-sm mb-4">
-                {domain.description}
-              </p>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2 text-sm text-gray-300">
-                  <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                  <span>Cliquer pour voir</span>
-                </div>
-                <div className="w-8 h-8 bg-gray-700/50 rounded-full flex items-center justify-center group-hover:bg-yellow-500 transition-colors">
-                  <Plus className="w-4 h-4 text-gray-400 group-hover:text-black transition-colors" />
-                </div>
-              </div>
-            </div>
-          </motion.div>
+            index={index}
+          />
         ))}
       </div>
 
@@ -343,6 +363,20 @@ export default function DomainsList({ moduleType, onDomainSelect, onCreateModule
           </div>
         </div>
       </motion.div>
+
+      {/* Formulaire de création de module */}
+      <ModuleForm
+        isOpen={showModuleForm}
+        onClose={() => setShowModuleForm(false)}
+        onSubmit={(moduleData) => {
+          console.log('Nouveau module créé:', moduleData);
+          setShowModuleForm(false);
+          // Ici vous pouvez ajouter la logique pour créer le module
+        }}
+        moduleType={moduleType}
+        editingModule={null}
+        domains={domains}
+      />
     </div>
   );
 }

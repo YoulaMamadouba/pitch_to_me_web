@@ -41,7 +41,8 @@ import {
   Mic,
   Video,
   Smile,
-  MessageSquareText
+  MessageSquareText,
+  Building
 } from 'lucide-react';
 import LearnerProfile from '@/components/LearnerProfile';
 import Community from '@/components/Community';
@@ -49,6 +50,14 @@ import VRCalibration from '@/components/VRCalibration';
 
 // Import dynamique des composants pour le chargement à la demande
 const ModuleView = dynamic(() => import('@/components/dashboard/ModuleView'), {
+  loading: () => <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div></div>
+});
+
+const DomainsList = dynamic(() => import('@/components/dashboard/DomainsList'), {
+  loading: () => <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div></div>
+});
+
+const ModulesList = dynamic(() => import('@/components/dashboard/ModulesList'), {
   loading: () => <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div></div>
 });
 
@@ -88,6 +97,8 @@ type ViewType =
   | 'community' 
   | 'vrcalibration'
   | 'module'
+  | 'modules-b2b'
+  | 'modules-b2c'
   | 'vr-scene'
   | 'vr-session'
   | 'voice-analysis'
@@ -172,6 +183,8 @@ export default function DashboardPage() {
   const [selectedVRScene, setSelectedVRScene] = useState<string>('');
   const [isAICoachOpen, setIsAICoachOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [selectedDomain, setSelectedDomain] = useState<any>(null);
+  const [moduleType, setModuleType] = useState<'b2b' | 'b2c'>('b2b');
   const router = useRouter();
   const handleLogout = () => {
     setIsUserMenuOpen(false);
@@ -186,6 +199,28 @@ export default function DashboardPage() {
       icon: Home, 
       active: activeView === 'dashboard',
       onClick: () => setActiveView('dashboard')
+    },
+    { 
+      id: 'modules-b2b', 
+      label: 'Modules B2B', 
+      icon: Building, 
+      active: activeView === 'modules-b2b',
+      onClick: () => {
+        setModuleType('b2b');
+        setActiveView('modules-b2b');
+        setSelectedDomain(null);
+      }
+    },
+    { 
+      id: 'modules-b2c', 
+      label: 'Modules B2C', 
+      icon: Users, 
+      active: activeView === 'modules-b2c',
+      onClick: () => {
+        setModuleType('b2c');
+        setActiveView('modules-b2c');
+        setSelectedDomain(null);
+      }
     },
     { 
       id: 'community', 
@@ -344,10 +379,11 @@ export default function DashboardPage() {
                 {activeView === 'dashboard' && 'Tableau de Bord'}
                 {activeView === 'profile' && 'Mon Profil'}
                 {activeView === 'community' && 'Communauté'}
+                {activeView === 'modules-b2b' && 'Modules B2B'}
+                {activeView === 'modules-b2c' && 'Modules B2C'}
                 {activeView === 'vr-scene' && 'S\'entraîner en VR'}
                 {activeView === 'vr-session' && 'Session VR'}
                 {activeView === 'voice-analysis' && 'Analyse Vocale'}
-                
                 {activeView === 'emotion-recognition' && 'Analyse des Émotions'}
                 {activeView === 'vrcalibration' && 'VR Calibration'}
                 {activeView === 'module' && `Module ${selectedModuleId}`}
@@ -407,6 +443,19 @@ export default function DashboardPage() {
               moduleId={selectedModuleId} 
               onBack={() => setActiveView('dashboard')} 
             />
+          ) : activeView === 'modules-b2b' || activeView === 'modules-b2c' ? (
+            selectedDomain ? (
+              <ModulesList 
+                domainName={selectedDomain.name}
+                onBackToDomains={() => setSelectedDomain(null)}
+              />
+            ) : (
+              <DomainsList 
+                moduleType={moduleType}
+                onDomainSelect={(domain) => setSelectedDomain(domain)}
+                onCreateModule={() => console.log('Créer un module')}
+              />
+            )
           ) : activeView === 'vr-scene' ? (
             <VRSceneView 
               onSceneSelect={(sceneId) => {
