@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -207,6 +208,24 @@ const CoachDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [unreadNotifications, setUnreadNotifications] = useState(3);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const profileDropdownRef = useRef<HTMLDivElement>(null);
+  const { user, signOut } = useAuth();
+
+  // Fermer le menu déroulant quand on clique en dehors
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target as Node)) {
+        setIsProfileDropdownOpen(false);
+      }
+    }
+    // Ajouter l'écouteur d'événement
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      // Nettoyer l'écouteur d'événement
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
   
   // Modules state
   const [activeModuleType, setActiveModuleType] = useState<'b2b' | 'b2c' | null>(null);
@@ -844,20 +863,84 @@ const CoachDashboard = () => {
                 )}
               </button>
               <div className="h-8 w-px bg-gray-700"></div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 relative" ref={profileDropdownRef}>
                 <div className="text-right hidden md:block">
                   <p className="text-sm font-medium text-white">Mawa SIMBA</p>
                   <p className="text-xs text-yellow-400">Expert Coach</p>
                 </div>
-                <div className="relative">
+                <div 
+                  className="relative cursor-pointer"
+                  onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                >
                   <Image 
                     src="https://i.pravatar.cc/150?u=coach1" 
                     alt="Mawa SIMBA" 
                     width={36} 
                     height={36}
-                    className="w-9 h-9 rounded-full border-2 border-yellow-400 object-cover"
+                    className="w-9 h-9 rounded-full border-2 border-yellow-400 object-cover hover:border-yellow-300 transition-colors"
                   />
                   <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 rounded-full border-2 border-gray-900"></div>
+                  
+                  {/* Menu déroulant */}
+                  <AnimatePresence>
+                    {isProfileDropdownOpen && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 15, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95, transition: { duration: 0.15 } }}
+                        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                        className="absolute right-0 mt-2 w-56 bg-gray-800 rounded-lg shadow-xl border border-gray-700 overflow-hidden z-50"
+                      >
+                        <div className="p-4 border-b border-gray-700">
+                          <p className="text-sm font-medium text-white">{user?.user_metadata?.name || 'Utilisateur'}</p>
+                          <p className="text-xs text-gray-400">{user?.email || ''}</p>
+                        </div>
+                        
+                        <div className="py-1">
+                          <a 
+                            href="#" 
+                            className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white flex items-center"
+                          >
+                            <User className="w-4 h-4 mr-3 text-gray-400" />
+                            Mon profil
+                          </a>
+                          <a 
+                            href="#" 
+                            className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white flex items-center"
+                          >
+                            <Settings className="w-4 h-4 mr-3 text-gray-400" />
+                            Paramètres
+                          </a>
+                          <a 
+                            href="#" 
+                            className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white flex items-center"
+                          >
+                            <HelpCircle className="w-4 h-4 mr-3 text-gray-400" />
+                            Aide & Support
+                          </a>
+                        </div>
+                        
+                        <div className="p-2 border-t border-gray-700">
+                          <button 
+                            className="w-full flex items-center px-4 py-2 text-sm text-red-400 hover:bg-red-900/20 rounded-md transition-colors"
+                            onClick={async (e) => {
+                              e.preventDefault();
+                              try {
+                                await signOut();
+                                // Redirection vers la page de connexion après déconnexion
+                                window.location.href = '/login';
+                              } catch (error) {
+                                console.error('Erreur lors de la déconnexion:', error);
+                              }
+                            }}
+                          >
+                            <LogOut className="w-4 h-4 mr-3" />
+                            Déconnexion
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
             </div>
