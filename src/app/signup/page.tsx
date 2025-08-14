@@ -180,11 +180,18 @@ export default function SignupPage() {
                     setFormData({...formData, phone: `${prefix} ${currentNumber}`});
                   }}
                 >
-                  <option value="+1">🇺🇸 +1</option>
-                  <option value="+33">🇫🇷 +33</option>
-                  <option value="+225">🇨🇮 +225</option>
-                  <option value="+221">🇸🇳 +221</option>
-                  <option value="+212">🇲🇦 +212</option>
+                  <option value="+224">🇬🇳 +224 (Guinée)</option>
+                  <option value="+225">🇨🇮 +225 (Côte d'Ivoire)</option>
+                  <option value="+221">🇸🇳 +221 (Sénégal)</option>
+                  <option value="+223">🇲🇱 +223 (Mali)</option>
+                  <option value="+226">🇧🇫 +226 (Burkina Faso)</option>
+                  <option value="+229">🇧🇯 +229 (Bénin)</option>
+                  <option value="+228">🇹🇬 +228 (Togo)</option>
+                  <option value="+227">🇳🇪 +227 (Niger)</option>
+                  <option value="+237">🇨🇲 +237 (Cameroun)</option>
+                  <option value="+33">🇫🇷 +33 (France)</option>
+                  <option value="+32">🇧🇪 +32 (Belgique)</option>
+                  <option value="+1">🇺🇸 +1 (États-Unis/Canada)</option>
                 </select>
                 <div className="relative flex-1">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -266,38 +273,7 @@ export default function SignupPage() {
               </div>
             </div>
 
-            {/* Account Type */}
-            <div>
-              <span className="block text-gray-300 text-sm font-medium mb-2">Account Type</span>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setFormData({...formData, accountType: 'b2c'})}
-                  className={`flex items-center justify-center space-x-2 py-3 px-4 rounded-lg border-2 ${
-                    formData.accountType === 'b2c' 
-                      ? 'border-yellow-400 bg-yellow-400/10 text-white' 
-                      : 'border-gray-600 hover:border-gray-500 text-gray-300 hover:text-white'
-                  } transition-colors`}
-                  aria-pressed={formData.accountType === 'b2c'}
-                >
-                  <UserCheck className="w-5 h-5" />
-                  <span>Individual</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFormData({...formData, accountType: 'b2b'})}
-                  className={`flex items-center justify-center space-x-2 py-3 px-4 rounded-lg border-2 ${
-                    formData.accountType === 'b2b' 
-                      ? 'border-yellow-400 bg-yellow-400/10 text-white' 
-                      : 'border-gray-600 hover:border-gray-500 text-gray-300 hover:text-white'
-                  } transition-colors`}
-                  aria-pressed={formData.accountType === 'b2b'}
-                >
-                  <Building className="w-5 h-5" />
-                  <span>Business</span>
-                </button>
-              </div>
-            </div>
+            {/* Account Type removed as per user request */}
 
             {/* Country Selector */}
             <div>
@@ -313,13 +289,19 @@ export default function SignupPage() {
                   required
                 >
                   <option value="">{t('auth.signup.country.placeholder')}</option>
-                  <option value="US">🇺🇸 United States</option>
-                  <option value="FR">🇫🇷 France</option>
+                  <option value="GN">🇬🇳 Guinée</option>
                   <option value="CI">🇨🇮 Côte d'Ivoire</option>
-                  <option value="SN">🇸🇳 Senegal</option>
-                  <option value="MA">🇲🇦 Morocco</option>
-                  <option value="NG">🇳🇬 Nigeria</option>
-                  <option value="KE">🇰🇪 Kenya</option>
+                  <option value="SN">🇸🇳 Sénégal</option>
+                  <option value="ML">🇲🇱 Mali</option>
+                  <option value="BF">🇧🇫 Burkina Faso</option>
+                  <option value="BJ">🇧🇯 Bénin</option>
+                  <option value="TG">🇹🇬 Togo</option>
+                  <option value="NE">🇳🇪 Niger</option>
+                  <option value="CM">🇨🇲 Cameroun</option>
+                  <option value="FR">🇫🇷 France</option>
+                  <option value="BE">🇧🇪 Belgique</option>
+                  <option value="CA">🇨🇦 Canada</option>
+                  <option value="US">🇺🇸 États-Unis</option>
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                   <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
