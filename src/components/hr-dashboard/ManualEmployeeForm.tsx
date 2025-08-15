@@ -4,11 +4,14 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Plus, Trash2, Save, User, Mail, Phone, Briefcase, Users } from 'lucide-react';
 import { Employee } from './EmployeeCard';
+import { HRService } from '@/lib/hrService';
 
 interface ManualEmployeeFormProps {
   onSubmit: (employees: Employee[]) => void;
   onBack: () => void;
   isSubmitting: boolean;
+  companyId: string;
+  companyName: string;
 }
 
 interface EmployeeFormData {
@@ -19,7 +22,9 @@ interface EmployeeFormData {
   offerType: 'commercial' | 'marketing' | 'finance' | 'rh' | 'international' | 'management';
 }
 
-export default function ManualEmployeeForm({ onSubmit, onBack, isSubmitting }: ManualEmployeeFormProps) {
+export default function ManualEmployeeForm({ onSubmit, onBack, isSubmitting, companyId, companyName }: ManualEmployeeFormProps) {
+  // Récupérer le nom de l'entreprise depuis les données RH si pas fourni
+  const [actualCompanyName, setActualCompanyName] = useState(companyName);
   const [employees, setEmployees] = useState<EmployeeFormData[]>([
     { name: '', email: '', position: '', phone: '', offerType: 'commercial' }
   ]);
@@ -52,7 +57,7 @@ export default function ManualEmployeeForm({ onSubmit, onBack, isSubmitting }: M
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validation
+    // Validation des données de base
     const validEmployees = employees.filter(emp => 
       emp.name.trim() && emp.email.trim() && emp.position.trim() && emp.phone.trim()
     );
@@ -62,22 +67,82 @@ export default function ManualEmployeeForm({ onSubmit, onBack, isSubmitting }: M
       return;
     }
 
-    // Conversion en objets Employee
-    const newEmployees: Employee[] = validEmployees.map((emp, index) => ({
-      id: Date.now().toString() + index,
-      name: emp.name.trim(),
-      email: emp.email.trim(),
-      position: emp.position.trim(),
-      phone: emp.phone.trim(),
-      offerType: emp.offerType,
-      currentModule: 'Aucun module assigné',
-      estimatedDuration: 0,
-      photo: `https://images.unsplash.com/photo-${1500000000000 + index}?w=150&h=150&fit=crop&crop=face`,
-      progress: 0,
-      status: 'active' as const
-    }));
+    // Validation du companyId
+    if (!companyId) {
+      alert('Erreur : Impossible de récupérer les informations de l\'entreprise. Veuillez rafraîchir la page.');
+      return;
+    }
 
-    await onSubmit(newEmployees);
+    console.log('📧 CompanyId:', companyId);
+    console.log('📧 CompanyName:', companyName);
+    
+    // Si le nom de l'entreprise n'est pas fourni, essayer de le récupérer
+    let finalCompanyName = companyName;
+    if (!finalCompanyName) {
+      try {
+        const hrUser = await HRService.getCurrentHR();
+        finalCompanyName = hrUser?.companies?.name || 'Votre entreprise';
+        console.log('📧 Nom de l\'entreprise récupéré:', finalCompanyName);
+      } catch (error) {
+        console.error('❌ Erreur lors de la récupération du nom de l\'entreprise:', error);
+        finalCompanyName = 'Votre entreprise';
+      }
+    }
+
+    const createdEmployees: Employee[] = [];
+
+    // Créer chaque employé
+    for (const emp of validEmployees) {
+      try {
+        // Générer un mot de passe temporaire sécurisé
+        const tempPassword = HRService.generateTemporaryPassword();
+
+        console.log('📧 Données de l\'employé à créer:', {
+          name: emp.name.trim(),
+          email: emp.email.trim(),
+          position: emp.position.trim(),
+          phone: emp.phone.trim(),
+          offerType: emp.offerType,
+          companyId,
+          password: tempPassword
+        });
+
+        // Créer l'employé
+        const result = await HRService.createEmployee({
+          name: emp.name.trim(),
+          email: emp.email.trim(),
+          position: emp.position.trim(),
+          phone: emp.phone.trim(),
+          offerType: emp.offerType,
+          companyId,
+          password: tempPassword
+        });
+
+        if (result.success && result.employee) {
+          createdEmployees.push(result.employee);
+
+          // Envoyer l'email de bienvenue
+          await HRService.sendEmployeeWelcomeEmail({
+            name: emp.name.trim(),
+            email: emp.email.trim(),
+            password: tempPassword,
+            companyName: finalCompanyName
+          });
+
+          console.log(`✅ Employé ${emp.name} créé avec succès`);
+        } else {
+          console.error(`❌ Erreur lors de la création de ${emp.name}:`, result.error);
+          alert(`Erreur lors de la création de ${emp.name}: ${result.error}`);
+        }
+      } catch (error) {
+        console.error(`❌ Erreur lors de la création de ${emp.name}:`, error);
+        alert(`Erreur lors de la création de ${emp.name}`);
+      }
+    }
+
+    if (createdEmployees.length > 0) {
+      await onSubmit(createdEmployees);
+    }
   };
 
   return (

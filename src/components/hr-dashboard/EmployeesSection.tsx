@@ -1,12 +1,18 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Users, Plus, Search, Filter, Download } from 'lucide-react';
+import { createClient } from '@supabase/supabase-js';
 import EmployeeCard from './EmployeeCard';
 import AddEmployeeButton from './AddEmployeeButton';
 import AddEmployeeModal from './AddEmployeeModal';
 import { Employee } from './EmployeeCard';
+import { HRService, HRUser } from '@/lib/hrService';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Données de démonstration
 const initialEmployees: Employee[] = [
@@ -91,10 +97,56 @@ const initialEmployees: Employee[] = [
 ];
 
 export default function EmployeesSection() {
-  const [employees, setEmployees] = useState<Employee[]>(initialEmployees);
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
+  const [hrUser, setHrUser] = useState<HRUser | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Récupérer les informations du RH et des employés
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          console.log('❌ Aucun utilisateur connecté');
+          return;
+        }
+
+        // Récupérer RH et employés en une seule requête
+        const response = await fetch('/api/get-hr-data', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId: user.id }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Erreur lors de la récupération des données');
+        }
+
+        const result = await response.json();
+        console.log('✅ Données récupérées:', result);
+        
+        setHrUser(result.hrUser);
+        setEmployees(result.employees || []);
+        
+        // Debug: afficher les données récupérées
+        console.log('🔍 Données RH:', result.hrUser);
+        console.log('🔍 Nom de l\'entreprise:', result.hrUser?.companies?.name);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des données:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleAddEmployees = (newEmployees: Employee[]) => {
     setEmployees(prev => [...prev, ...newEmployees]);
@@ -287,7 +339,18 @@ export default function EmployeesSection() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleAddEmployees}
+        companyId={hrUser?.company_id || ''}
+        companyName={hrUser?.company?.name || ''}
       />
+      
+      {/* Debug info */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed bottom-4 right-4 bg-gray-800 p-4 rounded-lg text-xs text-white opacity-75">
+          <div>HR User: {hrUser ? '✅' : '❌'}</div>
+          <div>Company ID: {hrUser?.company_id || '❌'}</div>
+          <div>Company Name: {hrUser?.company?.name || '❌'}</div>
+        </div>
+      )}
     </div>
   );
 }

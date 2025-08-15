@@ -1,12 +1,17 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Bell, Settings, User, LogOut, ChevronDown, MessageSquare, Calendar, FileText } from 'lucide-react';
 import Image from 'next/image';
+import { HRService, HRUser } from '@/lib/hrService';
+import { useRouter } from 'next/navigation';
 
 const HRHeader = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [hrUser, setHrUser] = useState<HRUser | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
   
   const notifications = [
     { 
@@ -39,6 +44,32 @@ const HRHeader = () => {
   ];
 
   const unreadCount = notifications.filter(n => !n.read).length;
+
+  // Récupérer les informations du RH connecté
+  useEffect(() => {
+    const fetchHRUser = async () => {
+      try {
+        const user = await HRService.getCurrentHR();
+        setHrUser(user);
+      } catch (error) {
+        console.error('Erreur lors de la récupération du RH:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHRUser();
+  }, []);
+
+  // Gérer la déconnexion
+  const handleSignOut = async () => {
+    try {
+      await HRService.signOut();
+      router.push('/login');
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+    }
+  };
 
   return (
     <header className="bg-gray-900 border-b border-gray-800">
@@ -154,8 +185,12 @@ const HRHeader = () => {
               <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 z-50">
                 <div className="py-1">
                   <div className="px-4 py-2 border-b border-gray-700">
-                    <p className="text-sm text-white font-medium">Sarah Mitchell</p>
-                    <p className="text-xs text-gray-400">sarah.m@techcorp.com</p>
+                    <p className="text-sm text-white font-medium">
+                      {loading ? 'Chargement...' : hrUser?.name || 'Utilisateur RH'}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      {loading ? '...' : hrUser?.email || 'email@entreprise.com'}
+                    </p>
                   </div>
                   <a
                     href="#"
@@ -177,7 +212,7 @@ const HRHeader = () => {
                   </a>
                   <div className="border-t border-gray-700"></div>
                   <button
-                    onClick={() => {}}
+                    onClick={handleSignOut}
                     className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-700 hover:text-red-300"
                   >
                     <div className="flex items-center">

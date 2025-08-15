@@ -1,14 +1,30 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import HRSidebar from '@/components/hr/HRSidebar';
 import HRHeader from '@/components/hr/HRHeader';
 import EmployeesSection from '@/components/hr-dashboard/EmployeesSection';
 import { Check, Clock, AlertTriangle, Star, BarChart3, Search, Bell, Users } from 'lucide-react';
+import { HRService, HRUser } from '@/lib/hrService';
 
 // Export par défaut pour faciliter l'import dynamique
 export default function HRDashboardContent() {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'employees' | 'trainings' | 'skills' | 'evaluation'>('dashboard');
+  const [hrUser, setHrUser] = useState<HRUser | null>(null);
+
+  // Récupérer les informations du RH
+  useEffect(() => {
+    const fetchHRUser = async () => {
+      try {
+        const user = await HRService.getCurrentHR();
+        setHrUser(user);
+      } catch (error) {
+        console.error('Erreur lors de la récupération du RH:', error);
+      }
+    };
+
+    fetchHRUser();
+  }, []);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -19,7 +35,7 @@ export default function HRDashboardContent() {
         return (
           <>
             {/* Company Overview */}
-            <CompanyOverview />
+            <CompanyOverview hrUser={hrUser} />
             
             {/* Key Metrics */}
             <KeyMetrics />
@@ -117,15 +133,19 @@ export default function HRDashboardContent() {
 }
 
 // Temporary components - will be moved to separate files
-function CompanyOverview() {
+function CompanyOverview({ hrUser }: { hrUser: HRUser | null }) {
   return (
     <div className="mb-8">
       <h2 className="text-2xl font-bold mb-4">Aperçu de l'entreprise</h2>
       <div className="bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl p-6 shadow-lg">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-xl font-bold text-white">TechCorp Training</h3>
-            <p className="text-cyan-100">Plan Entreprise • 150 employés</p>
+            <h3 className="text-xl font-bold text-white">
+              {hrUser?.company?.name || 'Chargement...'}
+            </h3>
+            <p className="text-cyan-100">
+              Plan Entreprise • {hrUser?.company?.employee_count || 0} employé(s)
+            </p>
           </div>
           <div className="relative w-24 h-24">
             <svg className="w-full h-full" viewBox="0 0 100 100">

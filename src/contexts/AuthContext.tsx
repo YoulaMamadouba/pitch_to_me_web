@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                   router.push('/hr-dashboard');
                   break;
                 case 'employee':
-                  router.push('/dashboard');
+                  router.push('/b2b');
                   break;
                 case 'individual':
                   router.push('/dashboard');
@@ -94,7 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                   router.push('/hr-dashboard');
                   break;
                 case 'employee':
-                  router.push('/dashboard');
+                  router.push('/b2b');
                   break;
                 case 'individual':
                   router.push('/dashboard');

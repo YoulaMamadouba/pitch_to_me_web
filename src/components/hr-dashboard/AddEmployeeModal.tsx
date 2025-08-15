@@ -11,11 +11,13 @@ interface AddEmployeeModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (employees: Employee[]) => void;
+  companyId: string;
+  companyName: string;
 }
 
 type FormMode = 'selection' | 'manual' | 'file';
 
-export default function AddEmployeeModal({ isOpen, onClose, onSubmit }: AddEmployeeModalProps) {
+export default function AddEmployeeModal({ isOpen, onClose, onSubmit, companyId, companyName }: AddEmployeeModalProps) {
   const [mode, setMode] = useState<FormMode>('selection');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -168,6 +170,8 @@ export default function AddEmployeeModal({ isOpen, onClose, onSubmit }: AddEmplo
                 onSubmit={handleSubmit}
                 onBack={handleBack}
                 isSubmitting={isSubmitting}
+                companyId={companyId}
+                companyName={companyName}
               />
             )}
 
