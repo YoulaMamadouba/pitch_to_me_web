@@ -6,8 +6,7 @@ import SignupForm from './SignupForm';
 import EnhancedOtpModal from './ui/EnhancedOtpModal';
 import PaymentWrapper from './PaymentWrapper';
 import OnboardingWrapper from './OnboardingWrapper';
-import SignupProgressIndicator from './SignupProgressIndicator';
-import SignupTestPanel from './SignupTestPanel';
+
 import Notification from './ui/Notification';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -38,38 +37,23 @@ export default function SignupFlow() {
   }, [currentStep, router, isOnboardingCompleted]);
 
   // Empêcher l'accès direct au dashboard si l'utilisateur n'a pas complété le flux
+  // DÉSACTIVÉ temporairement pour déboguer
+  /*
   useEffect(() => {
     // Si l'utilisateur est connecté mais qu'on n'est pas à l'étape dashboard
     // et que l'onboarding n'est pas complété, rediriger vers le formulaire
     if (user && currentStep !== 'dashboard' && !isOnboardingCompleted) {
+      console.log('useEffect: Remise à form car utilisateur connecté');
       setCurrentStep('form');
     }
   }, [user, currentStep, isOnboardingCompleted, setCurrentStep]);
+  */
 
   const handleFormSubmit = async (data: any) => {
     setFormData(data);
     
-    // Créer l'utilisateur dans la base de données
-    const { error } = await createUser(data);
-    
-    if (error) {
-      console.error('Erreur lors de la création de l\'utilisateur:', error);
-      setNotification({
-        type: 'error',
-        message: 'Erreur lors de la création du compte. Veuillez réessayer.',
-        isVisible: true
-      });
-      return;
-    }
-    
-    // Afficher une notification de succès
-    setNotification({
-      type: 'success',
-      message: 'Compte créé avec succès ! Veuillez vérifier votre téléphone.',
-      isVisible: true
-    });
-    
-    // Si la création réussit, passer à l'étape suivante
+    // Pour les utilisateurs individual, on ne crée pas l'utilisateur ici
+    // On passe directement à l'étape suivante
     nextStep();
   };
 
@@ -91,7 +75,26 @@ export default function SignupFlow() {
   };
 
   const handleOnboardingComplete = async () => {
+    console.log('=== handleOnboardingComplete appelé ===');
+    console.log('FormData:', formData);
+    
     setOnboardingCompleted(true);
+    
+    // Créer l'utilisateur dans la base de données à la fin de l'onboarding
+    console.log('Création de l\'utilisateur...');
+    const { error } = await createUser(formData);
+    
+    if (error) {
+      console.error('Erreur lors de la création de l\'utilisateur:', error);
+      setNotification({
+        type: 'error',
+        message: 'Erreur lors de la création du compte. Veuillez réessayer.',
+        isVisible: true
+      });
+      return;
+    }
+    
+    console.log('Utilisateur créé avec succès, connexion...');
     
     // Connecter l'utilisateur avec les données du formulaire
     try {
@@ -109,6 +112,7 @@ export default function SignupFlow() {
         return;
       }
       
+      console.log('Connexion réussie, passage au dashboard...');
       // Si la connexion réussit, passer à l'étape dashboard
       nextStep();
     } catch (error) {
@@ -131,12 +135,6 @@ export default function SignupFlow() {
         isVisible={notification.isVisible}
         onClose={() => setNotification(prev => ({ ...prev, isVisible: false }))}
       />
-      
-      {/* Indicateur de progression global */}
-      {currentStep !== 'form' && <SignupProgressIndicator />}
-      
-      {/* Panneau de test (en développement) */}
-      <SignupTestPanel />
       
       {/* Rendu conditionnel basé sur l'étape actuelle */}
       {(() => {

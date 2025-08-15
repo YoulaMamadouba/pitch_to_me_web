@@ -16,7 +16,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import AuthPageHeader from '@/components/ui/AuthPageHeader';
 
-export default function PaymentPage() {
+interface PaymentPageProps {
+  onComplete?: () => void;
+}
+
+export default function PaymentPage({ onComplete }: PaymentPageProps) {
   const [selectedCurrency, setSelectedCurrency] = useState('USD');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('card');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -71,8 +75,12 @@ export default function PaymentPage() {
     setIsProcessing(true);
     // Simulation de traitement
     await new Promise(resolve => setTimeout(resolve, 2000));
-    // Rediriger vers l'onboarding
-    window.location.href = '/onboarding';
+    // Appeler onComplete si fourni, sinon rediriger
+    if (onComplete) {
+      onComplete();
+    } else {
+      window.location.href = '/onboarding';
+    }
   };
 
   return (

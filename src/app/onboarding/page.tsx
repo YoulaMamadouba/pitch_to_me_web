@@ -4,18 +4,26 @@ import { useEffect, useState } from 'react';
 import { Check, Play, Volume2, BookOpen, Award } from 'lucide-react';
 import AuthPageHeader from '@/components/ui/AuthPageHeader';
 
-export default function OnboardingPage() {
+interface OnboardingPageProps {
+  onComplete?: () => void;
+}
+
+export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Simple navigation handler
+  // Navigation handler
   const handleContinue = (e: React.MouseEvent) => {
     e.preventDefault();
     if (isMounted) {
-      window.location.href = '/dashboard';
+      if (onComplete) {
+        onComplete();
+      } else {
+        window.location.href = '/dashboard';
+      }
     }
   };
 
