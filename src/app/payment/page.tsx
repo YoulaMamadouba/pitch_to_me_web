@@ -71,7 +71,7 @@ export default function PaymentPage() {
     setIsProcessing(true);
     // Simulation de traitement
     await new Promise(resolve => setTimeout(resolve, 2000));
-    // Rediriger vers la page d'onboarding
+    // Rediriger vers l'onboarding
     window.location.href = '/onboarding';
   };
 

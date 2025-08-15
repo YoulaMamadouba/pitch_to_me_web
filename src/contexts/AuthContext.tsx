@@ -47,6 +47,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         // Redirection basée sur le rôle après connexion
         if (event === 'SIGNED_IN' && session?.user) {
+          // Vérifier si on est sur la page d'inscription
+          const isOnSignupPage = window.location.pathname === '/signup';
+          
+          // Si on est sur la page d'inscription, ne pas rediriger automatiquement
+          if (isOnSignupPage) {
+            return;
+          }
+          
           try {
             const metadataRole = (session.user.user_metadata as any)?.role as string | undefined;
             if (metadataRole) {
