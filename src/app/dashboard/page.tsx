@@ -81,6 +81,8 @@ const AICoachDrawer = dynamic(() => import('@/components/dashboard/AICoachDrawer
   loading: () => <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div></div>
 });
 
+import { Module as ModuleType, Domain } from '@/types';
+
 
 interface NavigationItem {
   id: string;
@@ -104,7 +106,7 @@ type ViewType =
   | 'voice-analysis'
   | 'emotion-recognition';
 
-type Module = {
+type DashboardModule = {
   id: number;
   title: string;
   subtitle: string;
@@ -267,7 +269,7 @@ export default function DashboardPage() {
     },
   ];
 
-  const modules: Module[] = [
+  const modules: DashboardModule[] = [
     { id: 1, title: 'Module 1', subtitle: 'Fondamentaux', progress: 100, locked: false, current: false },
     { id: 2, title: 'Module 2', subtitle: 'Contrôle Vocal', progress: 100, locked: false, current: false },
     { id: 3, title: 'Module 3', subtitle: 'Structure du Pitch', progress: 100, locked: false, current: false },
@@ -276,6 +278,42 @@ export default function DashboardPage() {
     { id: 6, title: 'Module 6', subtitle: 'Langage Corporel', progress: 60, locked: false, current: true },
     { id: 7, title: 'Module 7', subtitle: 'Techniques Avancées', progress: 0, locked: true, current: false },
     { id: 8, title: 'Module 8', subtitle: 'Questions Difficiles', progress: 0, locked: true, current: false },
+  ];
+
+  // Modules de test pour ModulesList (compatibles avec le type Module)
+  const testModules: ModuleType[] = [
+    {
+      id: '1',
+      title: 'Techniques de vente avancées',
+      description: 'Maîtrisez l\'art de la vente et de la négociation commerciale',
+      videoUrl: 'https://example.com/video1',
+      theme: 'Vente',
+      domain: 'Commerce & Retail',
+      difficulty: 'intermediate',
+      duration: 45,
+      tags: ['vente', 'négociation', 'commercial'],
+      rating: 4.8,
+      studentsCount: 156,
+      createdAt: '2024-01-15',
+      status: 'completed',
+      lessons: []
+    },
+    {
+      id: '2',
+      title: 'Présentation de projet efficace',
+      description: 'Apprenez à présenter vos projets de manière claire et convaincante',
+      videoUrl: 'https://example.com/video2',
+      theme: 'Présentation',
+      domain: 'Gouvernement & Public',
+      difficulty: 'intermediate',
+      duration: 30,
+      tags: ['présentation', 'projet', 'management'],
+      rating: 4.6,
+      studentsCount: 89,
+      createdAt: '2024-01-20',
+      status: 'in-progress',
+      lessons: []
+    }
   ];
 
   const recentActivities: Activity[] = [
@@ -446,8 +484,13 @@ export default function DashboardPage() {
           ) : activeView === 'modules-b2b' || activeView === 'modules-b2c' ? (
             selectedDomain ? (
               <ModulesList 
-                domainName={selectedDomain.name}
-                onBackToDomains={() => setSelectedDomain(null)}
+                domain={selectedDomain}
+                modules={testModules.filter(m => m.domain === selectedDomain.name)}
+                onBack={() => setSelectedDomain(null)}
+                onCreateModule={() => console.log('Créer un module')}
+                onEditModule={(module) => console.log('Éditer module:', module)}
+                onDeleteModule={(moduleId) => console.log('Supprimer module:', moduleId)}
+                onViewModule={(module) => console.log('Voir module:', module)}
               />
             ) : (
               <DomainsList 

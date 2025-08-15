@@ -321,12 +321,11 @@ export default function DomainsList({ moduleType, onDomainSelect, onCreateModule
 
       {/* Domains Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {domains.map((domain, index) => (
+        {domains.map((domain) => (
           <DomainCard
             key={domain.id}
             domain={domain}
             onClick={() => onDomainSelect(domain)}
-            index={index}
           />
         ))}
       </div>
