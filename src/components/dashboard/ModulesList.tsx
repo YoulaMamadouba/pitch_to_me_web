@@ -7,7 +7,7 @@ import { ModuleFolder } from './ModuleFolder';
 import ModuleFolderComponent from './ModuleFolder';
 import { Lesson } from './LessonCard';
 import LessonsList from './LessonsList';
-import SimpleModuleForm from './SimpleModuleForm';
+import ModuleForm from './ModuleForm';
 import { ModulesListProps } from '@/types';
 
 // Données de test pour les modules
@@ -285,26 +285,7 @@ export default function ModulesList({ domain, modules, onBack, onCreateModule, o
     console.log('Leçon sélectionnée:', lesson);
   };
 
-  const handleAddModule = (moduleData: any) => {
-    const moduleToAdd: ModuleFolder = {
-      id: Date.now().toString(),
-      title: moduleData.title,
-      description: moduleData.description,
-      lessonCount: 0,
-      totalDuration: 0,
-      studentsCount: 0,
-      rating: 0,
-      difficulty: moduleData.difficulty,
-      isLocked: false,
-      isCompleted: false,
-      progress: 0,
-      color: moduleData.color,
-      tags: [],
-      createdAt: new Date().toISOString().split('T')[0]
-    };
-    
-    setLocalModules([moduleToAdd, ...localModules]);
-  };
+
 
   // Si un module est sélectionné, afficher la liste des leçons
   if (selectedModule) {
@@ -422,11 +403,17 @@ export default function ModulesList({ domain, modules, onBack, onCreateModule, o
         </div>
 
                 {/* Formulaire d'ajout de module */}
-        <SimpleModuleForm
+        <ModuleForm
           isOpen={showAddModuleForm}
           onClose={() => setShowAddModuleForm(false)}
-          onSubmit={handleAddModule}
+          onSubmit={(moduleData) => {
+            console.log('Nouveau module créé:', moduleData);
+            setShowAddModuleForm(false);
+            // Ici vous pouvez ajouter la logique pour créer le module
+          }}
           moduleType="b2b"
+          editingModule={null}
+          domains={[]}
         />
         
         <AnimatePresence>
