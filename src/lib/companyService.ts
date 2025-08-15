@@ -125,9 +125,23 @@ export class CompanyService {
   }
 
   private static generateTempPassword(): string {
-    // Mot de passe plus simple et prévisible pour les tests
-    const currentYear = new Date().getFullYear();
-    return `Welcome${currentYear}!`;
+    // Générer un mot de passe plus sécurisé
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+    let password = '';
+    
+    // Au moins une majuscule, une minuscule, un chiffre et un caractère spécial
+    password += chars.charAt(Math.floor(Math.random() * 26)); // Majuscule
+    password += chars.charAt(26 + Math.floor(Math.random() * 26)); // Minuscule
+    password += chars.charAt(52 + Math.floor(Math.random() * 10)); // Chiffre
+    password += chars.charAt(62 + Math.floor(Math.random() * 8)); // Caractère spécial
+    
+    // Ajouter 4 caractères aléatoires
+    for (let i = 0; i < 4; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    
+    // Mélanger les caractères
+    return password.split('').sort(() => Math.random() - 0.5).join('');
   }
 
   private static async sendRHWelcomeEmail(data: {
