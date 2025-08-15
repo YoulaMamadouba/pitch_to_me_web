@@ -78,13 +78,6 @@ export default function EnhancedOtpModal({
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
-
-    // Si tous les champs sont remplis, vérifier automatiquement
-    if (newOtpValues.every(val => val !== '') && newOtpValues.join('') === testCode) {
-      setTimeout(() => {
-        onVerify(newOtpValues.join(''));
-      }, 500);
-    }
   };
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
