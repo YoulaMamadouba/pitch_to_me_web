@@ -43,13 +43,10 @@ import DomainsList from '@/components/dashboard/DomainsList';
 import ModulesList from '@/components/dashboard/ModulesList';
 import ModuleForm from '@/components/dashboard/ModuleForm';
 import CompanyList from '@/components/dashboard-coach/CompanyList';
-import CompanyForm from '@/components/dashboard-coach/CompanyForm';
 import StudentList from '@/components/dashboard-coach/StudentList';
 import { useModules } from '@/contexts/ModulesContext';
-import { useCompanies } from '@/contexts/CompaniesContext';
 import { useStudents } from '@/contexts/StudentsContext';
 import { Module } from '@/components/dashboard/ModuleCard';
-import { Company } from '@/components/dashboard-coach/CompanyCard';
 import { Student } from '@/components/dashboard-coach/StudentCard';
 import RecordingStudioView from '@/components/dashboard/RecordingStudioView';
 
@@ -233,12 +230,7 @@ const CoachDashboard = () => {
   const [isModuleFormOpen, setIsModuleFormOpen] = useState(false);
   const [editingModule, setEditingModule] = useState<Module | null>(null);
   
-  // Companies state
-  const [isCompanyFormOpen, setIsCompanyFormOpen] = useState(false);
-  const [editingCompany, setEditingCompany] = useState<Company | null>(null);
-  
   const { modules, addModule, updateModule, deleteModule, getModulesByDomain } = useModules();
-  const { companies, addCompany, updateCompany, deleteCompany } = useCompanies();
   const { students } = useStudents();
 
   useEffect(() => {
@@ -412,46 +404,7 @@ const CoachDashboard = () => {
     }
   };
 
-  // Company handlers
-  const handleCreateCompany = () => {
-    setEditingCompany(null);
-    setIsCompanyFormOpen(true);
-  };
 
-  const handleEditCompany = (company: Company) => {
-    setEditingCompany(company);
-    setIsCompanyFormOpen(true);
-  };
-
-  const handleDeleteCompany = (companyId: string) => {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette entreprise ?')) {
-      deleteCompany(companyId);
-    }
-  };
-
-  const handleViewCompany = (company: Company) => {
-    console.log('View company:', company);
-  };
-
-  const handleCompanySubmit = async (companyData: Partial<Company>) => {
-    if (editingCompany) {
-      updateCompany(editingCompany.id, companyData);
-    } else {
-      const newCompany: Company = {
-        id: Date.now().toString(),
-        name: companyData.name || '',
-        logo: companyData.logo || '',
-        industry: companyData.industry || '',
-        employeeCount: companyData.employeeCount || 0,
-        hrName: companyData.hrName || '',
-        hrEmail: companyData.hrEmail || '',
-        hrPhone: companyData.hrPhone || '',
-        modules: companyData.modules || [],
-        createdAt: new Date().toISOString().split('T')[0]
-      };
-      addCompany(newCompany);
-    }
-  };
 
   // Student handlers
   const handleViewStudent = (student: Student) => {
@@ -474,16 +427,10 @@ const CoachDashboard = () => {
   const getCurrentView = () => {
     if (activeTab === 'modules' && activeModuleType) {
       if (selectedDomain) {
-        const domainModules = getModulesByDomain(selectedDomain.name);
         return (
           <ModulesList
-            domain={selectedDomain}
-            modules={domainModules}
-            onBack={handleBackToDomains}
-            onCreateModule={handleCreateModule}
-            onEditModule={handleEditModule}
-            onDeleteModule={handleDeleteModule}
-            onViewModule={handleViewModule}
+            domainName={selectedDomain.name}
+            onBackToDomains={handleBackToDomains}
           />
         );
       } else {
@@ -499,13 +446,7 @@ const CoachDashboard = () => {
 
     if (activeTab === 'companies') {
       return (
-        <CompanyList
-          companies={companies}
-          onCreateCompany={handleCreateCompany}
-          onEditCompany={handleEditCompany}
-          onDeleteCompany={handleDeleteCompany}
-          onViewCompany={handleViewCompany}
-        />
+        <CompanyList />
       );
     }
 
@@ -985,23 +926,7 @@ const CoachDashboard = () => {
         }
       />
 
-      {/* Company Form Modal */}
-      <CompanyForm
-        isOpen={isCompanyFormOpen}
-        onClose={() => setIsCompanyFormOpen(false)}
-        onSubmit={handleCompanySubmit}
-        editingCompany={editingCompany}
-        availableModules={[
-          'Techniques de vente avancées',
-          'Présentation de projet efficace',
-          'Management d\'équipe',
-          'Stratégies marketing',
-          'Communication digitale',
-          'Présentation financière',
-          'Négociation commerciale',
-          'Développement personnel'
-        ]}
-      />
+
     </div>
   );
 };

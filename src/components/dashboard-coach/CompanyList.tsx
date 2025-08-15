@@ -1,26 +1,61 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Building, Users, Target, TrendingUp } from 'lucide-react';
-import CompanyCard, { Company } from './CompanyCard';
+import { Building, Users, Calendar, Plus, Eye, Edit, Trash2, Target, TrendingUp } from 'lucide-react';
+import { CompanyService } from '@/lib/companyService';
+import { useAuth } from '@/contexts/AuthContext';
+import CreateCompanyModal from '@/components/company/CreateCompanyModal';
 
-interface CompanyListProps {
-  companies: Company[];
-  onCreateCompany: () => void;
-  onEditCompany: (company: Company) => void;
-  onDeleteCompany: (companyId: string) => void;
-  onViewCompany: (company: Company) => void;
-}
+export default function CompanyList() {
+  const { user } = useAuth();
+  const [companies, setCompanies] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
-export default function CompanyList({ 
-  companies, 
-  onCreateCompany, 
-  onEditCompany, 
-  onDeleteCompany, 
-  onViewCompany 
-}: CompanyListProps) {
-  const totalEmployees = companies.reduce((total, company) => total + company.employeeCount, 0);
-  const totalModules = companies.reduce((total, company) => total + company.modules.length, 0);
+  useEffect(() => {
+    if (user) {
+      loadCompanies();
+    }
+  }, [user]);
+
+  const loadCompanies = async () => {
+    if (!user) return;
+
+    try {
+      setIsLoading(true);
+      console.log('🔄 Chargement des entreprises pour le coach:', user.id);
+      const companiesData = await CompanyService.getCompaniesByCoach(user.id);
+      console.log('📊 Données des entreprises reçues:', companiesData);
+      setCompanies(companiesData);
+    } catch (error) {
+      console.error('Erreur lors du chargement des entreprises:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCompanyCreated = () => {
+    loadCompanies();
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const totalEmployees = companies.reduce((total, company) => total + company.employee_count, 0);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -35,7 +70,7 @@ export default function CompanyList({
           </p>
         </div>
         <button
-          onClick={onCreateCompany}
+          onClick={() => setShowCreateModal(true)}
           className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-semibold px-6 py-3 rounded-lg hover:shadow-lg transition-all flex items-center space-x-2"
         >
           <Plus className="w-5 h-5" />
@@ -90,8 +125,8 @@ export default function CompanyList({
               <Target className="w-5 h-5 text-green-400" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-white">{totalModules}</div>
-              <div className="text-sm text-gray-400">Modules actifs</div>
+              <div className="text-2xl font-bold text-white">{companies.length}</div>
+              <div className="text-sm text-gray-400">RH actifs</div>
             </div>
           </div>
         </motion.div>
@@ -101,13 +136,73 @@ export default function CompanyList({
       {companies.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {companies.map((company, index) => (
-            <CompanyCard
+            <motion.div
               key={company.id}
-              company={company}
-              onEdit={onEditCompany}
-              onDelete={onDeleteCompany}
-              onView={onViewCompany}
-            />
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className="bg-gray-800/30 backdrop-blur-sm rounded-xl overflow-hidden border border-gray-700/50 hover:border-yellow-400/30 transition-all"
+            >
+              {/* Header de la carte */}
+              <div className="p-6 border-b border-gray-700/50">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                    <Building className="w-6 h-6 text-white" />
+                  </div>
+                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                    company.status === 'active' 
+                      ? 'bg-green-900/50 text-green-400' 
+                      : 'bg-red-900/50 text-red-400'
+                  }`}>
+                    {company.status === 'active' ? 'Active' : 'Inactive'}
+                  </span>
+                </div>
+                
+                <h3 className="text-lg font-semibold text-white mb-2">{company.name}</h3>
+                <p className="text-sm text-gray-400 mb-3">{company.domain}</p>
+                
+                <div className="flex items-center space-x-4 text-sm text-gray-400">
+                  <div className="flex items-center space-x-1">
+                    <Users className="w-4 h-4" />
+                    <span>{company.employee_count} employés</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <Calendar className="w-4 h-4" />
+                    <span>{formatDate(company.created_at)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Contact RH */}
+              <div className="p-6 bg-gray-800/20">
+                <h4 className="text-sm font-medium text-white mb-3">Contact RH</h4>
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-300">
+                    <span className="font-medium">{company.rh_user?.name}</span>
+                  </p>
+                  <p className="text-sm text-gray-400">{company.rh_user?.email}</p>
+                  <p className="text-sm text-gray-400">{company.rh_user?.phone}</p>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="p-4 bg-gray-800/30 border-t border-gray-700/50">
+                <div className="flex items-center justify-between">
+                  <button className="flex items-center space-x-1 text-blue-400 hover:text-blue-300 text-sm font-medium">
+                    <Eye className="w-4 h-4" />
+                    <span>Voir</span>
+                  </button>
+                  <button className="flex items-center space-x-1 text-gray-400 hover:text-gray-300 text-sm font-medium">
+                    <Edit className="w-4 h-4" />
+                    <span>Modifier</span>
+                  </button>
+                  <button className="flex items-center space-x-1 text-red-400 hover:text-red-300 text-sm font-medium">
+                    <Trash2 className="w-4 h-4" />
+                    <span>Supprimer</span>
+                  </button>
+                </div>
+              </div>
+            </motion.div>
           ))}
         </div>
       ) : (
@@ -124,7 +219,7 @@ export default function CompanyList({
             Commencez par créer votre première entreprise partenaire
           </p>
           <button
-            onClick={onCreateCompany}
+            onClick={() => setShowCreateModal(true)}
             className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-semibold px-6 py-3 rounded-lg hover:shadow-lg transition-all flex items-center space-x-2 mx-auto"
           >
             <Plus className="w-5 h-5" />
@@ -156,17 +251,24 @@ export default function CompanyList({
                     <span className="font-medium">{company.name}</span> a rejoint la plateforme
                   </p>
                   <p className="text-gray-400 text-xs">
-                    {new Date(company.createdAt).toLocaleDateString('fr-FR')}
+                    {formatDate(company.created_at)}
                   </p>
                 </div>
                 <div className="text-xs text-gray-500">
-                  {company.employeeCount} employés
+                  {company.employee_count} employés
                 </div>
               </div>
             ))}
           </div>
         </motion.div>
       )}
+
+      {/* Modal de création */}
+      <CreateCompanyModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSuccess={handleCompanyCreated}
+      />
     </div>
   );
 }
