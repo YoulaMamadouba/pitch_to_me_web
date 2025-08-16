@@ -55,102 +55,85 @@ export async function POST(request: NextRequest) {
             },
           });
 
-    // Template de l'email
+    // Template de l'email avec styles en ligne pour une meilleure compatibilité
     const emailHtml = `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="utf-8">
-        <title>Bienvenue sur PitchToMe</title>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-          }
-          .header {
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-            border-radius: 10px 10px 0 0;
-          }
-          .content {
-            background: #f9f9f9;
-            padding: 30px;
-            border-radius: 0 0 10px 10px;
-          }
-          .button {
-            display: inline-block;
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            color: white;
-            padding: 12px 30px;
-            text-decoration: none;
-            border-radius: 5px;
-            margin: 20px 0;
-            font-weight: bold;
-          }
-          .credentials {
-            background: #e8f4fd;
-            border: 1px solid #bee5eb;
-            border-radius: 5px;
-            padding: 15px;
-            margin: 20px 0;
-          }
-          .footer {
-            text-align: center;
-            margin-top: 30px;
-            color: #666;
-            font-size: 14px;
-          }
-        </style>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Bienvenue sur Pitch To Me</title>
       </head>
-      <body>
-        <div class="header">
-          <h1>🎯 Bienvenue sur PitchToMe</h1>
-          <p>Votre entreprise a été ajoutée avec succès !</p>
-        </div>
-        
-        <div class="content">
-          <h2>Bonjour ${rhName},</h2>
-          
-          <p>Félicitations ! Votre entreprise <strong>${companyName}</strong> a été créée avec succès sur la plateforme PitchToMe.</p>
-          
-          <p>En tant que responsable RH, vous avez maintenant accès à votre tableau de bord pour gérer vos employés et suivre leur progression dans les modules de formation.</p>
-          
-          <div class="credentials">
-            <h3>🔐 Vos identifiants de connexion :</h3>
-            <p><strong>Email :</strong> ${rhEmail}</p>
-            <p><strong>Mot de passe temporaire :</strong> ${password}</p>
-            <p><em>⚠️ Veuillez changer votre mot de passe lors de votre première connexion.</em></p>
+      <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f5f5f5;">
+        <div style="max-width: 600px; margin: 0 auto; background: #ffffff;">
+          <!-- Header -->
+          <div style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); padding: 40px 30px; text-align: center; border-radius: 10px 10px 0 0; color: #1a1a1a;">
+            <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px; color: #1a1a1a; font-size: 24px; font-weight: 700;">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 10px;">
+                <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+              </svg>
+              Pitch To Me
+            </div>
+            <h1 style="margin: 0; font-size: 28px; font-weight: 700;">Bienvenue sur Pitch To Me</h1>
+            <p style="margin: 10px 0 0; font-size: 16px; opacity: 0.9;">Votre compte RH a été créé avec succès</p>
           </div>
           
-          <p>Vous pouvez dès maintenant :</p>
-          <ul>
-            <li>✅ Accéder à votre tableau de bord RH</li>
-            <li>✅ Créer des comptes pour vos employés</li>
-            <li>✅ Suivre leur progression dans les modules</li>
-            <li>✅ Consulter les rapports de formation</li>
-          </ul>
-          
-          <div style="text-align: center;">
-            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/login" class="button">
-              Accéder à mon tableau de bord
-            </a>
+          <!-- Content -->
+          <div style="padding: 40px 30px; border-radius: 0 0 10px 10px;">
+            <h2 style="color: #1a1a1a; margin-top: 0; font-size: 22px; font-weight: 600;">Bonjour ${rhName},</h2>
+            
+            <p style="color: #555; line-height: 1.8; margin-bottom: 20px; font-size: 15px;">
+              Bienvenue sur la plateforme Pitch To Me pour <strong style="color: #1a1a1a;">${companyName}</strong> !
+              Votre compte RH a été créé avec succès et vous pouvez dès maintenant gérer vos employés et suivre leur progression.
+            </p>
+            
+            <!-- Credentials -->
+            <div style="background: #FFF9E6; border-left: 4px solid #FFD700; padding: 20px; border-radius: 8px; margin: 25px 0;">
+              <h3 style="color: #1a1a1a; margin-top: 0; font-size: 18px; font-weight: 600;">Vos identifiants de connexion :</h3>
+              <p style="margin: 8px 0; font-size: 14px;"><strong>Email :</strong> ${rhEmail}</p>
+              <p style="margin: 8px 0; font-size: 14px;"><strong>Mot de passe temporaire :</strong> ${password}</p>
+            </div>
+            
+            <!-- Note -->
+            <div style="background: #FFF3E0; border: 1px solid #FFE0B2; padding: 15px; border-radius: 8px; margin: 25px 0;">
+              <div style="color: #E65100; font-size: 16px; font-weight: 600; margin-bottom: 10px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#E65100" style="vertical-align: middle; margin-right: 8px;">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                </svg>
+                Pour votre première connexion :
+              </div>
+              <ul style="margin: 10px 0 0 0; padding-left: 20px; color: #5D4037; font-size: 14px;">
+                <li style="margin-bottom: 8px;">Cliquez sur le bouton ci-dessous</li>
+                <li style="margin-bottom: 8px;">Utilisez les identifiants fournis ci-dessus</li>
+                <li style="margin-bottom: 8px;">Changez votre mot de passe immédiatement</li>
+                <li>Utilisez le rôle "HR" lors de la connexion</li>
+              </ul>
+            </div>
+            
+            <!-- Button -->
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/login" 
+                 style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: #1a1a1a; padding: 15px 30px; text-decoration: none; border-radius: 50px; font-weight: 600; display: inline-block; font-size: 15px;">
+                Accéder à mon espace RH
+              </a>
+            </div>
+            
+            <p style="color: #555; line-height: 1.8; margin-bottom: 20px; font-size: 15px;">
+              Si vous avez des questions ou besoin d'aide, n'hésitez pas à nous contacter.
+            </p>
+            
+            <p style="color: #555; line-height: 1.8; margin: 30px 0 0 0; font-size: 15px;">
+              Cordialement,<br>
+              <strong style="color: #1a1a1a;">L'équipe Pitch To Me</strong>
+            </p>
+            
+            <!-- Footer -->
+            <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; color: #777; font-size: 13px;">
+              <p>© ${new Date().getFullYear()} Pitch To Me. Tous droits réservés.</p>
+              <p>Cet email a été envoyé automatiquement. Merci de ne pas y répondre.</p>
+            </div>
           </div>
-          
-          <p>Si vous avez des questions ou besoin d'aide, n'hésitez pas à contacter notre équipe support.</p>
-          
-          <p>Cordialement,<br>
-          L'équipe PitchToMe</p>
-        </div>
-        
-        <div class="footer">
-          <p>Cet email a été envoyé automatiquement. Veuillez ne pas y répondre.</p>
-          <p>© 2024 PitchToMe. Tous droits réservés.</p>
         </div>
       </body>
       </html>
