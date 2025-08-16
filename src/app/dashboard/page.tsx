@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   Home, 
   BookOpen, 
@@ -133,20 +134,20 @@ const ProgressRing = ({ progress, size = 60, stroke = 6 }: ProgressRingProps) =>
 
   return (
     <div className="relative inline-flex items-center justify-center">
-      <svg className="progress-ring w-16 h-16" viewBox="0 0 80 80">
-        <circle 
-          cx="40" 
-          cy="40" 
-          r="36" 
-          stroke="#374151" 
-          strokeWidth="8" 
+      <svg height={size} width={size} className="transform -rotate-90">
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke="#2D3748"
+          strokeWidth={stroke}
           fill="transparent"
+          className="text-gray-700"
         />
-        <circle 
-          className="progress-ring-circle" 
-          cx="40" 
-          cy="40" 
-          r="36" 
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
           stroke="#F4C056" 
           strokeWidth="8" 
           fill="transparent"
@@ -162,35 +163,400 @@ const ProgressRing = ({ progress, size = 60, stroke = 6 }: ProgressRingProps) =>
   );
 };
 
-export default function DashboardPage() {
-  const [mounted, setMounted] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+const ProfileView = ({ 
+  currentUser, 
+  isEditing, 
+  previewImage, 
+  getUserInitials, 
+  handleImageChange, 
+  setIsEditing, 
+  handleSaveProfile, 
+  setCurrentUser,
+  isChangingPassword,
+  setIsChangingPassword,
+  currentPassword,
+  setCurrentPassword,
+  newPassword,
+  setNewPassword,
+  confirmPassword,
+  setConfirmPassword,
+  handleChangePassword
+}: {
+  currentUser: any;
+  isEditing: boolean;
+  previewImage: string | null;
+  getUserInitials: () => string;
+  handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  setIsEditing: (value: boolean) => void;
+  handleSaveProfile: () => void;
+  setCurrentUser: (user: any) => void;
+  isChangingPassword: boolean;
+  setIsChangingPassword: (value: boolean) => void;
+  currentPassword: string;
+  setCurrentPassword: (value: string) => void;
+  newPassword: string;
+  setNewPassword: (value: string) => void;
+  confirmPassword: string;
+  setConfirmPassword: (value: string) => void;
+  handleChangePassword: () => void;
+}) => (
+  <div className="p-6 max-w-4xl mx-auto">
+    <div className="bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+      {/* Profile Header */}
+      <div className="bg-gradient-to-r from-gray-900 to-gray-800 p-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center space-x-4">
+            <div className="relative group">
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center text-3xl font-bold text-gray-900">
+                {previewImage ? (
+                  <img 
+                    src={previewImage} 
+                    alt="Profile" 
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                ) : (
+                  getUserInitials()
+                )}
+              </div>
+              {isEditing && (
+                <label className="absolute bottom-0 right-0 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-full p-2 cursor-pointer transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                  </svg>
+                  <input 
+                    type="file" 
+                    className="hidden" 
+                    accept="image/*"
+                    onChange={handleImageChange}
+                  />
+                </label>
+              )}
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-white">
+                {currentUser.firstName} {currentUser.lastName}
+              </h2>
+              <p className="text-yellow-400">{currentUser.role}</p>
+            </div>
+          </div>
+          <div className="mt-4 md:mt-0">
+            {!isEditing ? (
+              <button 
+                onClick={() => setIsEditing(true)}
+                className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-medium rounded-lg transition-colors"
+              >
+                Modifier le profil
+              </button>
+            ) : (
+              <div className="space-x-2">
+                <button 
+                  onClick={handleSaveProfile}
+                  className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg transition-colors"
+                >
+                  Enregistrer
+                </button>
+                <button 
+                  onClick={() => setIsEditing(false)}
+                  className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors"
+                >
+                  Annuler
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
 
-  useEffect(() => {
-    setMounted(true);
-    
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [activeModule, setActiveModule] = useState<number>(5); // Module 6 est actif (index 5)
-  const [activeView, setActiveView] = useState<ViewType>('dashboard');
-  const [selectedModuleId, setSelectedModuleId] = useState<string>('6');
-  const [selectedVRScene, setSelectedVRScene] = useState<string>('');
-  const [isAICoachOpen, setIsAICoachOpen] = useState(false);
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [selectedDomain, setSelectedDomain] = useState<any>(null);
-  const [moduleType, setModuleType] = useState<'b2b' | 'b2c'>('b2b');
+      {/* Profile Content */}
+      <div className="p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Personal Information */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-white border-b border-gray-700 pb-2">
+              Informations personnelles
+            </h3>
+            
+            {isEditing ? (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Prénom</label>
+                  <input
+                    type="text"
+                    value={currentUser.firstName}
+                    onChange={(e) => setCurrentUser({...currentUser, firstName: e.target.value})}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Nom</label>
+                  <input
+                    type="text"
+                    value={currentUser.lastName}
+                    onChange={(e) => setCurrentUser({...currentUser, lastName: e.target.value})}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                  <input
+                    type="email"
+                    value={currentUser.email}
+                    onChange={(e) => setCurrentUser({...currentUser, email: e.target.value})}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Téléphone</label>
+                  <input
+                    type="tel"
+                    value={currentUser.phone}
+                    onChange={(e) => setCurrentUser({...currentUser, phone: e.target.value})}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div>
+                  <p className="text-sm text-gray-400">Email</p>
+                  <p className="text-white">{currentUser.email}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">Téléphone</p>
+                  <p className="text-white">{currentUser.phone}</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Company Information */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-white border-b border-gray-700 pb-2">
+              Informations professionnelles
+            </h3>
+            
+            {isEditing ? (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Entreprise</label>
+                  <input
+                    type="text"
+                    value={currentUser.company}
+                    onChange={(e) => setCurrentUser({...currentUser, company: e.target.value})}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Poste</label>
+                  <input
+                    type="text"
+                    value={currentUser.position}
+                    onChange={(e) => setCurrentUser({...currentUser, position: e.target.value})}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div>
+                  <p className="text-sm text-gray-400">Entreprise</p>
+                  <p className="text-white">{currentUser.company}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">Poste</p>
+                  <p className="text-white">{currentUser.position}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Bio */}
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold text-white border-b border-gray-700 pb-2 mb-4">
+            À propos
+          </h3>
+          {isEditing ? (
+            <textarea
+              value={currentUser.bio}
+              onChange={(e) => setCurrentUser({...currentUser, bio: e.target.value})}
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 min-h-[100px]"
+              placeholder="Décrivez-vous en quelques mots..."
+            />
+          ) : (
+            <p className="text-gray-300 whitespace-pre-line">
+              {currentUser.bio || "Aucune description fournie."}
+            </p>
+          )}
+        </div>
+
+        {/* Change Password Section */}
+        <div className="mt-8 pt-6 border-t border-gray-700">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-white">Sécurité du compte</h3>
+            {!isChangingPassword ? (
+              <button 
+                onClick={() => setIsChangingPassword(true)}
+                className="text-yellow-400 hover:text-yellow-300 text-sm font-medium"
+              >
+                Changer le mot de passe
+              </button>
+            ) : null}
+          </div>
+
+          {isChangingPassword && (
+            <div className="bg-gray-800 p-4 rounded-lg">
+              <h4 className="text-white font-medium mb-3">Changer le mot de passe</h4>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm text-gray-300 mb-1">Mot de passe actuel</label>
+                  <input
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                    placeholder="Entrez votre mot de passe actuel"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-300 mb-1">Nouveau mot de passe</label>
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                    placeholder="Entrez votre nouveau mot de passe"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-300 mb-1">Confirmer le nouveau mot de passe</label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                    placeholder="Confirmez votre nouveau mot de passe"
+                  />
+                </div>
+                <div className="flex justify-end space-x-2 pt-2">
+                  <button 
+                    onClick={handleChangePassword}
+                    className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-medium rounded-lg transition-colors"
+                    disabled={!currentPassword || !newPassword || newPassword !== confirmPassword}
+                  >
+                    Enregistrer
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setIsChangingPassword(false);
+                      setCurrentPassword('');
+                      setNewPassword('');
+                      setConfirmPassword('');
+                    }}
+                    className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors"
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+export default function DashboardPage() {
   const router = useRouter();
-  const handleLogout = () => {
-    setIsUserMenuOpen(false);
-    router.push('/');
+  const { signOut, user } = useAuth();
+  
+  // User state
+  // Initialize user data from auth context or default values
+  const [currentUser, setCurrentUser] = useState({
+    firstName: user?.user_metadata?.first_name || 'Utilisateur',
+    lastName: user?.user_metadata?.last_name || '',
+    email: user?.email || '',
+    role: user?.user_metadata?.role || 'Apprenant',
+    phone: user?.user_metadata?.phone || '',
+    company: user?.user_metadata?.company || '',
+    position: user?.user_metadata?.position || '',
+    bio: user?.user_metadata?.bio || '',
+    profileImage: user?.user_metadata?.avatar_url || null,
+  });
+  
+  // UI state
+  const [activeView, setActiveView] = useState<ViewType>('dashboard');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isAICoachOpen, setIsAICoachOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  
+  // Form state
+  const [isEditing, setIsEditing] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  
+  // Module/Content state
+  const [selectedModuleId, setSelectedModuleId] = useState('6');
+  const [selectedDomain, setSelectedDomain] = useState<any>(null);
+  const [selectedVRScene, setSelectedVRScene] = useState('');
+  const [moduleType, setModuleType] = useState<'b2b' | 'b2c'>('b2b');
+  const [activeModule, setActiveModule] = useState<number>(5); // Module 6 is active (index 5)
+  const [profileImage, setProfileImage] = useState<File | null>(null);
+
+  // Get user initials for avatar
+  const getUserInitials = () => {
+    if (!currentUser) return '??';
+    return `${currentUser.firstName?.[0] || ''}${currentUser.lastName?.[0] || ''}`.toUpperCase() || '??';
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setProfileImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSaveProfile = () => {
+    // Here you would typically make an API call to update the user's profile
+    console.log('Saving profile...', currentUser);
+    if (profileImage) {
+      console.log('Uploading new profile image...');
+      // Upload the image here
+    }
+    setIsEditing(false);
+  };
+
+  const handleChangePassword = () => {
+    // Here you would typically make an API call to change the password
+    console.log('Changing password...');
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setIsChangingPassword(false);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      router.push('/login');
+    } catch (error) {
+      console.error('Error during logout:', error);
+      // Optionally show an error message to the user
+    }
+  };
+
+  // Get user initials for the profile circle is already defined above
 
   const navigation: NavigationItem[] = [
     { 
@@ -199,28 +565,6 @@ export default function DashboardPage() {
       icon: Home, 
       active: activeView === 'dashboard',
       onClick: () => setActiveView('dashboard')
-    },
-    { 
-      id: 'modules-b2b', 
-      label: 'Modules B2B', 
-      icon: Building, 
-      active: activeView === 'modules-b2b',
-      onClick: () => {
-        setModuleType('b2b');
-        setActiveView('modules-b2b');
-        setSelectedDomain(null);
-      }
-    },
-    { 
-      id: 'modules-b2c', 
-      label: 'Modules B2C', 
-      icon: Users, 
-      active: activeView === 'modules-b2c',
-      onClick: () => {
-        setModuleType('b2c');
-        setActiveView('modules-b2c');
-        setSelectedDomain(null);
-      }
     },
     { 
       id: 'community', 
@@ -264,7 +608,7 @@ export default function DashboardPage() {
       icon: Eye, 
       active: activeView === 'vrcalibration',
       onClick: () => setActiveView('vrcalibration')
-    },
+    }
   ];
 
   const modules: Module[] = [
@@ -320,17 +664,16 @@ export default function DashboardPage() {
         {/* Profile */}
         <div className="p-4 flex items-center space-x-3 border-b border-gray-800">
           <div className="relative">
-            <img 
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face" 
-              alt="Profile" 
-              className="w-14 h-14 rounded-full border-2 border-yellow-400 object-cover"
-            />
-            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-400 rounded-full border-2 border-white"></div>
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center border-2 border-yellow-400">
+              <span className="text-xl font-bold text-gray-900">{getUserInitials()}</span>
+            </div>
+            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-400 rounded-full border-2 border-gray-900"></div>
           </div>
           {isSidebarOpen && (
             <div>
-              <div className="font-medium text-white">Alex Dupont</div>
-              <div className="text-xs text-gray-400">Niveau 3</div>
+              <div className="font-medium text-white">{currentUser?.firstName} {currentUser?.lastName}</div>
+              <div className="text-xs text-gray-400">{currentUser?.email}</div>
+              <div className="text-xs text-yellow-400 mt-1">{currentUser?.role}</div>
             </div>
           )}
         </div>
@@ -358,7 +701,7 @@ export default function DashboardPage() {
         {/* Footer */}
         {isSidebarOpen && (
           <div className="p-4 border-t border-gray-800 text-xs text-gray-400 mt-auto">
-            <p>© 2024 Pitch to Me</p>
+            <p> 2024 Pitch to Me</p>
             <p className="mt-1">Tous droits réservés</p>
           </div>
         )}
@@ -400,21 +743,27 @@ export default function DashboardPage() {
                   className="flex items-center space-x-3 focus:outline-none"
                 >
                   <div className="relative">
-                    <img 
-                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face" 
-                      alt="Profile" 
-                      className="w-8 h-8 rounded-full border-2 border-yellow-400 object-cover"
-                    />
+                    {previewImage || currentUser.profileImage ? (
+                      <img 
+                        src={previewImage || currentUser.profileImage} 
+                        alt="Profile" 
+                        className="w-8 h-8 rounded-full border-2 border-yellow-400 object-cover"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center text-gray-900 font-bold text-sm">
+                        {getUserInitials()}
+                      </div>
+                    )}
                     <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-green-400 rounded-full border-2 border-white"></div>
                   </div>
-                  <span className="hidden md:inline text-sm font-medium text-white">Alex Dupont</span>
+                  <span className="hidden md:inline text-sm font-medium text-white">{currentUser.firstName} {currentUser.lastName}</span>
                   <ChevronDown className={`w-4 h-4 text-gray-300 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {isUserMenuOpen && (
                   <div className="absolute right-0 mt-2 w-56 bg-gray-900/95 backdrop-blur rounded-lg shadow-lg border border-gray-700 z-20">
                     <div className="px-4 py-3">
-                      <p className="text-sm font-medium text-white">Alex Dupont</p>
-                      <p className="text-xs text-gray-300">alex.dupont@example.com</p>
+                      <p className="text-sm font-medium text-white">{currentUser.firstName} {currentUser.lastName}</p>
+                      <p className="text-xs text-gray-300">{currentUser.email}</p>
                     </div>
                     <div className="border-t border-gray-700"></div>
                     <button
