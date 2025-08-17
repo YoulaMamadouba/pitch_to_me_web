@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { UserService, User as UserType } from '@/lib/userService';
 import { 
   Home, 
   BookOpen, 
@@ -472,18 +473,8 @@ export default function DashboardPage() {
   const { signOut, user } = useAuth();
   
   // User state
-  // Initialize user data from auth context or default values
-  const [currentUser, setCurrentUser] = useState({
-    firstName: user?.user_metadata?.first_name || 'Utilisateur',
-    lastName: user?.user_metadata?.last_name || '',
-    email: user?.email || '',
-    role: user?.user_metadata?.role || 'Apprenant',
-    phone: user?.user_metadata?.phone || '',
-    company: user?.user_metadata?.company || '',
-    position: user?.user_metadata?.position || '',
-    bio: user?.user_metadata?.bio || '',
-    profileImage: user?.user_metadata?.avatar_url || null,
-  });
+  const [currentUser, setCurrentUser] = useState<UserType | null>(null);
+  const [loading, setLoading] = useState(true);
   
   // UI state
   const [activeView, setActiveView] = useState<ViewType>('dashboard');
@@ -492,6 +483,26 @@ export default function DashboardPage() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isAICoachOpen, setIsAICoachOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  // Load user data
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const userData = await UserService.getCurrentUser();
+        setCurrentUser(userData);
+      } catch (error) {
+        console.error('Erreur lors du chargement des données utilisateur:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      loadUserData();
+    } else {
+      setLoading(false);
+    }
+  }, [user]);
   
   // Form state
   const [isEditing, setIsEditing] = useState(false);
@@ -511,8 +522,8 @@ export default function DashboardPage() {
 
   // Get user initials for avatar
   const getUserInitials = () => {
-    if (!currentUser) return '??';
-    return `${currentUser.firstName?.[0] || ''}${currentUser.lastName?.[0] || ''}`.toUpperCase() || '??';
+    if (!currentUser?.name) return '??';
+    return UserService.getUserInitials(currentUser.name);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -671,7 +682,7 @@ export default function DashboardPage() {
           </div>
           {isSidebarOpen && (
             <div>
-              <div className="font-medium text-white">{currentUser?.firstName} {currentUser?.lastName}</div>
+              <div className="font-medium text-white">{currentUser?.name || 'Utilisateur'}</div>
               <div className="text-xs text-gray-400">{currentUser?.email}</div>
               <div className="text-xs text-yellow-400 mt-1">{currentUser?.role}</div>
             </div>
@@ -743,9 +754,9 @@ export default function DashboardPage() {
                   className="flex items-center space-x-3 focus:outline-none"
                 >
                   <div className="relative">
-                    {previewImage || currentUser.profileImage ? (
+                    {previewImage || currentUser?.avatar_url ? (
                       <img 
-                        src={previewImage || currentUser.profileImage} 
+                        src={previewImage || currentUser?.avatar_url} 
                         alt="Profile" 
                         className="w-8 h-8 rounded-full border-2 border-yellow-400 object-cover"
                       />
@@ -756,14 +767,14 @@ export default function DashboardPage() {
                     )}
                     <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-green-400 rounded-full border-2 border-white"></div>
                   </div>
-                  <span className="hidden md:inline text-sm font-medium text-white">{currentUser.firstName} {currentUser.lastName}</span>
+                  <span className="hidden md:inline text-sm font-medium text-white">{currentUser?.name || 'Utilisateur'}</span>
                   <ChevronDown className={`w-4 h-4 text-gray-300 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {isUserMenuOpen && (
                   <div className="absolute right-0 mt-2 w-56 bg-gray-900/95 backdrop-blur rounded-lg shadow-lg border border-gray-700 z-20">
                     <div className="px-4 py-3">
-                      <p className="text-sm font-medium text-white">{currentUser.firstName} {currentUser.lastName}</p>
-                      <p className="text-xs text-gray-300">{currentUser.email}</p>
+                      <p className="text-sm font-medium text-white">{currentUser?.name || 'Utilisateur'}</p>
+                      <p className="text-xs text-gray-300">{currentUser?.email}</p>
                     </div>
                     <div className="border-t border-gray-700"></div>
                     <button
@@ -781,7 +792,11 @@ export default function DashboardPage() {
 
         {/* Main Content Area */}
         <main className="flex-1 overflow-y-auto pt-4 px-4 pb-3 md:pt-6 md:px-6 md:pb-4">
-          {activeView === 'profile' ? (
+          {loading ? (
+            <div className="flex items-center justify-center h-64">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div>
+            </div>
+          ) : activeView === 'profile' ? (
             <LearnerProfile onBack={() => setActiveView('dashboard')} />
           ) : activeView === 'community' ? (
             <Community />
@@ -828,14 +843,16 @@ export default function DashboardPage() {
             />
           ) : (
             <>
-          <motion.div 
+                      <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             className="bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg p-6 mb-6 border border-gray-700 hover:shadow-xl transition-all"
           >
-            <h2 className="text-xl font-semibold text-white mb-2">Bon retour, Alex !</h2>
-            <p className="text-gray-300 mb-6">Continuez votre apprentissage l o vous vous tes arrt.</p>
+            <h2 className="text-xl font-semibold text-white mb-2">
+              Bon retour, {currentUser?.name?.split(' ')[0] || 'Utilisateur'} !
+            </h2>
+            <p className="text-gray-300 mb-6">Continuez votre apprentissage là où vous vous êtes arrêté.</p>
             
             {/* Progress Overview */}
             <div className="bg-gradient-to-r from-gray-800 to-gray-700 rounded-xl p-6 text-white mb-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-700">
