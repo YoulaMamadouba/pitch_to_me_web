@@ -6,6 +6,7 @@ import {
   Search, 
   Plus, 
   FileText, 
+  File, 
   Video, 
   Image as ImageIcon, 
   Link2, 
@@ -25,12 +26,24 @@ import {
   PlayCircle,
   FolderOpen,
   LayoutGrid,
-  List
+  List,
+  ExternalLink,
+  FileArchive,
+  FileCode,
+  FileAudio,
+  FileVideo as FileVideo2,
+  FileType2,
+  FileJson
 } from 'lucide-react';
+
+// Alias pour la compatibilité
+const FileVideo = FileVideo2;
+const FilePdf = FileType2;
+const FileJsonIcon = FileJson;
 import Image from 'next/image';
 
 // Types
-type ResourceType = 'document' | 'video' | 'image' | 'link' | 'folder';
+type ResourceType = 'document' | 'video' | 'image' | 'link' | 'folder' | 'pdf' | 'audio' | 'archive' | 'code' | 'youtube';
 
 interface Resource {
   id: string;
@@ -50,7 +63,7 @@ interface Folder extends Omit<Resource, 'type'> {
   isExpanded?: boolean;
 }
 
-// Données de démonstration
+// Données de démonstration avec des exemples réels
 const demoResources: (Resource | Folder)[] = [
   {
     id: 'folder-1',
@@ -58,16 +71,16 @@ const demoResources: (Resource | Folder)[] = [
     type: 'folder',
     lastModified: new Date('2025-08-15'),
     url: '#',
-    items: ['doc-1', 'video-1'],
+    items: ['pdf-1', 'video-1', 'youtube-1'],
     isExpanded: true,
   },
   {
-    id: 'doc-1',
+    id: 'pdf-1',
     name: 'Guide du pitch parfait.pdf',
-    type: 'document',
+    type: 'pdf',
     size: '2.4 MB',
     lastModified: new Date('2025-08-10'),
-    url: '#',
+    url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
     folderId: 'folder-1',
     thumbnail: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=200&h=200&fit=crop&crop=faces',
     description: 'Guide complet pour maîtriser l\'art du pitch en entreprise',
@@ -78,10 +91,21 @@ const demoResources: (Resource | Folder)[] = [
     type: 'video',
     size: '45.2 MB',
     lastModified: new Date('2025-08-12'),
-    url: '#',
+    url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
     folderId: 'folder-1',
     thumbnail: 'https://images.unsplash.com/photo-1551817958-9cc07887d3df?w=200&h=200&fit=crop&crop=faces',
     description: 'Exemple de pitch réussi par un de nos étudiants',
+  },
+  {
+    id: 'youtube-1',
+    name: 'Comment pitcher comme un pro',
+    type: 'video',
+    size: 'Lien YouTube',
+    lastModified: new Date('2025-08-11'),
+    url: 'https://www.youtube.com/watch?v=HAnw168huqA',
+    folderId: 'folder-1',
+    thumbnail: 'https://i.ytimg.com/vi/HAnw168huqA/hqdefault.jpg',
+    description: 'Tutoriel vidéo sur les techniques de pitch',
   },
   {
     id: 'folder-2',
@@ -98,7 +122,7 @@ const demoResources: (Resource | Folder)[] = [
     type: 'image',
     size: '1.8 MB',
     lastModified: new Date('2025-07-28'),
-    url: '#',
+    url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&crop=faces',
     folderId: 'folder-2',
     thumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&h=200&fit=crop&crop=faces',
   },
@@ -108,7 +132,7 @@ const demoResources: (Resource | Folder)[] = [
     type: 'document',
     size: '1.2 MB',
     lastModified: new Date('2025-07-25'),
-    url: '#',
+    url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
     folderId: 'folder-2',
     description: 'Structure type à suivre pour un pitch efficace',
   },
@@ -117,10 +141,49 @@ const demoResources: (Resource | Folder)[] = [
     name: 'Outils de présentation en ligne',
     type: 'link',
     lastModified: new Date('2025-08-01'),
-    url: 'https://example.com/outils-presentation',
-    description: 'Collection d\'outils en ligne pour créer des présentations percutantes',
+    url: 'https://www.canva.com/presentations/templates/',
+    description: 'Modèles de présentation professionnels sur Canva',
+  },
+  {
+    id: 'pdf-2',
+    name: 'Exercices pratiques pitch.pdf',
+    type: 'pdf',
+    size: '3.1 MB',
+    lastModified: new Date('2025-08-03'),
+    url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+    description: 'Exercices pour s\'entraîner à pitcher efficacement',
+  },
+  {
+    id: 'vimeo-1',
+    name: 'Storytelling pour pitch',
+    type: 'video',
+    size: 'Lien Vimeo',
+    lastModified: new Date('2025-07-20'),
+    url: 'https://vimeo.com/76979871',
+    thumbnail: 'https://i.vimeocdn.com/video/452001751-3f8a7b3f5d7b3e8f3e5d3a2f1e2d3c1b',
+    description: 'Comment intégrer le storytelling dans votre pitch',
   },
 ];
+
+// Fonction pour déterminer le type de ressource à partir de l'URL ou du nom de fichier
+const getResourceType = (url: string, name: string): ResourceType => {
+  const lowerUrl = url.toLowerCase();
+  const lowerName = name.toLowerCase();
+  
+  if (lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be') || lowerUrl.includes('vimeo.com')) {
+    return 'video';
+  }
+  
+  if (lowerName.endsWith('.pdf')) return 'pdf';
+  if (lowerName.match(/\.(jpg|jpeg|png|gif|webp|svg)$/)) return 'image';
+  if (lowerName.match(/\.(mp4|webm|mov|avi|mkv)$/)) return 'video';
+  if (lowerName.match(/\.(mp3|wav|ogg|m4a)$/)) return 'audio';
+  if (lowerName.match(/\.(zip|rar|7z|tar\.gz)$/)) return 'archive';
+  if (lowerName.match(/\.(js|jsx|ts|tsx|html|css|scss|json)$/)) return 'code';
+  if (lowerName.match(/^https?:\/\//)) return 'link';
+  
+  return 'document';
+};
 
 // Composant d'icône de ressource
 const ResourceIcon = ({ type, className = '' }: { type: ResourceType; className?: string }) => {
@@ -129,7 +192,10 @@ const ResourceIcon = ({ type, className = '' }: { type: ResourceType; className?
   switch (type) {
     case 'document':
       return <FileText className={iconClass} />;
+    case 'pdf':
+      return <FileType2 className={iconClass} />;
     case 'video':
+    case 'youtube':
       return <Video className={iconClass} />;
     case 'image':
       return <ImageIcon className={iconClass} />;
@@ -137,8 +203,14 @@ const ResourceIcon = ({ type, className = '' }: { type: ResourceType; className?
       return <Link2 className={iconClass} />;
     case 'folder':
       return <Folder className={iconClass} />;
+    case 'audio':
+      return <FileAudio className={iconClass} />;
+    case 'archive':
+      return <FileArchive className={iconClass} />;
+    case 'code':
+      return <FileCode className={iconClass} />;
     default:
-      return <FileText className={iconClass} />;
+      return <File className={iconClass} />;
   }
 };
 
@@ -284,6 +356,83 @@ const ResourceCard = ({
   );
 };
 
+// Composant pour afficher un aperçu PDF
+const PdfViewer = ({ url }: { url: string }) => {
+  return (
+    <div className="w-full h-full">
+      <object 
+        data={`${url}#view=fitH`} 
+        type="application/pdf"
+        className="w-full h-full min-h-[500px] bg-gray-900"
+      >
+        <div className="flex flex-col items-center justify-center p-8 text-center">
+          <FilePdf className="w-12 h-12 text-red-500 mb-4" />
+          <p className="text-gray-300 mb-4">Impossible d'afficher le PDF. Vous pouvez le télécharger ci-dessous.</p>
+          <a 
+            href={url} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Télécharger le PDF
+          </a>
+        </div>
+      </object>
+    </div>
+  );
+};
+
+// Composant pour afficher une vidéo intégrée
+const VideoPlayer = ({ url, thumbnail }: { url: string; thumbnail?: string }) => {
+  const isYouTube = url.includes('youtube.com') || url.includes('youtu.be');
+  const isVimeo = url.includes('vimeo.com');
+  
+  let videoId = '';
+  let embedUrl = '';
+  
+  if (isYouTube) {
+    // Extraire l'ID de la vidéo YouTube
+    const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^\"&?\/\s]{11})/);
+    videoId = match ? match[1] : '';
+    embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+  } else if (isVimeo) {
+    // Extraire l'ID de la vidéo Vimeo
+    const match = url.match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/);
+    videoId = match ? match[1] : '';
+    embedUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1`;
+  }
+  
+  if (isYouTube || isVimeo) {
+    return (
+      <div className="relative aspect-video w-full bg-black rounded-lg overflow-hidden">
+        <iframe
+          src={embedUrl}
+          className="absolute inset-0 w-full h-full"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          title="Vidéo intégrée"
+        />
+      </div>
+    );
+  }
+  
+  // Pour les vidéos locales ou MP4
+  return (
+    <div className="relative w-full">
+      <video 
+        controls 
+        className="w-full max-h-[70vh] bg-black rounded-lg"
+        poster={thumbnail}
+      >
+        <source src={url} type="video/mp4" />
+        Votre navigateur ne prend pas en charge la lecture de vidéos.
+      </video>
+    </div>
+  );
+};
+
 // Composant principal
 const ResourcesView = () => {
   const [resources, setResources] = useState<(Resource | Folder)[]>(demoResources);
@@ -357,8 +506,13 @@ const ResourcesView = () => {
   // Gestion des ressources
   const handleSelectResource = (id: string) => {
     const resource = resources.find(r => r.id === id);
-    if (resource?.type === 'folder') {
+    if (!resource) return;
+    
+    if (resource.type === 'folder') {
       setCurrentFolder(id);
+    } else if (resource.type === 'link') {
+      // Ouvrir les liens externes dans un nouvel onglet
+      window.open(resource.url, '_blank', 'noopener,noreferrer');
     } else {
       setSelectedResource(id === selectedResource ? null : id);
     }
@@ -534,7 +688,7 @@ const ResourcesView = () => {
                         height={200}
                         className="w-full h-full object-cover"
                       />
-                    ) : resource.type === 'video' ? (
+                    ) : resource.type === 'video' || resource.type === 'youtube' ? (
                       <div className="relative w-full h-full flex items-center justify-center">
                         {resource.thumbnail ? (
                           <>
@@ -553,6 +707,20 @@ const ResourcesView = () => {
                           <Video className="w-12 h-12 text-gray-500" />
                         )}
                       </div>
+                    ) : resource.type === 'pdf' ? (
+                      <div className="p-4 w-full h-full flex flex-col items-center justify-center bg-gray-800/50">
+                        <FileType2 className="w-12 h-12 text-red-500 mb-2" />
+                        <span className="text-xs text-gray-400 text-center px-2 line-clamp-2">
+                          {resource.name}
+                        </span>
+                      </div>
+                    ) : resource.type === 'link' ? (
+                      <div className="p-4 w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-900/30 to-purple-900/30">
+                        <ExternalLink className="w-10 h-10 text-blue-400 mb-2" />
+                        <span className="text-xs text-blue-300 text-center px-2 line-clamp-2">
+                          {resource.url.replace(/^https?:\/\//, '').split('/')[0]}
+                        </span>
+                      </div>
                     ) : (
                       <div className="p-6 text-gray-500">
                         <ResourceIcon 
@@ -569,11 +737,25 @@ const ResourcesView = () => {
                     )}
                     
                     {/* Badge de type */}
-                    <div className="absolute top-2 right-2 bg-gray-900/80 text-white text-xs px-2 py-1 rounded-full">
-                      {resource.type === 'document' ? 'PDF' : 
-                       resource.type === 'video' ? 'VIDÉO' : 
-                       resource.type === 'image' ? 'IMAGE' : 
-                       resource.type === 'link' ? 'LIEN' : 'DOSSIER'}
+                    <div className={`absolute top-2 right-2 text-white text-xs px-2 py-1 rounded-full flex items-center ${
+                      resource.type === 'pdf' ? 'bg-red-600/90' :
+                      resource.type === 'video' ? 'bg-blue-600/90' :
+                      resource.type === 'image' ? 'bg-green-600/90' :
+                      resource.type === 'link' ? 'bg-purple-600/90' :
+                      resource.type === 'document' ? 'bg-yellow-600/90' :
+                      'bg-gray-700/90'
+                    }`}>
+                      <ResourceIcon 
+                        type={resource.type} 
+                        className="w-3 h-3 mr-1" 
+                      />
+                      <span className="text-[10px] font-medium">
+                        {resource.type === 'pdf' ? 'PDF' : 
+                         resource.type === 'video' ? 'VIDÉO' : 
+                         resource.type === 'image' ? 'IMAGE' : 
+                         resource.type === 'link' ? 'LIEN' : 
+                         resource.type === 'document' ? 'DOC' : 'DOSSIER'}
+                      </span>
                     </div>
                   </div>
                   
@@ -609,7 +791,7 @@ const ResourcesView = () => {
                         handleEditResource(resource.id);
                       }}
                     >
-                      <Edit2 className="w-3 h-3 mr-1" />
+                      <Edit2 className="w-4 h-4 mr-1" />
                       <span>Modifier</span>
                     </button>
                     <button 
@@ -630,6 +812,146 @@ const ResourcesView = () => {
         )}
       </div>
 
+      {/* Modal de visualisation de ressource */}
+      <AnimatePresence>
+        {selectedResource && (() => {
+          const resource = resources.find(r => r.id === selectedResource);
+          if (!resource || resource.type === 'folder') return null;
+          
+          return (
+            <motion.div 
+              className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedResource(null)}
+            >
+              <div 
+                className="relative w-full max-w-5xl max-h-[90vh] bg-gray-900 rounded-xl overflow-hidden flex flex-col"
+                onClick={e => e.stopPropagation()}
+              >
+                {/* En-tête */}
+                <div className="flex items-center justify-between p-4 bg-gray-800 border-b border-gray-700">
+                  <div className="flex items-center space-x-3 max-w-[80%]">
+                    <ResourceIcon 
+                      type={resource.type} 
+                      className={`w-5 h-5 ${
+                        resource.type === 'pdf' ? 'text-red-400' :
+                        resource.type === 'video' ? 'text-blue-400' :
+                        resource.type === 'link' ? 'text-purple-400' : 'text-yellow-400'
+                      }`} 
+                    />
+                    <h3 className="text-white font-medium truncate">
+                      {resource.name}
+                    </h3>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <a 
+                      href={resource.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="p-2 text-gray-400 hover:text-white transition-colors"
+                      title="Ouvrir dans un nouvel onglet"
+                    >
+                      <ExternalLink className="w-5 h-5" />
+                    </a>
+                    <a 
+                      href={resource.url} 
+                      download={resource.name}
+                      className="p-2 text-gray-400 hover:text-white transition-colors"
+                      title="Télécharger"
+                    >
+                      <Download className="w-5 h-5" />
+                    </a>
+                    <button 
+                      className="p-2 text-gray-400 hover:text-white transition-colors"
+                      onClick={() => setSelectedResource(null)}
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Contenu */}
+                <div className="flex-1 overflow-auto p-6">
+                  {resource.type === 'pdf' ? (
+                    <PdfViewer url={resource.url} />
+                  ) : resource.type === 'video' ? (
+                    <VideoPlayer url={resource.url} thumbnail={resource.thumbnail} />
+                  ) : resource.type === 'image' ? (
+                    <div className="flex justify-center">
+                      <img 
+                        src={resource.url} 
+                        alt={resource.name}
+                        className="max-w-full max-h-[70vh] object-contain"
+                      />
+                    </div>
+                  ) : resource.type === 'link' ? (
+                    <div className="h-[70vh] flex items-center justify-center">
+                      <div className="text-center max-w-md">
+                        <ExternalLink className="w-12 h-12 text-blue-400 mx-auto mb-4" />
+                        <h3 className="text-xl font-medium text-white mb-2">Lien externe</h3>
+                        <p className="text-gray-400 mb-6">Vous allez être redirigé vers :</p>
+                        <div className="bg-gray-800/50 p-4 rounded-lg mb-6 break-all">
+                          <p className="text-blue-400 text-sm">{resource.url}</p>
+                        </div>
+                        <a 
+                          href={resource.url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                        >
+                          <ExternalLink className="w-4 h-4 mr-2" />
+                          Ouvrir le lien
+                        </a>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center h-64 text-gray-500">
+                      <p>Aperçu non disponible pour ce type de fichier</p>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Pied de page */}
+                <div className="p-4 bg-gray-800 border-t border-gray-700 text-sm text-gray-400">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-white">{resource.name}</p>
+                      <p className="text-xs">
+                        Ajouté le {resource.lastModified.toLocaleDateString('fr-FR', {
+                          day: '2-digit',
+                          month: 'long',
+                          year: 'numeric'
+                        })}
+                        {'size' in resource && resource.size && (
+                          <span> • {resource.size}</span>
+                        )}
+                      </p>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <button className="p-2 text-gray-400 hover:text-white transition-colors">
+                        <Share2 className="w-4 h-4" />
+                      </button>
+                      <button className="p-2 text-gray-400 hover:text-white transition-colors">
+                        <Copy className="w-4 h-4" />
+                      </button>
+                      <a 
+                        href={resource.url} 
+                        download={resource.name}
+                        className="p-2 text-gray-400 hover:text-white transition-colors"
+                      >
+                        <Download className="w-4 h-4" />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })()}
+      </AnimatePresence>
+      
       {/* Modal d'import de fichiers */}
       <AnimatePresence>
         {showUploadModal && (
