@@ -52,29 +52,36 @@ export function SignupProvider({ children }: { children: ReactNode }) {
 
   const createUser = async (formData: any) => {
     try {
-      // Préparer les données utilisateur
-      const userData: CreateUserData = {
-        email: formData.email,
-        password: formData.password,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        phone: formData.phone,
-        country: formData.country,
-        role: 'individual' // Par défaut, les nouveaux inscrits sont des 'individual'
-      };
+      console.log('🔧 Création d\'utilisateur via API:', formData);
 
-      // Créer l'utilisateur via le service (sans connexion automatique)
-      const { user, error } = await AuthService.createUserWithoutSignIn(userData);
+      // Appeler l'API route pour créer l'utilisateur
+      const response = await fetch('/api/create-individual-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          phone: formData.phone,
+          country: formData.country,
+        }),
+      });
 
-      if (error) {
-        console.error('Erreur lors de la création de l\'utilisateur:', error);
-        return { error };
+      const result = await response.json();
+
+      if (!response.ok) {
+        console.error('❌ Erreur API création utilisateur:', result.error);
+        return { error: result.error };
       }
 
-      return { error: null };
+      console.log('✅ Utilisateur créé avec succès via API:', result.user);
+      return { error: null, user: result.user };
     } catch (error) {
-      console.error('Erreur lors de la création de l\'utilisateur:', error);
-      return { error };
+      console.error('❌ Erreur lors de la création de l\'utilisateur:', error);
+      return { error: 'Erreur de connexion au serveur' };
     }
   };
 

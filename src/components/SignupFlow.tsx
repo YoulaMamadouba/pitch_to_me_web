@@ -11,6 +11,7 @@ import Notification from './ui/Notification';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { apiCall } from '@/lib/apiUtils';
 
 export default function SignupFlow() {
   const { currentStep, formData, setFormData, setOtpVerified, setPaymentCompleted, setOnboardingCompleted, isOnboardingCompleted, setCurrentStep, nextStep, createUser } = useSignup();
@@ -25,16 +26,28 @@ export default function SignupFlow() {
     message: '',
     isVisible: false
   });
+  const [isOtpVerifying, setIsOtpVerifying] = useState(false);
 
   // Redirection automatique vers le dashboard si l'inscription est complète
   useEffect(() => {
+    console.log('🔧 useEffect dashboard - currentStep:', currentStep, 'isOnboardingCompleted:', isOnboardingCompleted);
     if (currentStep === 'dashboard') {
       // Seulement rediriger si l'onboarding est complété
       if (isOnboardingCompleted) {
+        console.log('🔧 Redirection vers /dashboard car onboarding complété');
         router.push('/dashboard');
+      } else {
+        console.log('🔧 Onboarding pas encore complété, pas de redirection');
       }
     }
   }, [currentStep, router, isOnboardingCompleted]);
+
+  // Réinitialiser l'état de vérification OTP seulement si on revient au formulaire
+  useEffect(() => {
+    if (currentStep === 'form') {
+      setIsOtpVerifying(false);
+    }
+  }, [currentStep]);
 
   // Empêcher l'accès direct au dashboard si l'utilisateur n'a pas complété le flux
   // DÉSACTIVÉ temporairement pour déboguer
@@ -52,21 +65,60 @@ export default function SignupFlow() {
   const handleFormSubmit = async (data: any) => {
     setFormData(data);
     
-    // Pour les utilisateurs individual, on ne crée pas l'utilisateur ici
-    // On passe directement à l'étape suivante
-    nextStep();
-  };
+    // Envoyer l'OTP par email avant de passer à l'étape suivante
+    const result = await apiCall('/api/send-otp-email', {
+      method: 'POST',
+      body: JSON.stringify({ 
+        email: data.email, 
+        name: data.name 
+      }),
+    });
 
-  const handleOtpVerify = (code: string) => {
-    // Simuler la vérification OTP
-    if (code === '123456') {
-      setOtpVerified(true);
+    if (result.success) {
+      console.log('Code OTP envoyé avec succès');
       nextStep();
+    } else {
+      console.error('Erreur lors de l\'envoi du code OTP:', result.error);
+      setNotification({
+        type: 'error',
+        message: 'Erreur lors de l\'envoi du code de vérification. Veuillez réessayer.',
+        isVisible: true
+      });
     }
   };
 
-  const handleOtpResend = () => {
-    console.log('Renvoyer le code OTP...');
+  const handleOtpVerify = async (code: string) => {
+    // Empêcher les appels multiples
+    if (isOtpVerifying) {
+      console.log('🔍 Vérification OTP déjà en cours, ignoré');
+      return;
+    }
+
+    console.log('🔍 OTP vérifié avec succès par le modal, passage à l\'étape suivante');
+    setIsOtpVerifying(true);
+    setOtpVerified(true);
+    
+    // Passer immédiatement à l'étape suivante
+    setTimeout(() => {
+      console.log('🔧 Passage à l\'étape suivante après OTP');
+      nextStep();
+    }, 100);
+  };
+
+  const handleOtpResend = async () => {
+    const result = await apiCall('/api/send-otp-email', {
+      method: 'POST',
+      body: JSON.stringify({ 
+        email: formData.email, 
+        name: formData.name 
+      }),
+    });
+
+    if (result.success) {
+      console.log('Code OTP renvoyé avec succès');
+    } else {
+      console.error('Erreur lors du renvoi du code OTP:', result.error);
+    }
   };
 
   const handlePaymentComplete = () => {
@@ -77,31 +129,34 @@ export default function SignupFlow() {
   const handleOnboardingComplete = async () => {
     console.log('=== handleOnboardingComplete appelé ===');
     console.log('FormData:', formData);
+    console.log('FormData keys:', Object.keys(formData));
+    console.log('createUser function exists:', !!createUser);
     
     setOnboardingCompleted(true);
     
     // Créer l'utilisateur dans la base de données à la fin de l'onboarding
-    console.log('Création de l\'utilisateur...');
-    const { error } = await createUser(formData);
+    console.log('🔧 Création de l\'utilisateur...');
+    const { error, user } = await createUser(formData);
     
     if (error) {
-      console.error('Erreur lors de la création de l\'utilisateur:', error);
+      console.error('❌ Erreur lors de la création de l\'utilisateur:', error);
       setNotification({
         type: 'error',
-        message: 'Erreur lors de la création du compte. Veuillez réessayer.',
+        message: `Erreur lors de la création du compte: ${error}`,
         isVisible: true
       });
       return;
     }
     
-    console.log('Utilisateur créé avec succès, connexion...');
+    console.log('✅ Utilisateur créé avec succès:', user);
+    console.log('🔧 Tentative de connexion...');
     
     // Connecter l'utilisateur avec les données du formulaire
     try {
       const { error } = await signIn(formData.email, formData.password);
       
       if (error) {
-        console.error('Erreur lors de la connexion:', error);
+        console.error('❌ Erreur lors de la connexion:', error);
         setNotification({
           type: 'error',
           message: 'Erreur lors de la connexion. Veuillez vous connecter manuellement.',
@@ -112,11 +167,11 @@ export default function SignupFlow() {
         return;
       }
       
-      console.log('Connexion réussie, passage au dashboard...');
+      console.log('✅ Connexion réussie, passage au dashboard...');
       // Si la connexion réussit, passer à l'étape dashboard
       nextStep();
     } catch (error) {
-      console.error('Erreur lors de la connexion:', error);
+      console.error('❌ Erreur lors de la connexion:', error);
       setNotification({
         type: 'error',
         message: 'Erreur lors de la connexion. Veuillez vous connecter manuellement.',
@@ -147,7 +202,7 @@ export default function SignupFlow() {
               <EnhancedOtpModal
                 isOpen={true}
                 onClose={() => {}} // Pas de fermeture possible à cette étape
-                phoneNumber={formData.phone || '+33 6 12 34 56 78'}
+                email={formData.email}
                 onVerify={handleOtpVerify}
                 onResendCode={handleOtpResend}
               />
@@ -157,6 +212,7 @@ export default function SignupFlow() {
             return <PaymentWrapper onComplete={handlePaymentComplete} />;
           
           case 'onboarding':
+            console.log('🔧 Rendu OnboardingWrapper avec handleOnboardingComplete:', !!handleOnboardingComplete);
             return <OnboardingWrapper onComplete={handleOnboardingComplete} />;
           
           default:

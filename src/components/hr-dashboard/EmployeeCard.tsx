@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { User, Mail, Phone, Clock, BookOpen, Eye, Edit, MoreVertical } from 'lucide-react';
 import Image from 'next/image';
 
-export interface Employee {
+export interface EmployeeCardData {
   id: string;
   name: string;
   email: string;
@@ -20,9 +20,9 @@ export interface Employee {
 }
 
 interface EmployeeCardProps {
-  employee: Employee;
-  onView?: (employee: Employee) => void;
-  onEdit?: (employee: Employee) => void;
+  employee: EmployeeCardData;
+  onView?: (employee: EmployeeCardData) => void;
+  onEdit?: (employee: EmployeeCardData) => void;
 }
 
 const offerTypeColors = {

@@ -3,11 +3,11 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Plus, Trash2, Save, User, Mail, Phone, Briefcase, Users } from 'lucide-react';
-import { Employee } from './EmployeeCard';
+import { EmployeeCardData } from './EmployeeCard';
 import { HRService } from '@/lib/hrService';
 
 interface ManualEmployeeFormProps {
-  onSubmit: (employees: Employee[]) => void;
+  onSubmit: (employees: EmployeeCardData[]) => void;
   onBack: () => void;
   isSubmitting: boolean;
   companyId: string;
@@ -81,7 +81,7 @@ export default function ManualEmployeeForm({ onSubmit, onBack, isSubmitting, com
     if (!finalCompanyName) {
       try {
         const hrUser = await HRService.getCurrentHR();
-        finalCompanyName = hrUser?.companies?.name || 'Votre entreprise';
+        finalCompanyName = hrUser?.company?.name || 'Votre entreprise';
         console.log('📧 Nom de l\'entreprise récupéré:', finalCompanyName);
       } catch (error) {
         console.error('❌ Erreur lors de la récupération du nom de l\'entreprise:', error);
@@ -89,7 +89,7 @@ export default function ManualEmployeeForm({ onSubmit, onBack, isSubmitting, com
       }
     }
 
-    const createdEmployees: Employee[] = [];
+    const createdEmployees: EmployeeCardData[] = [];
 
     // Créer chaque employé
     for (const emp of validEmployees) {
@@ -119,7 +119,21 @@ export default function ManualEmployeeForm({ onSubmit, onBack, isSubmitting, com
         });
 
         if (result.success && result.employee) {
-          createdEmployees.push(result.employee);
+          // Convertir l'employé API en EmployeeCardData
+          const employeeCardData: EmployeeCardData = {
+            id: result.employee.id,
+            name: result.employee.name,
+            email: result.employee.email,
+            position: result.employee.position,
+            phone: result.employee.phone || '',
+            offerType: result.employee.offerType as any,
+            currentModule: 'Module 1',
+            estimatedDuration: 30,
+            photo: '',
+            progress: 0,
+            status: 'active'
+          };
+          createdEmployees.push(employeeCardData);
 
           // Envoyer l'email de bienvenue
           await HRService.sendEmployeeWelcomeEmail({

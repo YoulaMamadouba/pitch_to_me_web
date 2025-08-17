@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   ArrowLeft, 
@@ -29,6 +29,14 @@ export default function PaymentPage({ onComplete }: PaymentPageProps) {
     expiry: '',
     cvv: ''
   });
+
+  // Rediriger vers le signup si accédé directement sans contexte
+  useEffect(() => {
+    if (!onComplete) {
+      console.log('🔧 Accès direct à /payment détecté, redirection vers /signup');
+      window.location.href = '/signup';
+    }
+  }, [onComplete]);
 
   const currencies = [
     { code: 'USD', symbol: '$', amount: '299' },
@@ -75,10 +83,13 @@ export default function PaymentPage({ onComplete }: PaymentPageProps) {
     setIsProcessing(true);
     // Simulation de traitement
     await new Promise(resolve => setTimeout(resolve, 2000));
-    // Appeler onComplete si fourni, sinon rediriger
+    
+    // Utiliser onComplete si disponible, sinon rediriger vers l'onboarding
     if (onComplete) {
+      console.log('🔧 Paiement terminé, appel de onComplete');
       onComplete();
     } else {
+      console.log('🔧 Pas de onComplete, redirection vers /onboarding');
       window.location.href = '/onboarding';
     }
   };

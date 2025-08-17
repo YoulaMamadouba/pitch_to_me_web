@@ -103,18 +103,31 @@ export async function POST(request: NextRequest) {
 
     // 4. Mettre à jour le nombre d'employés dans la table companies
     try {
-      const { error: companyUpdateError } = await supabase
+      // Récupérer le nombre actuel d'employés
+      const { data: companyData, error: companyFetchError } = await supabase
         .from('companies')
-        .update({ 
-          employee_count: supabase.sql`employee_count + 1`
-        })
-        .eq('id', companyId);
+        .select('employee_count')
+        .eq('id', companyId)
+        .single();
 
-      if (companyUpdateError) {
-        console.error('❌ Erreur lors de la mise à jour du nombre d\'employés:', companyUpdateError);
-        // Pas de rollback ici car l'employé est déjà créé
+      if (companyFetchError) {
+        console.error('❌ Erreur lors de la récupération du nombre d\'employés:', companyFetchError);
       } else {
-        console.log('✅ Nombre d\'employés mis à jour');
+        const newEmployeeCount = (companyData.employee_count || 0) + 1;
+        
+        const { error: companyUpdateError } = await supabase
+          .from('companies')
+          .update({ 
+            employee_count: newEmployeeCount
+          })
+          .eq('id', companyId);
+
+        if (companyUpdateError) {
+          console.error('❌ Erreur lors de la mise à jour du nombre d\'employés:', companyUpdateError);
+          // Pas de rollback ici car l'employé est déjà créé
+        } else {
+          console.log('✅ Nombre d\'employés mis à jour');
+        }
       }
     } catch (updateError) {
       console.error('❌ Erreur lors de la mise à jour du nombre d\'employés:', updateError);

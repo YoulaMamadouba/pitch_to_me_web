@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     console.log('✅ RH récupéré via API:', hrUser);
 
     // Si on demande aussi les employés
-    let employees = [];
+    let employees: any[] = [];
     if (companyId || hrUser?.company_id) {
       const companyIdToUse = companyId || hrUser.company_id;
       

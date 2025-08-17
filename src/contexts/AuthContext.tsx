@@ -117,11 +117,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (email: string, password: string) => {
     const supabase = getSupabase();
     if (!supabase) return { error: { message: 'Supabase non configuré' } } as any;
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
-      password: password.trim(),
-    });
-    return { error };
+    
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password: password.trim(),
+      });
+      
+      if (error) {
+        console.error('Erreur de connexion:', error);
+        return { error };
+      }
+      
+      // Vérifier que la session est bien établie
+      if (data.session) {
+        setSession(data.session);
+        setUser(data.session.user);
+      }
+      
+      return { error: null };
+    } catch (error) {
+      console.error('Erreur inattendue lors de la connexion:', error);
+      return { error: { message: 'Erreur de connexion inattendue' } };
+    }
   };
 
   const signUp = async (email: string, password: string, name: string, role: string) => {

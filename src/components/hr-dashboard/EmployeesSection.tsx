@@ -7,7 +7,7 @@ import { createClient } from '@supabase/supabase-js';
 import EmployeeCard from './EmployeeCard';
 import AddEmployeeButton from './AddEmployeeButton';
 import AddEmployeeModal from './AddEmployeeModal';
-import { Employee } from './EmployeeCard';
+import { EmployeeCardData } from './EmployeeCard';
 import { HRService, HRUser } from '@/lib/hrService';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -15,7 +15,7 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Données de démonstration
-const initialEmployees: Employee[] = [
+const initialEmployees: EmployeeCardData[] = [
   {
     id: '1',
     name: 'Marie Dupont',
@@ -97,7 +97,7 @@ const initialEmployees: Employee[] = [
 ];
 
 export default function EmployeesSection() {
-  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [employees, setEmployees] = useState<EmployeeCardData[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
@@ -137,7 +137,7 @@ export default function EmployeesSection() {
         
         // Debug: afficher les données récupérées
         console.log('🔍 Données RH:', result.hrUser);
-        console.log('🔍 Nom de l\'entreprise:', result.hrUser?.companies?.name);
+        console.log('🔍 Nom de l\'entreprise:', result.hrUser?.company?.name);
       } catch (error) {
         console.error('Erreur lors de la récupération des données:', error);
       } finally {
@@ -148,7 +148,7 @@ export default function EmployeesSection() {
     fetchData();
   }, []);
 
-  const handleAddEmployees = (newEmployees: Employee[]) => {
+  const handleAddEmployees = (newEmployees: EmployeeCardData[]) => {
     setEmployees(prev => [...prev, ...newEmployees]);
     setIsModalOpen(false);
   };

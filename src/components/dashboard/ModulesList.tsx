@@ -263,7 +263,7 @@ interface ModulesListProps {
 export default function ModulesList({ domainName, onBackToDomains }: ModulesListProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedModule, setSelectedModule] = useState<ModuleFolder | null>(null);
-  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+  const [selectedLesson, setSelectedLesson] = useState<Lesson | undefined>(undefined);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showAddModuleForm, setShowAddModuleForm] = useState(false);
   const [modules, setModules] = useState<ModuleFolder[]>(mockModules);
@@ -275,12 +275,12 @@ export default function ModulesList({ domainName, onBackToDomains }: ModulesList
 
   const handleModuleClick = (module: ModuleFolder) => {
     setSelectedModule(module);
-    setSelectedLesson(null);
+    setSelectedLesson(undefined);
   };
 
   const handleBackToModules = () => {
     setSelectedModule(null);
-    setSelectedLesson(null);
+    setSelectedLesson(undefined);
   };
 
   const handleLessonClick = (lesson: Lesson) => {

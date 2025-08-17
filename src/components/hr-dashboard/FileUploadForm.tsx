@@ -3,10 +3,10 @@
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Upload, FileText, Download, CheckCircle, AlertCircle, Save } from 'lucide-react';
-import { Employee } from './EmployeeCard';
+import { EmployeeCardData } from './EmployeeCard';
 
 interface FileUploadFormProps {
-  onSubmit: (employees: Employee[]) => void;
+  onSubmit: (employees: EmployeeCardData[]) => void;
   onBack: () => void;
   isSubmitting: boolean;
 }
@@ -126,8 +126,8 @@ export default function FileUploadForm({ onSubmit, onBack, isSubmitting }: FileU
       return;
     }
 
-    // Conversion en objets Employee
-    const newEmployees: Employee[] = parsedEmployees.map((emp, index) => ({
+    // Conversion en objets EmployeeCardData
+    const newEmployees: EmployeeCardData[] = parsedEmployees.map((emp, index) => ({
       id: Date.now().toString() + index,
       name: emp.name,
       email: emp.email,

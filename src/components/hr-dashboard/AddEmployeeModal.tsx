@@ -5,12 +5,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Users, Upload, FileText, UserPlus } from 'lucide-react';
 import ManualEmployeeForm from './ManualEmployeeForm';
 import FileUploadForm from './FileUploadForm';
-import { Employee } from './EmployeeCard';
+import { EmployeeCardData } from './EmployeeCard';
 
 interface AddEmployeeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (employees: Employee[]) => void;
+  onSubmit: (employees: EmployeeCardData[]) => void;
   companyId: string;
   companyName: string;
 }
@@ -21,7 +21,7 @@ export default function AddEmployeeModal({ isOpen, onClose, onSubmit, companyId,
   const [mode, setMode] = useState<FormMode>('selection');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (employees: Employee[]) => {
+  const handleSubmit = async (employees: EmployeeCardData[]) => {
     setIsSubmitting(true);
     try {
       await onSubmit(employees);

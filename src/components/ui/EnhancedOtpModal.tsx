@@ -2,12 +2,13 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ArrowLeft, Phone, Clock } from 'lucide-react';
+import { X, ArrowLeft, Mail, Clock } from 'lucide-react';
+import { apiCall } from '@/lib/apiUtils';
 
 interface EnhancedOtpModalProps {
   isOpen: boolean;
   onClose: () => void;
-  phoneNumber: string;
+  email: string;
   onVerify: (code: string) => void;
   onResendCode: () => void;
   title?: string;
@@ -18,32 +19,40 @@ interface EnhancedOtpModalProps {
 export default function EnhancedOtpModal({
   isOpen,
   onClose,
-  phoneNumber,
+  email,
   onVerify,
   onResendCode,
-  title = "Vérification téléphonique",
+  title = "Vérification par email",
   subtitle = "Nous avons envoyé un code à 6 chiffres à",
   buttonText = "Continuer"
 }: EnhancedOtpModalProps) {
   const [otpValues, setOtpValues] = useState(['', '', '', '', '', '']);
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes en secondes
   const [canResend, setCanResend] = useState(false);
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verificationError, setVerificationError] = useState('');
+  const [isVerified, setIsVerified] = useState(false);
 
-  // Code de test affiché en haut
-  const testCode = "123456";
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     if (isOpen) {
       setTimeLeft(300);
       setCanResend(false);
       setOtpValues(['', '', '', '', '', '']);
+      setVerificationError('');
+      setIsVerified(false);
+      setIsVerifying(false);
       // Focus sur le premier champ
       setTimeout(() => {
         inputRefs.current[0]?.focus();
       }, 100);
     }
   }, [isOpen]);
+
+
+
+
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -103,12 +112,44 @@ export default function EnhancedOtpModal({
       setTimeLeft(300);
       setCanResend(false);
       setOtpValues(['', '', '', '', '', '']);
+      setVerificationError('');
       inputRefs.current[0]?.focus();
     }
   };
 
+  const handleVerify = async () => {
+    const code = otpValues.join('');
+    if (code.length !== 6 || isVerifying || isVerified) return; // Empêcher les appels multiples ET les appels après vérification
+
+    setIsVerifying(true);
+    setVerificationError('');
+
+    try {
+      const result = await apiCall('/api/send-otp-email', {
+        method: 'PUT',
+        body: JSON.stringify({ email, code }),
+      });
+
+      if (result.success) {
+        // Marquer comme vérifié et ne pas réactiver le bouton
+        setIsVerified(true);
+        setIsVerifying(false); // Arrêter la vérification
+        // Appeler onVerify une seule fois après succès
+        onVerify(code);
+        return; // Sortir immédiatement
+      } else {
+        console.error('❌ Erreur de vérification OTP:', result.error);
+        setVerificationError(result.error || 'Code incorrect');
+        setIsVerifying(false);
+      }
+    } catch (error) {
+      console.error('❌ Erreur lors de la vérification OTP:', error);
+      setVerificationError('Erreur de connexion au serveur');
+      setIsVerifying(false);
+    }
+  };
+
   const isOtpComplete = otpValues.every(val => val !== '');
-  const isOtpValid = otpValues.join('') === testCode;
 
   return (
     <AnimatePresence>
@@ -136,19 +177,18 @@ export default function EnhancedOtpModal({
               <X className="w-5 h-5" />
             </button>
 
-            {/* Code de test */}
-            <div className="absolute top-4 left-4 bg-yellow-400 text-black px-2 py-1 rounded text-xs font-bold">
-              Code test: {testCode}
-            </div>
+
+
+
 
             {/* Header */}
             <div className="text-center mb-6 mt-8">
               <div className="w-20 h-20 bg-gradient-to-r from-cyan-400 to-cyan-500 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <Phone className="w-10 h-10 text-black" />
+                <Mail className="w-10 h-10 text-black" />
               </div>
               <h2 className="text-xl font-bold text-white mb-1">{title}</h2>
               <p className="text-gray-300 text-sm">
-                {subtitle} <span className="text-yellow-400 font-medium">{phoneNumber}</span>
+                {subtitle} <span className="text-yellow-400 font-medium">{email}</span>
               </p>
             </div>
 
@@ -184,13 +224,9 @@ export default function EnhancedOtpModal({
               </div>
 
               {/* Message de validation */}
-              {isOtpComplete && (
+              {verificationError && (
                 <div className="text-center mb-4">
-                  {isOtpValid ? (
-                    <p className="text-green-400 text-sm font-medium">✓ Code correct !</p>
-                  ) : (
-                    <p className="text-red-400 text-sm font-medium">✗ Code incorrect</p>
-                  )}
+                  <p className="text-red-400 text-sm font-medium">✗ {verificationError}</p>
                 </div>
               )}
 
@@ -212,15 +248,17 @@ export default function EnhancedOtpModal({
 
             {/* Continue Button */}
             <button
-              onClick={() => onVerify(otpValues.join(''))}
-              disabled={!isOtpComplete || !isOtpValid}
+              onClick={isVerified ? undefined : handleVerify}
+              disabled={!isOtpComplete || isVerifying || isVerified}
               className={`w-full font-semibold py-3 rounded-xl transition-all duration-300 shadow-lg ${
-                isOtpComplete && isOtpValid
+                isVerified
+                  ? 'bg-green-500 text-white cursor-not-allowed'
+                  : isOtpComplete && !isVerifying
                   ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-black hover:from-yellow-300 hover:to-yellow-400 shadow-yellow-400/20'
                   : 'bg-gray-600 text-gray-400 cursor-not-allowed'
               }`}
             >
-              {buttonText}
+              {isVerifying ? 'Vérification...' : isVerified ? 'Vérifié ✓' : buttonText}
             </button>
           </motion.div>
         </motion.div>

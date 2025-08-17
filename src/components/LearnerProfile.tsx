@@ -85,7 +85,7 @@ export default function LearnerProfile({ onBack }: LearnerProfileProps) {
 
     try {
       // Upload image if changed
-      let avatarUrl = user.avatar_url;
+      let avatarUrl = user.avatar_url || undefined;
       if (profileImage) {
         avatarUrl = await UserService.uploadAvatar(user.id, profileImage);
       }

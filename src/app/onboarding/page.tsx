@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Check, Play, Volume2, BookOpen, Award } from 'lucide-react';
 import AuthPageHeader from '@/components/ui/AuthPageHeader';
+import { useRouter } from 'next/navigation';
 
 interface OnboardingPageProps {
   onComplete?: () => void;
@@ -10,18 +11,34 @@ interface OnboardingPageProps {
 
 export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
   const [isMounted, setIsMounted] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
-  }, []);
+    console.log('🔧 OnboardingPage monté avec onComplete:', !!onComplete);
+    
+    // Si onComplete n'existe pas, c'est qu'on accède directement à la page
+    // Rediriger vers le signup
+    if (!onComplete) {
+      console.log('🔧 Accès direct à /onboarding détecté, redirection vers /signup');
+      router.push('/signup');
+      return;
+    }
+  }, [onComplete, router]);
 
   // Navigation handler
   const handleContinue = (e: React.MouseEvent) => {
     e.preventDefault();
+    console.log('🔧 handleContinue appelé !');
+    console.log('🔧 onComplete existe ?', !!onComplete);
+    console.log('🔧 isMounted ?', isMounted);
+    
     if (isMounted) {
       if (onComplete) {
+        console.log('🔧 Appel de onComplete depuis OnboardingPage');
         onComplete();
       } else {
+        console.log('🔧 Redirection directe vers /dashboard');
         window.location.href = '/dashboard';
       }
     }
@@ -176,13 +193,12 @@ export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
 
                 {/* CTA Button */}
                 <div className="text-center">
-                  <a 
-                    href="/dashboard"
+                  <button 
                     onClick={handleContinue}
                     className="inline-block w-full max-w-xs mx-auto bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-black font-semibold py-3 px-6 rounded-xl transition-all transform hover:scale-[1.02] active:scale-95"
                   >
                     Continuer la configuration
-                  </a>
+                  </button>
                   <p className="text-gray-400 text-xs mt-2">Moins de 2 minutes</p>
                 </div>
               </div>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import * as nodemailer from 'nodemailer';
+import { buildUrl } from '@/lib/config';
 
 export async function POST(request: NextRequest) {
   try {
@@ -72,7 +73,7 @@ export async function POST(request: NextRequest) {
               
               <!-- Button -->
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/login" 
+                <a href="${buildUrl('/login')}" 
                    style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: #1a1a1a; padding: 15px 30px; text-decoration: none; border-radius: 50px; font-weight: 600; display: inline-block; font-size: 15px;">
                   Accéder à mon espace
                 </a>
