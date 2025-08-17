@@ -49,6 +49,7 @@ import { useStudents } from '@/contexts/StudentsContext';
 import { Module } from '@/components/dashboard/ModuleCard';
 import { Student } from '@/components/dashboard-coach/StudentCard';
 import RecordingStudioView from '@/components/dashboard/RecordingStudioView';
+import AnalyticsView from '@/components/dashboard-coach/analytics/AnalyticsView';
 import dynamic from 'next/dynamic';
 
 // Chargement dynamique pour éviter les problèmes de SSR
@@ -493,6 +494,12 @@ const CoachDashboard = () => {
           onToggleRecording={handleToggleRecording}
           onTogglePause={handleTogglePause}
         />
+      );
+    }
+
+    if (activeTab === 'analytics') {
+      return (
+        <AnalyticsView />
       );
     }
 
