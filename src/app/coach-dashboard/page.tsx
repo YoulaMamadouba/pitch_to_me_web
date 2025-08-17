@@ -49,6 +49,17 @@ import { useStudents } from '@/contexts/StudentsContext';
 import { Module } from '@/components/dashboard/ModuleCard';
 import { Student } from '@/components/dashboard-coach/StudentCard';
 import RecordingStudioView from '@/components/dashboard/RecordingStudioView';
+import dynamic from 'next/dynamic';
+
+// Chargement dynamique pour éviter les problèmes de SSR
+const SessionsList = dynamic(() => import('@/components/dashboard-coach/SessionsList'), {
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center h-64">
+      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-yellow-500"></div>
+    </div>
+  ),
+});
 
 // Types
 type NavigationItem = {
@@ -303,6 +314,18 @@ const CoachDashboard = () => {
     { id: 'settings', label: 'Settings', icon: Settings, active: activeTab === 'settings' },
   ];
 
+  // Gestion du clic sur une session
+  const handleSessionClick = (sessionId: string) => {
+    console.log('Session sélectionnée:', sessionId);
+    // Ici, vous pouvez ajouter la logique pour afficher les détails de la session
+  };
+
+  // Gestion de la création d'une nouvelle session
+  const handleNewSession = () => {
+    console.log('Nouvelle session demandée');
+    // Ici, vous pouvez ajouter la logique pour créer une nouvelle session
+  };
+
   // Notification counts for B2B and B2C sections
   const b2bNotificationCount = 8; // Example count for Entreprises
   const b2cNotificationCount = 5; // Example count for Étudiants
@@ -469,6 +492,15 @@ const CoachDashboard = () => {
           recordingTime={recordingTime}
           onToggleRecording={handleToggleRecording}
           onTogglePause={handleTogglePause}
+        />
+      );
+    }
+
+    if (activeTab === 'sessions') {
+      return (
+        <SessionsList 
+          onSessionClick={handleSessionClick}
+          onNewSession={handleNewSession}
         />
       );
     }
