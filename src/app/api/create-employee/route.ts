@@ -62,7 +62,9 @@ export async function POST(request: NextRequest) {
         role: 'employee',
         company_id: companyId,
         level: 0,
-        xp: 0
+        xp: 0,
+        password_changed: false, // L'employé devra changer son mot de passe
+        password_changed_at: null
       })
       .select()
       .single();

@@ -118,14 +118,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const supabase = getSupabase();
     if (!supabase) return { error: { message: 'Supabase non configuré' } } as any;
     
+    console.log('🔧 Tentative de connexion pour:', email);
+    
     try {
+      console.log('🔧 Appel de signInWithPassword...');
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password: password.trim(),
       });
       
+      console.log('🔧 Réponse de signInWithPassword:', { data: !!data, error: !!error });
+      
       if (error) {
-        console.error('Erreur de connexion:', error);
+        console.error('❌ Erreur de connexion:', error);
         return { error };
       }
       

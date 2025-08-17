@@ -51,6 +51,12 @@ export class CompanyService {
       const tempPassword = this.generateTempPassword();
       
       // 3. Créer l'utilisateur RH via l'API route
+      console.log('🔧 Appel API create-rh-user avec:', {
+        email: companyData.rhEmail,
+        name: companyData.rhName,
+        passwordLength: tempPassword.length
+      });
+
       const response = await fetch('/api/create-rh-user', {
         method: 'POST',
         headers: {
@@ -63,10 +69,16 @@ export class CompanyService {
         }),
       });
 
+      console.log('🔧 Réponse API create-rh-user:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok
+      });
+
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('Erreur lors de la création de l\'utilisateur RH:', errorData);
-        throw new Error('Erreur lors de la création de l\'utilisateur RH');
+        console.error('❌ Erreur lors de la création de l\'utilisateur RH:', errorData);
+        throw new Error(`Erreur lors de la création de l'utilisateur RH: ${errorData.error || 'Erreur inconnue'}`);
       }
 
       const { user: userData } = await response.json();

@@ -8,6 +8,7 @@ import { LanguageProvider } from '@/contexts/LanguageContext';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { SignupProvider } from '@/contexts/SignupContext';
 import PitchLoader from '@/components/ui/PitchLoader';
+import PasswordChangeGuard from '@/components/PasswordChangeGuard';
 import { Mic } from 'lucide-react';
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
@@ -38,7 +39,9 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                   siteName="Pitch to Me"
                   brandColorClass="text-yellow-400"
                 />
-                {children}
+                <PasswordChangeGuard>
+                  {children}
+                </PasswordChangeGuard>
               </SignupProvider>
             </StudentsProvider>
           </CompaniesProvider>
