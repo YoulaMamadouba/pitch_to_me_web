@@ -52,6 +52,7 @@ import RecordingStudioView from '@/components/dashboard/RecordingStudioView';
 import AnalyticsView from '@/components/dashboard-coach/analytics/AnalyticsView';
 import MessagesView from '@/components/dashboard-coach/messages/MessagesView';
 import ResourcesView from '@/components/dashboard-coach/resources/ResourcesView';
+import SettingsView from '@/components/dashboard-coach/settings/SettingsView';
 import dynamic from 'next/dynamic';
 
 // Chargement dynamique pour éviter les problèmes de SSR
@@ -523,6 +524,12 @@ const CoachDashboard = () => {
           onSessionClick={handleSessionClick}
           onNewSession={handleNewSession}
         />
+      );
+    }
+
+    if (activeTab === 'settings') {
+      return (
+        <SettingsView />
       );
     }
 

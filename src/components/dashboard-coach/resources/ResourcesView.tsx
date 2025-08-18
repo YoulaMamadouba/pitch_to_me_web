@@ -329,7 +329,7 @@ const ResourcesView = () => {
           />
         )}
       </AnimatePresence>
-
+      
       <AnimatePresence>
         {showNewFolderModal && (
           <NewFolderModal
@@ -353,3 +353,4 @@ const ResourcesView = () => {
 };
 
 export default ResourcesView;
+  
