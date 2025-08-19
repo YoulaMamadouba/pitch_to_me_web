@@ -169,3 +169,4 @@ Toutes les animations utilisent Framer Motion pour une expérience fluide :
 - Optimisation des re-renders avec `useCallback`
 - Gestion efficace de l'état local
 - Animations optimisées avec Framer Motion
+

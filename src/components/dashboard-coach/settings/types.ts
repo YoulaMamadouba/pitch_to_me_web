@@ -50,3 +50,4 @@ export interface PasswordChangeFormProps {
   onChangePassword: (data: PasswordChangeData) => Promise<void>;
   isLoading?: boolean;
 }
+

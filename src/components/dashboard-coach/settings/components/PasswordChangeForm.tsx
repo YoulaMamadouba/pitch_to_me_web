@@ -283,3 +283,4 @@ export const PasswordChangeForm = ({ onChangePassword, isLoading = false }: Pass
     </motion.div>
   );
 };
+

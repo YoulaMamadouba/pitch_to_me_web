@@ -353,4 +353,3 @@ const ResourcesView = () => {
 };
 
 export default ResourcesView;
-  

@@ -355,3 +355,4 @@ export const ProfileForm = ({ profile, onUpdate, onAvatarChange, isLoading = fal
     </motion.div>
   );
 };
+

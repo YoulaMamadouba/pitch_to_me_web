@@ -163,3 +163,4 @@ export const SettingsView = ({ activeTab = 'profile' }: SettingsViewProps) => {
 };
 
 export default SettingsView;
+
