@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
             id: userId,
             email: session.metadata?.userEmail,
             name: `${session.metadata?.userFirstName} ${session.metadata?.userLastName}`,
-            role: 'coach', // Rôle par défaut pour les nouveaux utilisateurs
+            role: 'individual', // Rôle pour les apprenants individuels
             created_at: new Date().toISOString(),
           });
 
@@ -139,6 +139,26 @@ export async function POST(request: NextRequest) {
         }
         
         console.log('✅ Utilisateur inséré dans la table users');
+        
+        // Insérer l'utilisateur dans la table students
+        console.log('📚 Insertion dans la table students...');
+        const { error: studentInsertError } = await supabase
+          .from('students')
+          .insert({
+            user_id: userId,
+            progress: {},
+            vr_sessions: 0,
+          });
+
+        if (studentInsertError) {
+          console.error('❌ Erreur lors de l\'insertion dans la table students:', studentInsertError);
+          return NextResponse.json(
+            { error: 'Erreur lors de l\'insertion dans la table students' },
+            { status: 500 }
+          );
+        }
+        
+
       }
     } else {
       // L'utilisateur n'existe pas dans auth.users, le créer
@@ -175,7 +195,7 @@ export async function POST(request: NextRequest) {
           id: userId,
           email: session.metadata?.userEmail,
           name: `${session.metadata?.userFirstName} ${session.metadata?.userLastName}`,
-          role: 'coach', // Rôle par défaut pour les nouveaux utilisateurs
+          role: 'individual', // Rôle pour les apprenants individuels
           created_at: new Date().toISOString(),
         });
 
@@ -188,6 +208,26 @@ export async function POST(request: NextRequest) {
       }
       
       console.log('✅ Utilisateur inséré dans la table users');
+      
+      // Insérer l'utilisateur dans la table students
+      console.log('📚 Insertion dans la table students...');
+      const { error: studentInsertError } = await supabase
+        .from('students')
+        .insert({
+          user_id: userId,
+          progress: {},
+          vr_sessions: 0,
+        });
+
+      if (studentInsertError) {
+        console.error('❌ Erreur lors de l\'insertion dans la table students:', studentInsertError);
+        return NextResponse.json(
+          { error: 'Erreur lors de l\'insertion dans la table students' },
+          { status: 500 }
+        );
+      }
+      
+      console.log('✅ Utilisateur inséré dans la table students');
     }
 
     // Enregistrer le paiement

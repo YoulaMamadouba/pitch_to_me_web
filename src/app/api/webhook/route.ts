@@ -80,13 +80,27 @@ export async function POST(request: NextRequest) {
               id: userId,
               email: session.metadata?.userEmail,
               name: `${session.metadata?.userFirstName} ${session.metadata?.userLastName}`,
-              role: 'coach', // Rôle par défaut pour les nouveaux utilisateurs
+              role: 'individual', // Rôle pour les apprenants individuels
               created_at: new Date().toISOString(),
             });
 
           if (userInsertError) {
             console.error('Erreur lors de l\'insertion dans la table users:', userInsertError);
             // On continue quand même car l'utilisateur existe dans auth.users
+          }
+
+          // Créer l'utilisateur dans la table students également
+          const { error: studentInsertError } = await supabase
+            .from('students')
+            .insert({
+              user_id: userId,
+              progress: {},
+              vr_sessions: 0,
+            });
+
+          if (studentInsertError) {
+            console.error('Erreur lors de l\'insertion dans la table students:', studentInsertError);
+            // On continue quand même car l'utilisateur existe dans users
           }
 
           // Insérer le paiement réussi dans Supabase
