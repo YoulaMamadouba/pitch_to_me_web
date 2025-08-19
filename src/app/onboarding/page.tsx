@@ -17,17 +17,13 @@ export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
     setIsMounted(true);
     console.log('🔧 OnboardingPage monté avec onComplete:', !!onComplete);
     
-    // Si onComplete n'existe pas, c'est qu'on accède directement à la page
-    // Rediriger vers le signup
-    if (!onComplete) {
-      console.log('🔧 Accès direct à /onboarding détecté, redirection vers /signup');
-      router.push('/signup');
-      return;
-    }
+    // Vérifier si l'utilisateur est authentifié
+    // Si onComplete n'existe pas, on vérifie si on vient du flow de signup
+    // On ne redirige plus automatiquement vers /signup
   }, [onComplete, router]);
 
   // Navigation handler
-  const handleContinue = (e: React.MouseEvent) => {
+  const handleContinue = async (e: React.MouseEvent) => {
     e.preventDefault();
     console.log('🔧 handleContinue appelé !');
     console.log('🔧 onComplete existe ?', !!onComplete);
@@ -38,8 +34,9 @@ export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
         console.log('🔧 Appel de onComplete depuis OnboardingPage');
         onComplete();
       } else {
-        console.log('🔧 Redirection directe vers /dashboard');
-        window.location.href = '/dashboard';
+        // Rediriger vers le dashboard approprié selon le rôle
+        console.log('🔧 Redirection vers le dashboard learner');
+        window.location.href = '/dashboard'; // Dashboard learner pour les utilisateurs individual
       }
     }
   };
