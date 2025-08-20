@@ -45,20 +45,20 @@ export default function SuccessPage() {
             
             // Attendre 3 secondes puis rediriger vers l'onboarding
             setTimeout(() => {
-              window.location.href = '/onboarding';
+              router.push('/onboarding');
             }, 3000);
           } else {
             console.error('❌ Erreur lors de la vérification:', data.error);
             // En cas d'erreur, rediriger vers la page d'annulation
             setTimeout(() => {
-              window.location.href = '/cancel';
+              router.push('/cancel');
             }, 3000);
           }
         } catch (error) {
           console.error('❌ Erreur lors de la vérification du paiement:', error);
           // En cas d'erreur, rediriger vers la page d'annulation
           setTimeout(() => {
-            window.location.href = '/cancel';
+            router.push('/cancel');
           }, 3000);
         }
       };
@@ -67,7 +67,7 @@ export default function SuccessPage() {
     } else {
       // Pas de session ID, rediriger vers l'accueil
       setTimeout(() => {
-        window.location.href = '/';
+        router.push('/');
       }, 3000);
     }
     

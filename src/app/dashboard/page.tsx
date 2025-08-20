@@ -483,15 +483,64 @@ export default function DashboardPage() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isAICoachOpen, setIsAICoachOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [showWelcomeNotification, setShowWelcomeNotification] = useState(false);
+  const [showOnboardingSuccess, setShowOnboardingSuccess] = useState(false);
+
+  // Check for onboarding completion
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const fromOnboarding = sessionStorage.getItem('fromOnboarding') === 'true';
+    const onboardingComplete = searchParams.get('onboarding') === 'complete';
+    
+    if (fromOnboarding && onboardingComplete) {
+      setShowOnboardingSuccess(true);
+      // Clear the flag from session storage
+      sessionStorage.removeItem('fromOnboarding');
+      // Remove the query parameter from the URL without reloading
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+      
+      // Hide the success message after 5 seconds
+      const timer = setTimeout(() => {
+        setShowOnboardingSuccess(false);
+      }, 5000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [router]);
 
   // Load user data
   useEffect(() => {
     const loadUserData = async () => {
       try {
+        console.log('🔧 Chargement des données utilisateur...');
         const userData = await UserService.getCurrentUser();
+        
+        if (!userData) {
+          console.error('❌ Aucune donnée utilisateur trouvée');
+          // Rediriger vers la page de login si pas de données utilisateur
+          router.push('/login');
+          return;
+        }
+        
+        console.log('✅ Données utilisateur chargées:', userData);
         setCurrentUser(userData);
+        
+        // Afficher la notification de bienvenue si c'est la première fois
+        const hasSeenWelcome = sessionStorage.getItem('hasSeenWelcome');
+        const isFromOnboarding = sessionStorage.getItem('fromOnboarding');
+        
+        if (!hasSeenWelcome || isFromOnboarding) {
+          setShowWelcomeNotification(true);
+          sessionStorage.setItem('hasSeenWelcome', 'true');
+          sessionStorage.removeItem('fromOnboarding'); // Nettoyer le flag
+          // Masquer la notification après 5 secondes
+          setTimeout(() => setShowWelcomeNotification(false), 5000);
+        }
       } catch (error) {
-        console.error('Erreur lors du chargement des données utilisateur:', error);
+        console.error('❌ Erreur lors du chargement des données utilisateur:', error);
+        // Rediriger vers la page de login en cas d'erreur
+        router.push('/login');
       } finally {
         setLoading(false);
       }
@@ -500,9 +549,10 @@ export default function DashboardPage() {
     if (user) {
       loadUserData();
     } else {
-      setLoading(false);
+      console.log('🔧 Aucun utilisateur connecté, redirection vers /login');
+      router.push('/login');
     }
-  }, [user]);
+  }, [user, router]);
   
   // Form state
   const [isEditing, setIsEditing] = useState(false);
@@ -654,6 +704,16 @@ export default function DashboardPage() {
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+      {/* Onboarding Success Notification */}
+      {showOnboardingSuccess && (
+        <div className="fixed top-4 right-4 z-50">
+          <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2 animate-fade-in">
+            <Check className="w-5 h-5" />
+            <span>Onboarding terminé avec succès ! Profitez de votre formation.</span>
+          </div>
+        </div>
+      )}
+      
       {/* Sidebar */}
       <div className={`${isSidebarOpen ? 'w-64' : 'w-20'} bg-gray-900 text-white transition-all duration-300 ease-in-out flex flex-col`}>
         <div className="p-4 flex items-center justify-between border-b border-gray-800">
@@ -1053,6 +1113,27 @@ export default function DashboardPage() {
           )}
         </main>
       </div>
+
+      {/* Welcome Notification */}
+      {showWelcomeNotification && (
+        <div className="fixed top-4 right-4 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg border border-green-400 animate-in slide-in-from-right duration-300">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-green-400 rounded-full flex items-center justify-center">
+              <Check className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <p className="font-medium">Bienvenue, {currentUser?.name?.split(' ')[0] || 'Utilisateur'} !</p>
+              <p className="text-sm opacity-90">Vous êtes maintenant connecté à votre dashboard.</p>
+            </div>
+            <button 
+              onClick={() => setShowWelcomeNotification(false)}
+              className="text-white hover:text-gray-200"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* AI Coach Circle Button */}
       <motion.button

@@ -11,15 +11,24 @@ interface OnboardingPageProps {
 
 export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
   const [isMounted, setIsMounted] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
     console.log('🔧 OnboardingPage monté avec onComplete:', !!onComplete);
     
-    // Vérifier si l'utilisateur est authentifié
-    // Si onComplete n'existe pas, on vérifie si on vient du flow de signup
-    // On ne redirige plus automatiquement vers /signup
+    // Check if we're coming from a successful payment
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.get('payment') === 'success') {
+      setShowSuccess(true);
+      
+      // Store the session ID for later use
+      const sessionId = searchParams.get('session_id');
+      if (sessionId) {
+        localStorage.setItem('stripe_session_id', sessionId);
+      }
+    }
   }, [onComplete, router]);
 
   // Navigation handler
@@ -29,15 +38,31 @@ export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
     console.log('🔧 onComplete existe ?', !!onComplete);
     console.log('🔧 isMounted ?', isMounted);
     
-    if (isMounted) {
+    if (!isMounted) return;
+    
+    try {
+      // Mark onboarding as completed in local storage
+      localStorage.setItem('onboardingCompleted', 'true');
+      
+      // If we have an onComplete callback, use it
       if (onComplete) {
         console.log('🔧 Appel de onComplete depuis OnboardingPage');
         onComplete();
-      } else {
-        // Rediriger vers le dashboard approprié selon le rôle
-        console.log('🔧 Redirection vers le dashboard learner');
-        window.location.href = '/dashboard'; // Dashboard learner pour les utilisateurs individual
+        return;
       }
+      
+      console.log('🔧 Redirection vers le dashboard');
+      
+      // Store in session that we're coming from onboarding
+      sessionStorage.setItem('fromOnboarding', 'true');
+      
+      // Redirect to dashboard with a flag to show success message
+      router.push('/dashboard?onboarding=complete');
+      
+    } catch (error) {
+      console.error('Error completing onboarding:', error);
+      // Fallback to dashboard even if there's an error
+      router.push('/dashboard');
     }
   };
 
@@ -45,6 +70,16 @@ export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 flex flex-col">
       {/* Header */}
       <AuthPageHeader pageTitle="Onboarding" />
+      
+      {/* Success Notification */}
+      {showSuccess && (
+        <div className="fixed top-4 right-4 z-50">
+          <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2 animate-fade-in">
+            <Check className="w-5 h-5" />
+            <span>Paiement réussi ! Complétez votre onboarding pour commencer.</span>
+          </div>
+        </div>
+      )}
       
       <div className="flex-1 overflow-y-auto pt-10 pb-4">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full">
