@@ -586,57 +586,71 @@ const MediaPipeAnalyzer = ({ onRecordingComplete, onClose, onError }: MediaPipeA
     try {
       // Dessiner les landmarks de pose
       if (poseResults.landmarks && poseResults.landmarks.length > 0) {
-        const { DrawingUtils } = require('@mediapipe/drawing_utils');
-        const { PoseLandmarker } = require('@mediapipe/tasks-vision');
-        const drawingUtils = new DrawingUtils(ctx);
-        
+        // Dessiner des points simples pour la pose
         for (const landmarks of poseResults.landmarks) {
-          drawingUtils.drawConnectors(landmarks, PoseLandmarker.POSE_CONNECTIONS, {
-            color: '#00FF00',
-            lineWidth: 2
-          });
-          drawingUtils.drawLandmarks(landmarks, {
-            color: '#00FF00',
-            lineWidth: 1
-          });
+          ctx.strokeStyle = '#00FF00';
+          ctx.lineWidth = 2;
+          
+          // Dessiner quelques points clés de la pose
+          const keyPoints = [0, 11, 12, 23, 24]; // nez, épaules, hanches
+          for (const pointIndex of keyPoints) {
+            if (landmarks[pointIndex]) {
+              const point = landmarks[pointIndex];
+              const x = point.x * ctx.canvas.width;
+              const y = point.y * ctx.canvas.height;
+              
+              ctx.beginPath();
+              ctx.arc(x, y, 5, 0, 2 * Math.PI);
+              ctx.fillStyle = '#00FF00';
+              ctx.fill();
+            }
+          }
         }
       }
       
       // Dessiner les landmarks de visage
       if (faceResults.faceLandmarks && faceResults.faceLandmarks.length > 0) {
-        const { DrawingUtils } = require('@mediapipe/drawing_utils');
-        const { FaceLandmarker } = require('@mediapipe/tasks-vision');
-        const drawingUtils = new DrawingUtils(ctx);
-        
         for (const landmarks of faceResults.faceLandmarks) {
-          drawingUtils.drawConnectors(landmarks, FaceLandmarker.FACE_LANDMARKS_TESSELATION, {
-            color: '#FF0000',
-            lineWidth: 1
-          });
-          drawingUtils.drawConnectors(landmarks, FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE, {
-            color: '#FF00FF'
-          });
-          drawingUtils.drawConnectors(landmarks, FaceLandmarker.FACE_LANDMARKS_LEFT_EYE, {
-            color: '#FF00FF'
-          });
+          ctx.strokeStyle = '#FF0000';
+          ctx.lineWidth = 1;
+          
+          // Dessiner quelques points clés du visage
+          const facePoints = [33, 133, 362, 263]; // yeux et nez
+          for (const pointIndex of facePoints) {
+            if (landmarks[pointIndex]) {
+              const point = landmarks[pointIndex];
+              const x = point.x * ctx.canvas.width;
+              const y = point.y * ctx.canvas.height;
+              
+              ctx.beginPath();
+              ctx.arc(x, y, 3, 0, 2 * Math.PI);
+              ctx.fillStyle = '#FF0000';
+              ctx.fill();
+            }
+          }
         }
       }
       
       // Dessiner les landmarks des mains
       if (handResults && handResults.landmarks && handResults.landmarks.length > 0) {
-        const { DrawingUtils } = require('@mediapipe/drawing_utils');
-        const { HandLandmarker } = require('@mediapipe/tasks-vision');
-        const drawingUtils = new DrawingUtils(ctx);
-        
         for (const landmarks of handResults.landmarks) {
-          drawingUtils.drawConnectors(landmarks, HandLandmarker.HAND_CONNECTIONS, {
-            color: '#FF8000',
-            lineWidth: 2
-          });
-          drawingUtils.drawLandmarks(landmarks, {
-            color: '#FF8000',
-            lineWidth: 1
-          });
+          ctx.strokeStyle = '#FF8000';
+          ctx.lineWidth = 2;
+          
+          // Dessiner quelques points clés des mains
+          const handPoints = [0, 4, 8, 12, 16, 20]; // pouce, index, majeur, etc.
+          for (const pointIndex of handPoints) {
+            if (landmarks[pointIndex]) {
+              const point = landmarks[pointIndex];
+              const x = point.x * ctx.canvas.width;
+              const y = point.y * ctx.canvas.height;
+              
+              ctx.beginPath();
+              ctx.arc(x, y, 4, 0, 2 * Math.PI);
+              ctx.fillStyle = '#FF8000';
+              ctx.fill();
+            }
+          }
         }
       }
       
