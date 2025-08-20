@@ -7,5 +7,5 @@ interface PaymentWrapperProps {
 }
 
 export default function PaymentWrapper({ onComplete }: PaymentWrapperProps) {
-  return <PaymentPage onComplete={onComplete} />;
+  return <PaymentPage />;
 }

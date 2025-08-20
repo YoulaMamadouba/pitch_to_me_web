@@ -4,19 +4,17 @@ import { useEffect, useState } from 'react';
 import { Check, Play, Volume2, BookOpen, Award } from 'lucide-react';
 import AuthPageHeader from '@/components/ui/AuthPageHeader';
 import { useRouter } from 'next/navigation';
+import { VideoMotivationRecorder } from '@/components/analyse_post_face/VideoMotivationRecorder';
 
-interface OnboardingPageProps {
-  onComplete?: () => void;
-}
-
-export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
+export default function OnboardingPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showVideoRecorder, setShowVideoRecorder] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
-    console.log('🔧 OnboardingPage monté avec onComplete:', !!onComplete);
+    console.log('🔧 OnboardingPage monté');
     
     // Check if we're coming from a successful payment
     const searchParams = new URLSearchParams(window.location.search);
@@ -29,13 +27,12 @@ export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
         localStorage.setItem('stripe_session_id', sessionId);
       }
     }
-  }, [onComplete, router]);
+  }, [router]);
 
   // Navigation handler
   const handleContinue = async (e: React.MouseEvent) => {
     e.preventDefault();
     console.log('🔧 handleContinue appelé !');
-    console.log('🔧 onComplete existe ?', !!onComplete);
     console.log('🔧 isMounted ?', isMounted);
     
     if (!isMounted) return;
@@ -43,13 +40,6 @@ export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
     try {
       // Mark onboarding as completed in local storage
       localStorage.setItem('onboardingCompleted', 'true');
-      
-      // If we have an onComplete callback, use it
-      if (onComplete) {
-        console.log('🔧 Appel de onComplete depuis OnboardingPage');
-        onComplete();
-        return;
-      }
       
       console.log('🔧 Redirection vers le dashboard');
       
@@ -68,6 +58,17 @@ export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 flex flex-col">
+      {/* Video Recorder Modal */}
+      {showVideoRecorder && (
+        <VideoMotivationRecorder
+          onRecordingComplete={(data) => {
+            console.log('Vidéo enregistrée:', data);
+            setShowVideoRecorder(false);
+          }}
+          onClose={() => setShowVideoRecorder(false)}
+        />
+      )}
+
       {/* Header */}
       <AuthPageHeader pageTitle="Onboarding" />
       
@@ -168,7 +169,13 @@ export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
                           <p className="text-gray-300 text-xs">Partagez-nous vos objectifs</p>
                         </div>
                       </div>
-                      <button className="bg-yellow-500 hover:bg-yellow-400 text-black text-sm font-medium px-3 py-1 rounded-lg transition-colors">
+                      <button 
+                        onClick={() => {
+                          console.log('🔧 Bouton Enregistrer cliqué !');
+                          setShowVideoRecorder(true);
+                        }}
+                        className="bg-yellow-500 hover:bg-yellow-400 text-black text-sm font-medium px-3 py-1 rounded-lg transition-colors"
+                      >
                         Enregistrer
                       </button>
                     </div>

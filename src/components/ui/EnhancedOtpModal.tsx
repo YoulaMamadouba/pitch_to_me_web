@@ -207,7 +207,11 @@ export default function EnhancedOtpModal({
                 {[0, 1, 2, 3, 4, 5].map((index) => (
                   <input
                     key={index}
-                    ref={(el) => (inputRefs.current[index] = el)}
+                    ref={(el) => {
+                      if (inputRefs.current) {
+                        inputRefs.current[index] = el;
+                      }
+                    }}
                     type="text"
                     maxLength={1}
                     inputMode="numeric"

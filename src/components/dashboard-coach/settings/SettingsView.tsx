@@ -140,7 +140,7 @@ export const SettingsView = ({ activeTab = 'profile' }: SettingsViewProps) => {
       <div className="lg:w-80 flex-shrink-0">
         <SettingsTabs
           activeTab={currentTab}
-          onTabChange={setCurrentTab}
+          onTabChange={(tab) => setCurrentTab(tab as typeof currentTab)}
         />
       </div>
 

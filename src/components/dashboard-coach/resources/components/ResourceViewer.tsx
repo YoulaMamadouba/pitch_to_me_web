@@ -157,7 +157,7 @@ export const ResourceViewer = ({ resource, onClose }: ResourceViewerProps) => {
                   month: 'long',
                   year: 'numeric'
                 })}
-                {resource.size && (
+                {'size' in resource && resource.size && (
                   <span> • {resource.size}</span>
                 )}
               </p>

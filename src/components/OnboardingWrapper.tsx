@@ -7,5 +7,5 @@ interface OnboardingWrapperProps {
 }
 
 export default function OnboardingWrapper({ onComplete }: OnboardingWrapperProps) {
-  return <OnboardingPage onComplete={onComplete} />;
+  return <OnboardingPage />;
 }

@@ -87,7 +87,8 @@ export default function LearnerProfile({ onBack }: LearnerProfileProps) {
       // Upload image if changed
       let avatarUrl = user.avatar_url || undefined;
       if (profileImage) {
-        avatarUrl = await UserService.uploadAvatar(user.id, profileImage);
+        const uploadedUrl = await UserService.uploadAvatar(user.id, profileImage);
+        avatarUrl = uploadedUrl || undefined;
       }
 
       // Update user data

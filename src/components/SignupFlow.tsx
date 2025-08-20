@@ -136,7 +136,9 @@ export default function SignupFlow() {
     
     // Créer l'utilisateur dans la base de données à la fin de l'onboarding
     console.log('🔧 Création de l\'utilisateur...');
-    const { error, user } = await createUser(formData);
+    const result = await createUser(formData);
+    const error = result?.error;
+    const user = (result as any)?.user;
     
     if (error) {
       console.error('❌ Erreur lors de la création de l\'utilisateur:', error);
