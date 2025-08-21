@@ -453,11 +453,16 @@ const CoachDashboard = () => {
 
   const getCurrentView = () => {
     if (activeTab === 'modules' && activeModuleType) {
-      if (selectedDomain) {
+      if (selectedDomain && selectedDomain.name) {
         return (
           <ModulesList
-            domainName={selectedDomain.name}
-            onBackToDomains={handleBackToDomains}
+            domain={selectedDomain}
+            modules={[] as any[]} // TODO: Passer les vrais modules
+            onBack={handleBackToDomains}
+            onCreateModule={handleCreateModule}
+            onEditModule={() => {}}
+            onDeleteModule={() => {}}
+            onViewModule={() => {}}
           />
         );
       } else {
