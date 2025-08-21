@@ -2,6 +2,26 @@
 export type LessonStatus = 'completed' | 'in-progress' | 'locked' | 'unlocked';
 export type LessonType = 'video' | 'reading' | 'quiz' | 'exercise';
 
+// Type Module pour la compatibilité
+export interface Module {
+  id: string;
+  title: string;
+  description: string;
+  videoUrl: string;
+  theme: string;
+  domain: string;
+  offerType?: string;
+  activityDomain?: string;
+  difficulty: 'easy' | 'intermediate' | 'advanced';
+  duration: number; // en minutes
+  tags: string[];
+  rating: number;
+  studentsCount: number;
+  createdAt: string;
+  status?: 'locked' | 'unlocked' | 'in-progress' | 'completed';
+  lessons?: BaseLesson[];
+}
+
 export interface BaseLesson {
   id: string;
   title: string;
@@ -87,10 +107,10 @@ export interface LessonListProps {
 
 export interface ModulesListProps {
   domain: Domain;
-  modules: CoachModule[];
+  modules: Module[];
   onBack: () => void;
   onCreateModule: () => void;
-  onEditModule: (module: CoachModule) => void;
+  onEditModule: (module: Module) => void;
   onDeleteModule: (moduleId: string) => void;
-  onViewModule: (module: CoachModule) => void;
+  onViewModule: (module: Module) => void;
 }

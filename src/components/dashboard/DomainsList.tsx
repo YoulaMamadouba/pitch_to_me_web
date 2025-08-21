@@ -19,7 +19,8 @@ import {
   ShoppingBag,
   Wrench,
   Leaf,
-  Zap
+  Zap,
+  X
 } from 'lucide-react';
 import DomainCard from './DomainCard';
 import ModuleForm from './ModuleForm';
@@ -239,6 +240,7 @@ const b2cDomains: Domain[] = [
 
 export default function DomainsList({ moduleType, onDomainSelect, onCreateModule }: DomainsListProps) {
   const [showModuleForm, setShowModuleForm] = useState(false);
+  const [showDomainForm, setShowDomainForm] = useState(false);
   const domains = moduleType === 'b2b' ? b2bDomains : b2cDomains;
   const totalModules = domains.reduce((total, domain) => total + domain.moduleCount, 0);
 
@@ -252,13 +254,15 @@ export default function DomainsList({ moduleType, onDomainSelect, onCreateModule
           </h2>
 
         </div>
-        <button
-          onClick={() => setShowModuleForm(true)}
-          className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-semibold px-6 py-3 rounded-lg hover:shadow-lg transition-all flex items-center space-x-2"
-        >
-          <Plus className="w-5 h-5" />
-          <span>Créer un module {moduleType.toUpperCase()}</span>
-        </button>
+        {moduleType === 'b2c' && (
+          <button
+            onClick={() => setShowDomainForm(true)}
+            className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-semibold px-6 py-3 rounded-lg hover:shadow-lg transition-all flex items-center space-x-2"
+          >
+            <Plus className="w-5 h-5" />
+            <span>Créer un domaine</span>
+          </button>
+        )}
       </div>
 
       {/* Stats */}
@@ -376,6 +380,98 @@ export default function DomainsList({ moduleType, onDomainSelect, onCreateModule
         editingModule={null}
         domains={domains}
       />
+
+      {/* Formulaire de création de domaine */}
+      {showDomainForm && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-gray-900 rounded-xl p-6 w-full max-w-md border border-gray-700">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold text-white">Créer un nouveau domaine</h3>
+              <button
+                onClick={() => setShowDomainForm(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.currentTarget);
+              const domainData = {
+                name: formData.get('name') as string,
+                description: formData.get('description') as string,
+                color: formData.get('color') as string,
+              };
+              console.log('Nouveau domaine créé:', domainData);
+              setShowDomainForm(false);
+              // Ici vous pouvez ajouter la logique pour créer le domaine
+            }}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Nom du domaine
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    required
+                    className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400"
+                    placeholder="Ex: Technologies de l'information"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    name="description"
+                    required
+                    rows={3}
+                    className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400"
+                    placeholder="Description du domaine d'activité..."
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Couleur du thème
+                  </label>
+                  <select
+                    name="color"
+                    required
+                    className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-yellow-400"
+                  >
+                    <option value="from-blue-500 to-blue-600">Bleu</option>
+                    <option value="from-green-500 to-green-600">Vert</option>
+                    <option value="from-purple-500 to-purple-600">Violet</option>
+                    <option value="from-red-500 to-red-600">Rouge</option>
+                    <option value="from-yellow-500 to-yellow-600">Jaune</option>
+                    <option value="from-pink-500 to-pink-600">Rose</option>
+                  </select>
+                </div>
+                
+                <div className="flex space-x-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowDomainForm(false)}
+                    className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 px-4 py-2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-semibold rounded-lg hover:shadow-lg transition-all"
+                  >
+                    Créer le domaine
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -7,7 +7,8 @@ import { ModuleFolder } from './ModuleFolder';
 import ModuleFolderComponent from './ModuleFolder';
 import { Lesson } from './LessonCard';
 import LessonsList from './LessonsList';
-import SimpleModuleForm from './SimpleModuleForm';
+import ModuleForm from './ModuleForm';
+import { ModulesListProps } from '@/types';
 
 // Données de test pour les modules
 const mockModules: ModuleFolder[] = [
@@ -255,20 +256,15 @@ const mockLessons: Record<string, Lesson[]> = {
   ]
 };
 
-interface ModulesListProps {
-  domainName: string;
-  onBackToDomains: () => void;
-}
-
-export default function ModulesList({ domainName, onBackToDomains }: ModulesListProps) {
+export default function ModulesList({ domain, modules, onBack, onCreateModule, onEditModule, onDeleteModule, onViewModule }: ModulesListProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedModule, setSelectedModule] = useState<ModuleFolder | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | undefined>(undefined);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showAddModuleForm, setShowAddModuleForm] = useState(false);
-  const [modules, setModules] = useState<ModuleFolder[]>(mockModules);
+  const [localModules, setLocalModules] = useState<ModuleFolder[]>(mockModules);
 
-  const filteredModules = modules.filter(module =>
+  const filteredModules = localModules.filter(module =>
     module.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     module.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -289,26 +285,7 @@ export default function ModulesList({ domainName, onBackToDomains }: ModulesList
     console.log('Leçon sélectionnée:', lesson);
   };
 
-  const handleAddModule = (moduleData: any) => {
-    const moduleToAdd: ModuleFolder = {
-      id: Date.now().toString(),
-      title: moduleData.title,
-      description: moduleData.description,
-      lessonCount: 0,
-      totalDuration: 0,
-      studentsCount: 0,
-      rating: 0,
-      difficulty: moduleData.difficulty,
-      isLocked: false,
-      isCompleted: false,
-      progress: 0,
-      color: moduleData.color,
-      tags: [],
-      createdAt: new Date().toISOString().split('T')[0]
-    };
-    
-    setModules([moduleToAdd, ...modules]);
-  };
+
 
   // Si un module est sélectionné, afficher la liste des leçons
   if (selectedModule) {
@@ -334,14 +311,14 @@ export default function ModulesList({ domainName, onBackToDomains }: ModulesList
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <button
-            onClick={onBackToDomains}
+            onClick={onBack}
             className="flex items-center space-x-2 text-gray-400 hover:text-yellow-400 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
             <span>Retour aux domaines</span>
           </button>
           <div className="h-6 w-px bg-gray-600"></div>
-          <h1 className="text-2xl font-bold text-white">Modules - {domainName}</h1>
+          <h1 className="text-2xl font-bold text-white">Modules - {domain.name}</h1>
         </div>
         
         <div className="flex items-center space-x-4">
@@ -392,19 +369,19 @@ export default function ModulesList({ domainName, onBackToDomains }: ModulesList
           </div>
         <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-4">
           <div className="text-2xl font-bold text-green-400">
-            {modules.filter(m => m.isCompleted).length}
+            {modules.filter(m => m.status === 'completed').length}
           </div>
           <div className="text-sm text-gray-400">Modules terminés</div>
             </div>
         <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-4">
           <div className="text-2xl font-bold text-blue-400">
-            {modules.reduce((total, m) => total + m.lessonCount, 0)}
+            {modules.reduce((total, m) => total + (m.lessons?.length || 0), 0)}
           </div>
           <div className="text-sm text-gray-400">Leçons totales</div>
             </div>
         <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-4">
           <div className="text-2xl font-bold text-purple-400">
-            {Math.round(modules.reduce((total, m) => total + m.totalDuration, 0) / 60)}h
+            {Math.round(modules.reduce((total, m) => total + m.duration, 0) / 60)}h
           </div>
           <div className="text-sm text-gray-400">Durée totale</div>
         </div>
@@ -426,11 +403,17 @@ export default function ModulesList({ domainName, onBackToDomains }: ModulesList
         </div>
 
                 {/* Formulaire d'ajout de module */}
-        <SimpleModuleForm
+        <ModuleForm
           isOpen={showAddModuleForm}
           onClose={() => setShowAddModuleForm(false)}
-          onSubmit={handleAddModule}
+          onSubmit={(moduleData) => {
+            console.log('Nouveau module créé:', moduleData);
+            setShowAddModuleForm(false);
+            // Ici vous pouvez ajouter la logique pour créer le module
+          }}
           moduleType="b2b"
+          editingModule={null}
+          domains={[]}
         />
         
         <AnimatePresence>
