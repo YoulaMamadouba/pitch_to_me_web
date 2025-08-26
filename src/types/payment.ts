@@ -32,7 +32,15 @@ export const PAYMENT_AMOUNTS: PaymentAmounts = {
   XOF: 17500000, // 175,000 FCFA en centimes
 };
 
-export const getAmountInCents = (currency: keyof PaymentAmounts): number => {
+export const getAmountInCents = (currency: keyof PaymentAmounts, customAmount?: number): number => {
+  if (customAmount !== undefined) {
+    // Si c'est déjà en centimes, retourner tel quel
+    if (customAmount > 1000) {
+      return customAmount;
+    }
+    // Sinon convertir en centimes
+    return Math.round(customAmount * 100);
+  }
   return PAYMENT_AMOUNTS[currency];
 };
 

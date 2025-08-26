@@ -7,7 +7,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(request: NextRequest) {
   try {
-    const { amount, currency, plan, userData } = await request.json();
+    const { amount, currency, plan, userData, formationData } = await request.json();
 
     // Validation des paramètres
     if (!amount || !currency || !plan || !userData) {
@@ -34,13 +34,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validation du plan
-    const validPlans = ['standard', 'premium'];
+    // Validation du plan (maintenant peut être un ID de formation)
+    const validPlans = ['standard', 'premium', 'commercial-basics', 'commercial-advanced', 'pitch-mastery', 'public-speaking', 'team-leadership', 'persuasion-techniques'];
     if (!validPlans.includes(plan)) {
       return NextResponse.json(
-        { error: 'Plan non supporté' },
+        { error: 'Plan/Formation non supporté' },
         { status: 400 }
       );
+    }
+
+    // Déterminer le nom et la description du produit
+    let productName = 'Formation Standard';
+    let productDescription = '6 modules + coaching de base';
+    
+    if (plan === 'premium') {
+      productName = 'Formation Premium VR';
+      productDescription = '12 modules + environnements VR + coaching IA';
+    } else if (formationData) {
+      productName = formationData.title;
+      productDescription = `Formation spécialisée - ${formationData.title}`;
     }
 
     // Création de la session Stripe
@@ -51,10 +63,8 @@ export async function POST(request: NextRequest) {
           price_data: {
             currency: currency.toLowerCase(),
             product_data: {
-              name: `Formation ${plan === 'premium' ? 'Premium VR' : 'Standard'}`,
-              description: plan === 'premium' 
-                ? '12 modules + environnements VR + coaching IA' 
-                : '6 modules + coaching de base',
+              name: productName,
+              description: productDescription,
             },
             unit_amount: amount, // Montant en centimes
           },
@@ -72,6 +82,8 @@ export async function POST(request: NextRequest) {
         userCountry: userData.country || '',
         currency,
         plan,
+        formationId: formationData?.id || '',
+        formationTitle: formationData?.title || '',
       },
     });
 
