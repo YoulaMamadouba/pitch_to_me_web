@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { ModulesProvider } from '@/contexts/ModulesContext';
 import { CompaniesProvider } from '@/contexts/CompaniesContext';
 import { StudentsProvider } from '@/contexts/StudentsContext';
+import { ActivityDomainsProvider } from '@/contexts/ActivityDomainsContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { SignupProvider } from '@/contexts/SignupContext';
@@ -29,8 +30,9 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
     <AuthProvider>
       <LanguageProvider>
         <ModulesProvider>
-          <CompaniesProvider>
-            <StudentsProvider>
+          <ActivityDomainsProvider>
+            <CompaniesProvider>
+              <StudentsProvider>
               <SignupProvider>
                 {/* Global loader uses the same icon and brand color as the header */}
                 <PitchLoader
@@ -45,6 +47,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
               </SignupProvider>
             </StudentsProvider>
           </CompaniesProvider>
+        </ActivityDomainsProvider>
         </ModulesProvider>
       </LanguageProvider>
     </AuthProvider>

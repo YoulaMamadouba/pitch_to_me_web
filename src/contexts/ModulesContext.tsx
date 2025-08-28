@@ -1,114 +1,137 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode } from 'react';
-import { Module } from '@/components/dashboard/ModuleCard';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { 
+  Module, 
+  CreateModuleData,
+  getAllModules,
+  getModulesByType,
+  getModulesByActivityDomain,
+  createModule,
+  updateModule,
+  deleteModule,
+  getModuleStats
+} from '@/lib/moduleService';
 
 interface ModulesContextType {
   modules: Module[];
-  addModule: (module: Module) => void;
-  updateModule: (moduleId: string, updates: Partial<Module>) => void;
-  deleteModule: (moduleId: string) => void;
-  getModulesByDomain: (domain: string) => Module[];
-  getModulesByType: (type: 'b2b' | 'b2c') => Module[];
+  loading: boolean;
+  error: string | null;
+  refreshModules: () => Promise<void>;
+  createModule: (moduleData: CreateModuleData) => Promise<Module>;
+  updateModule: (id: string, updates: Partial<CreateModuleData>) => Promise<Module>;
+  deleteModule: (id: string) => Promise<void>;
+  getModulesByType: (type: 'b2b' | 'b2c') => Promise<Module[]>;
+  getModulesByDomain: (domainId: string) => Promise<Module[]>;
+  getModuleStats: (moduleId: string) => Promise<{
+    lessonCount: number;
+    studentsCount: number;
+    averageRating: number;
+  }>;
 }
 
 const ModulesContext = createContext<ModulesContextType | undefined>(undefined);
 
-// Données de démonstration
-const initialModules: Module[] = [
-  {
-    id: '1',
-    title: 'Techniques de vente avancées',
-    description: 'Maîtrisez les techniques de vente les plus efficaces pour maximiser vos résultats commerciaux.',
-    videoUrl: 'https://www.youtube.com/watch?v=example1',
-    theme: 'Négociation commerciale',
-    domain: 'Banque & Finance',
-    offerType: 'commercial',
-    activityDomain: 'commercial',
-    difficulty: 'advanced',
-    duration: 45,
-    tags: ['vente', 'négociation', 'commercial', 'techniques'],
-    rating: 4.8,
-    studentsCount: 156,
-    createdAt: '2024-01-15'
-  },
-  {
-    id: '2',
-    title: 'Présentation de projet efficace',
-    description: 'Apprenez à présenter vos projets de manière claire et convaincante.',
-    videoUrl: 'https://www.youtube.com/watch?v=example2',
-    theme: 'Présentation',
-    domain: 'Gouvernement & Public',
-    offerType: 'management',
-    activityDomain: 'management',
-    difficulty: 'intermediate',
-    duration: 30,
-    tags: ['présentation', 'projet', 'management', 'communication'],
-    rating: 4.6,
-    studentsCount: 89,
-    createdAt: '2024-01-20'
-  },
-  {
-    id: '3',
-    title: 'Confiance en soi pour les entretiens',
-    description: 'Développez votre confiance en soi pour réussir vos entretiens professionnels.',
-    videoUrl: 'https://www.youtube.com/watch?v=example3',
-    theme: 'Développement personnel',
-    domain: 'Développement Personnel',
-    offerType: 'rh',
-    activityDomain: 'rh',
-    difficulty: 'easy',
-    duration: 25,
-    tags: ['confiance', 'entretien', 'développement', 'personnel'],
-    rating: 4.9,
-    studentsCount: 234,
-    createdAt: '2024-01-10'
-  }
-];
-
 export function ModulesProvider({ children }: { children: ReactNode }) {
-  const [modules, setModules] = useState<Module[]>(initialModules);
+  const [modules, setModules] = useState<Module[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const addModule = (module: Module) => {
-    setModules(prev => [...prev, module]);
+  const fetchModules = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await getAllModules();
+      setModules(data);
+    } catch (err) {
+      console.error('Erreur lors du chargement des modules:', err);
+      setError(err instanceof Error ? err.message : 'Erreur lors du chargement des modules');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const updateModule = (moduleId: string, updates: Partial<Module>) => {
-    setModules(prev => prev.map(module => 
-      module.id === moduleId ? { ...module, ...updates } : module
-    ));
+  const refreshModules = async () => {
+    await fetchModules();
   };
 
-  const deleteModule = (moduleId: string) => {
-    setModules(prev => prev.filter(module => module.id !== moduleId));
+  const createModuleHandler = async (moduleData: CreateModuleData): Promise<Module> => {
+    try {
+      const newModule = await createModule(moduleData);
+      setModules(prev => [...prev, newModule]);
+      return newModule;
+    } catch (err) {
+      console.error('Erreur lors de la création du module:', err);
+      throw err;
+    }
   };
 
-  const getModulesByDomain = (domain: string) => {
-    return modules.filter(module => module.domain === domain);
+  const updateModuleHandler = async (id: string, updates: Partial<CreateModuleData>): Promise<Module> => {
+    try {
+      const updatedModule = await updateModule(id, updates);
+      setModules(prev => prev.map(module => 
+        module.id === id ? updatedModule : module
+      ));
+      return updatedModule;
+    } catch (err) {
+      console.error('Erreur lors de la mise à jour du module:', err);
+      throw err;
+    }
   };
 
-  const getModulesByType = (type: 'b2b' | 'b2c') => {
-    // Logique pour filtrer par type B2B ou B2C basée sur les domaines
-    const b2bDomains = [
-      'Banque & Finance', 'Mines & Énergie', 'Gouvernement & Public', 
-      'Industrie & Manufacture', 'Automobile & Transport', 'Aérospatial & Aviation',
-      'Santé & Médical', 'Éducation & Formation', 'Commerce & Retail',
-      'Technologie & IT', 'Environnement & Développement Durable', 'Consulting & Services'
-    ];
-    const b2cDomains = ['Développement Personnel', 'Carrière & Emploi', 'Prise de Parole', 'Networking & Relations', 'Entrepreneuriat'];
-    
-    const targetDomains = type === 'b2b' ? b2bDomains : b2cDomains;
-    return modules.filter(module => targetDomains.includes(module.domain));
+  const deleteModuleHandler = async (id: string): Promise<void> => {
+    try {
+      await deleteModule(id);
+      setModules(prev => prev.filter(module => module.id !== id));
+    } catch (err) {
+      console.error('Erreur lors de la suppression du module:', err);
+      throw err;
+    }
   };
+
+  const getModulesByTypeHandler = async (type: 'b2b' | 'b2c'): Promise<Module[]> => {
+    try {
+      return await getModulesByType(type);
+    } catch (err) {
+      console.error('Erreur lors de la récupération des modules par type:', err);
+      throw err;
+    }
+  };
+
+  const getModulesByDomainHandler = async (domainId: string): Promise<Module[]> => {
+    try {
+      return await getModulesByActivityDomain(domainId);
+    } catch (err) {
+      console.error('Erreur lors de la récupération des modules par domaine:', err);
+      throw err;
+    }
+  };
+
+  const getModuleStatsHandler = async (moduleId: string) => {
+    try {
+      return await getModuleStats(moduleId);
+    } catch (err) {
+      console.error('Erreur lors de la récupération des statistiques du module:', err);
+      throw err;
+    }
+  };
+
+  useEffect(() => {
+    fetchModules();
+  }, []);
 
   return (
     <ModulesContext.Provider value={{
       modules,
-      addModule,
-      updateModule,
-      deleteModule,
-      getModulesByDomain,
-      getModulesByType
+      loading,
+      error,
+      refreshModules,
+      createModule: createModuleHandler,
+      updateModule: updateModuleHandler,
+      deleteModule: deleteModuleHandler,
+      getModulesByType: getModulesByTypeHandler,
+      getModulesByDomain: getModulesByDomainHandler,
+      getModuleStats: getModuleStatsHandler
     }}>
       {children}
     </ModulesContext.Provider>

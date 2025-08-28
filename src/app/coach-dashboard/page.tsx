@@ -39,9 +39,9 @@ import {
 import SidebarModulesMenu from '@/components/dashboard/SidebarModulesMenu';
 import SidebarB2BMenu from '@/components/dashboard-coach/SidebarB2BMenu';
 import SidebarB2CMenu from '@/components/dashboard-coach/SidebarB2CMenu';
-import DomainsList from '@/components/dashboard/DomainsList';
-import ModulesList from '@/components/dashboard/ModulesList';
-import ModuleForm from '@/components/dashboard/ModuleForm';
+import DynamicDomainsList from '@/components/dashboard-coach/DynamicDomainsList';
+import DynamicModulesList from '@/components/dashboard-coach/DynamicModulesList';
+import DynamicModuleForm from '@/components/dashboard-coach/DynamicModuleForm';
 import CompanyList from '@/components/dashboard-coach/CompanyList';
 import StudentList from '@/components/dashboard-coach/StudentList';
 import { useModules } from '@/contexts/ModulesContext';
@@ -55,6 +55,8 @@ import MessagesView from '@/components/dashboard-coach/messages/MessagesView';
 import ResourcesView from '@/components/dashboard-coach/resources/ResourcesView';
 import SettingsView from '@/components/dashboard-coach/settings/SettingsView';
 import dynamic from 'next/dynamic';
+import { useActivityDomains } from '@/contexts/ActivityDomainsContext';
+import { CreateModuleData } from '@/lib/moduleService';
 
 // Chargement dynamique pour éviter les problèmes de SSR
 const SessionsList = dynamic(() => import('@/components/dashboard-coach/SessionsList'), {
@@ -246,7 +248,8 @@ const CoachDashboard = () => {
   const [isModuleFormOpen, setIsModuleFormOpen] = useState(false);
   const [editingModule, setEditingModule] = useState<Module | null>(null);
   
-  const { modules, addModule, updateModule, deleteModule, getModulesByDomain } = useModules();
+  const { modules, createModule, updateModule, deleteModule } = useModules();
+  const { domains } = useActivityDomains();
   const { students, loading, error, refreshStudents } = useStudents();
   const [companiesCount, setCompaniesCount] = useState(0);
 
@@ -421,27 +424,20 @@ const CoachDashboard = () => {
     console.log('View module:', module);
   };
 
-  const handleModuleSubmit = async (moduleData: Partial<Module>) => {
-    if (editingModule) {
-      updateModule(editingModule.id, moduleData);
-    } else {
-      const newModule: Module = {
-        id: Date.now().toString(),
-        title: moduleData.title || '',
-        description: moduleData.description || '',
-        videoUrl: moduleData.videoUrl || '',
-        theme: moduleData.theme || '',
-        domain: moduleData.domain || '',
-        offerType: moduleData.offerType || '',
-        activityDomain: moduleData.activityDomain || '',
-        difficulty: moduleData.difficulty || 'intermediate',
-        duration: moduleData.duration || 30,
-        tags: moduleData.tags || [],
-        rating: 0,
-        studentsCount: 0,
-        createdAt: new Date().toISOString().split('T')[0]
-      };
-      addModule(newModule);
+  const handleModuleSubmit = async (moduleData: CreateModuleData) => {
+    try {
+      if (editingModule) {
+        await updateModule(editingModule.id, moduleData);
+      } else {
+        await createModule(moduleData);
+      }
+      // Fermer le formulaire et rafraîchir les modules
+      setIsModuleFormOpen(false);
+      setEditingModule(null);
+      console.log('Module créé/modifié avec succès');
+    } catch (error) {
+      console.error('Erreur lors de la création/modification du module:', error);
+      throw error;
     }
   };
 
@@ -469,24 +465,23 @@ const CoachDashboard = () => {
     if (activeTab === 'modules' && activeModuleType) {
       if (selectedDomain && selectedDomain.name) {
         return (
-          <ModulesList
-            domain={selectedDomain}
-            modules={[] as any[]} // TODO: Passer les vrais modules
-            onBack={handleBackToDomains}
-            onCreateModule={handleCreateModule}
-            onEditModule={() => {}}
-            onDeleteModule={() => {}}
-            onViewModule={() => {}}
-          />
+                     <DynamicModulesList
+             domain={selectedDomain}
+             onBack={handleBackToDomains}
+             onCreateModule={handleCreateModule}
+             onEditModule={handleEditModule}
+             onDeleteModule={handleDeleteModule}
+             onViewModule={handleViewModule}
+           />
         );
       } else {
-        return (
-          <DomainsList
-            moduleType={activeModuleType}
-            onDomainSelect={handleDomainSelect}
-            onCreateModule={handleCreateModule}
-          />
-        );
+                 return (
+           <DynamicDomainsList
+             moduleType={activeModuleType}
+             onDomainSelect={handleDomainSelect}
+             onCreateModule={handleCreateModule}
+           />
+         );
       }
     }
 
@@ -977,36 +972,13 @@ const CoachDashboard = () => {
       </div>
 
       {/* Module Form Modal */}
-      <ModuleForm
-        isOpen={isModuleFormOpen}
-        onClose={() => setIsModuleFormOpen(false)}
-        onSubmit={handleModuleSubmit}
-        moduleType={activeModuleType || 'b2b'}
-        editingModule={editingModule}
-        domains={activeModuleType === 'b2b' 
-          ? [
-              { id: 'banque', name: 'Banque & Finance' },
-              { id: 'minier', name: 'Mines & Énergie' },
-              { id: 'gouvernement', name: 'Gouvernement & Public' },
-              { id: 'industrie', name: 'Industrie & Manufacture' },
-              { id: 'automobile', name: 'Automobile & Transport' },
-              { id: 'aerospatial', name: 'Aérospatial & Aviation' },
-              { id: 'sante', name: 'Santé & Médical' },
-              { id: 'education', name: 'Éducation & Formation' },
-              { id: 'retail', name: 'Commerce & Retail' },
-              { id: 'technologie', name: 'Technologie & IT' },
-              { id: 'environnement', name: 'Environnement & Développement Durable' },
-              { id: 'consulting', name: 'Consulting & Services' }
-            ]
-          : [
-              { id: 'personal-development', name: 'Développement Personnel' },
-              { id: 'career', name: 'Carrière & Emploi' },
-              { id: 'public-speaking', name: 'Prise de Parole' },
-              { id: 'networking', name: 'Networking & Relations' },
-              { id: 'entrepreneurship', name: 'Entrepreneuriat' }
-            ]
-        }
-      />
+             <DynamicModuleForm
+         isOpen={isModuleFormOpen}
+         onClose={() => setIsModuleFormOpen(false)}
+         onSubmit={handleModuleSubmit}
+         moduleType={activeModuleType || 'b2b'}
+         editingModule={editingModule}
+       />
 
 
     </div>
