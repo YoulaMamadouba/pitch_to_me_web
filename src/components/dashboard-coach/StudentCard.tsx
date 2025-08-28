@@ -1,28 +1,20 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { User, MapPin, Calendar, BookOpen, Star, Eye } from 'lucide-react';
+import { User, MapPin, Calendar, BookOpen, Star, Eye, Building, Users, Briefcase } from 'lucide-react';
 import Image from 'next/image';
-
-export interface Student {
-  id: string;
-  name: string;
-  photo: string;
-  age: number;
-  city: string;
-  modules: string[];
-  progress: number;
-  rating: number;
-  joinedAt: string;
-  lastActivity: string;
-}
+import { StudentData } from '@/lib/studentService';
 
 interface StudentCardProps {
-  student: Student;
-  onView?: (student: Student) => void;
+  student: StudentData;
+  onView?: (student: StudentData) => void;
 }
 
 export default function StudentCard({ student, onView }: StudentCardProps) {
+  const isB2B = student.role === 'employee';
+  const progress = student.progress?.overall || 0;
+  const lastActivity = student.progress?.lastActivity || student.created_at;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -36,9 +28,9 @@ export default function StudentCard({ student, onView }: StudentCardProps) {
           <div className="flex items-center space-x-4">
             <div className="relative">
               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center overflow-hidden">
-                {student.photo ? (
+                {student.company_logo ? (
                   <Image 
-                    src={student.photo} 
+                    src={student.company_logo} 
                     alt={student.name} 
                     width={64} 
                     height={64}
@@ -56,12 +48,18 @@ export default function StudentCard({ student, onView }: StudentCardProps) {
               </h3>
               <div className="flex items-center space-x-4 text-sm text-gray-400">
                 <div className="flex items-center space-x-1">
-                  <Calendar className="w-4 h-4" />
-                  <span>{student.age} ans</span>
+                  <Briefcase className="w-4 h-4" />
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    isB2B 
+                      ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' 
+                      : 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+                  }`}>
+                    {isB2B ? 'B2B - Employé' : 'B2C - Individuel'}
+                  </span>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <MapPin className="w-4 h-4" />
-                  <span>{student.city}</span>
+                  <Star className="w-4 h-4 text-yellow-400" />
+                  <span>Niveau {student.level}</span>
                 </div>
               </div>
             </div>
@@ -78,6 +76,22 @@ export default function StudentCard({ student, onView }: StudentCardProps) {
           )}
         </div>
 
+        {/* Company Info for B2B */}
+        {isB2B && student.company_name && (
+          <div className="mb-4 p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+            <div className="flex items-center space-x-2 mb-2">
+              <Building className="w-4 h-4 text-blue-400" />
+              <span className="text-sm font-medium text-blue-300">{student.company_name}</span>
+            </div>
+            {student.rh_user_name && (
+              <div className="flex items-center space-x-2">
+                <Users className="w-4 h-4 text-blue-400" />
+                <span className="text-xs text-blue-400">RH: {student.rh_user_name}</span>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Stats */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
@@ -86,12 +100,12 @@ export default function StudentCard({ student, onView }: StudentCardProps) {
               <span className="text-sm text-gray-300">{student.modules.length} modules</span>
             </div>
             <div className="flex items-center space-x-2">
-              <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-              <span className="text-sm text-gray-300">{student.rating}/5</span>
+              <Calendar className="w-4 h-4 text-green-400" />
+              <span className="text-sm text-gray-300">{student.vr_sessions} sessions VR</span>
             </div>
           </div>
           <div className="text-xs text-gray-500">
-            Dernière activité: {new Date(student.lastActivity).toLocaleDateString('fr-FR')}
+            Dernière activité: {new Date(lastActivity).toLocaleDateString('fr-FR')}
           </div>
         </div>
       </div>
@@ -102,12 +116,12 @@ export default function StudentCard({ student, onView }: StudentCardProps) {
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
             <h4 className="text-sm font-medium text-gray-300">Progression globale</h4>
-            <span className="text-sm text-yellow-400 font-medium">{student.progress}%</span>
+            <span className="text-sm text-yellow-400 font-medium">{progress}%</span>
           </div>
           <div className="w-full bg-gray-700 rounded-full h-2">
             <div 
               className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-2 rounded-full transition-all duration-300" 
-              style={{ width: `${student.progress}%` }}
+              style={{ width: `${progress}%` }}
             ></div>
           </div>
         </div>
@@ -118,15 +132,21 @@ export default function StudentCard({ student, onView }: StudentCardProps) {
           <div className="flex flex-wrap gap-2">
             {student.modules.slice(0, 3).map((module, index) => (
               <span
-                key={index}
+                key={module.id}
                 className="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded-full border border-purple-500/30"
+                title={module.description}
               >
-                {module}
+                {module.title}
               </span>
             ))}
             {student.modules.length > 3 && (
               <span className="px-2 py-1 bg-gray-700/50 text-gray-400 text-xs rounded-full border border-gray-600/50">
                 +{student.modules.length - 3}
+              </span>
+            )}
+            {student.modules.length === 0 && (
+              <span className="px-2 py-1 bg-gray-700/50 text-gray-400 text-xs rounded-full border border-gray-600/50">
+                Aucun module assigné
               </span>
             )}
           </div>
@@ -135,7 +155,7 @@ export default function StudentCard({ student, onView }: StudentCardProps) {
         {/* Footer */}
         <div className="flex items-center justify-between pt-4 mt-4 border-t border-gray-700/50">
           <div className="text-xs text-gray-500">
-            Inscrit le {new Date(student.joinedAt).toLocaleDateString('fr-FR')}
+            Inscrit le {new Date(student.created_at).toLocaleDateString('fr-FR')}
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-2 h-2 bg-green-400 rounded-full"></div>

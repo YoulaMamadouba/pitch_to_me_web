@@ -47,7 +47,7 @@ import StudentList from '@/components/dashboard-coach/StudentList';
 import { useModules } from '@/contexts/ModulesContext';
 import { useStudents } from '@/contexts/StudentsContext';
 import { Module } from '@/components/dashboard/ModuleCard';
-import { Student } from '@/components/dashboard-coach/StudentCard';
+import { StudentData } from '@/lib/studentService';
 import RecordingStudioView from '@/components/dashboard/RecordingStudioView';
 import AnalyticsView from '@/components/dashboard-coach/analytics/AnalyticsView';
 import MessagesView from '@/components/dashboard-coach/messages/MessagesView';
@@ -246,7 +246,7 @@ const CoachDashboard = () => {
   const [editingModule, setEditingModule] = useState<Module | null>(null);
   
   const { modules, addModule, updateModule, deleteModule, getModulesByDomain } = useModules();
-  const { students } = useStudents();
+  const { students, loading, error, refreshStudents } = useStudents();
 
   useEffect(() => {
     setMounted(true);
@@ -434,7 +434,7 @@ const CoachDashboard = () => {
 
 
   // Student handlers
-  const handleViewStudent = (student: Student) => {
+  const handleViewStudent = (student: StudentData) => {
     console.log('View student:', student);
   };
 
@@ -486,7 +486,10 @@ const CoachDashboard = () => {
       return (
         <StudentList
           students={students}
+          loading={loading}
+          error={error}
           onViewStudent={handleViewStudent}
+          onRefresh={refreshStudents}
         />
       );
     }
