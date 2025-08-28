@@ -46,7 +46,7 @@ export default function DynamicLessonsList({
     totalDuration: number;
   }>({ lessonCount: 0, totalDuration: 0 });
 
-  const { getLessonsForModule, getModuleStats, refreshLessons } = useLessons();
+  const { getLessonsForModule, getModuleStats, refreshLessons, createLesson, updateLesson, deleteLesson } = useLessons();
 
   // Charger les leçons du module
   useEffect(() => {
@@ -86,7 +86,8 @@ export default function DynamicLessonsList({
   const handleDeleteLesson = async (lessonId: string) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer cette leçon ?')) {
       try {
-        onDeleteLesson(lessonId);
+        await deleteLesson(lessonId);
+        
         // Recharger les leçons
         const updatedLessons = await getLessonsForModule(module.id);
         setLessons(updatedLessons);
@@ -103,9 +104,9 @@ export default function DynamicLessonsList({
   const handleLessonSubmit = async (lessonData: CreateLessonData) => {
     try {
       if (editingLesson) {
-        await onEditLesson(editingLesson);
+        await updateLesson(editingLesson.id, lessonData);
       } else {
-        await onCreateLesson();
+        await createLesson(lessonData);
       }
       
       setShowLessonForm(false);
