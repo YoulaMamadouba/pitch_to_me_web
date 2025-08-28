@@ -171,14 +171,30 @@ export async function getModuleById(id: string): Promise<Module | null> {
 
 export async function createModule(moduleData: CreateModuleData): Promise<Module> {
   try {
+    console.log('=== DÉBUT createModule SERVICE ===');
     const supabase = getSupabase();
     
     if (!supabase) {
       throw new Error('Supabase client non initialisé');
     }
 
+    console.log('Données du module à créer:', moduleData);
+
     // Récupérer l'utilisateur actuel
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    console.log('Récupération de l\'utilisateur...');
+    let user;
+    let userError;
+    
+    try {
+      const userResult = await supabase.auth.getUser();
+      user = userResult.data.user;
+      userError = userResult.error;
+      console.log('Utilisateur récupéré:', user);
+      console.log('Erreur utilisateur:', userError);
+    } catch (authError) {
+      console.error('Erreur lors de la récupération de l\'utilisateur:', authError);
+      throw new Error(`Erreur d'authentification: ${authError instanceof Error ? authError.message : 'Erreur inconnue'}`);
+    }
     
     if (userError || !user) {
       throw new Error('Utilisateur non authentifié');
@@ -190,9 +206,27 @@ export async function createModule(moduleData: CreateModuleData): Promise<Module
       created_by: user.id
     };
 
+    // Nettoyer les données pour éviter les erreurs UUID
+    const cleanedData = {
+      ...moduleDataWithCreator,
+      // Supprimer video_id si ce n'est pas un UUID valide
+      video_id: moduleDataWithCreator.video_id && 
+                moduleDataWithCreator.video_id !== "1" && 
+                moduleDataWithCreator.video_id !== "" ? 
+                moduleDataWithCreator.video_id : null,
+      // S'assurer que les champs optionnels sont corrects
+      domain_metier: moduleDataWithCreator.domain_metier || null,
+      type_offre: moduleDataWithCreator.type_offre || null,
+      theme: moduleDataWithCreator.theme || null,
+      mots_cles: moduleDataWithCreator.mots_cles || null
+    };
+
+    console.log('Données complètes du module:', cleanedData);
+    console.log('Préparation de la requête Supabase...');
+
     const { data, error } = await supabase
       .from('modules')
-      .insert([moduleDataWithCreator])
+      .insert([cleanedData])
       .select(`
         *,
         activity_domains!inner(
@@ -203,14 +237,30 @@ export async function createModule(moduleData: CreateModuleData): Promise<Module
       `)
       .single();
 
+    console.log('Réponse Supabase - data:', data);
+    console.log('Réponse Supabase - error:', error);
+
     if (error) {
       console.error('Erreur lors de la création du module:', error);
+      console.error('Détails de l\'erreur:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      });
+      console.error('Erreur complète JSON:', JSON.stringify(error, null, 2));
       throw error;
     }
 
+    console.log('Module créé avec succès:', data);
+    console.log('=== FIN createModule SERVICE ===');
     return data;
   } catch (error) {
-    console.error('Erreur dans createModule:', error);
+    console.error('=== ERREUR dans createModule SERVICE ===');
+    console.error('Erreur complète:', error);
+    console.error('Type d\'erreur:', typeof error);
+    console.error('Message d\'erreur:', error instanceof Error ? error.message : 'Erreur inconnue');
+    console.error('Stack trace:', error instanceof Error ? error.stack : 'Pas de stack trace');
     throw error;
   }
 }

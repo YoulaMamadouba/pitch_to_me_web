@@ -57,11 +57,22 @@ export function ModulesProvider({ children }: { children: ReactNode }) {
 
   const createModuleHandler = async (moduleData: CreateModuleData): Promise<Module> => {
     try {
+      console.log('=== DÉBUT createModuleHandler ===');
+      console.log('Données reçues dans le contexte:', moduleData);
+      
       const newModule = await createModule(moduleData);
+      
+      console.log('Module créé avec succès:', newModule);
       setModules(prev => [...prev, newModule]);
+      
+      console.log('=== FIN createModuleHandler ===');
       return newModule;
     } catch (err) {
-      console.error('Erreur lors de la création du module:', err);
+      console.error('=== ERREUR dans createModuleHandler ===');
+      console.error('Erreur complète:', err);
+      console.error('Type d\'erreur:', typeof err);
+      console.error('Message d\'erreur:', err instanceof Error ? err.message : 'Erreur inconnue');
+      console.error('Stack trace:', err instanceof Error ? err.stack : 'Pas de stack trace');
       throw err;
     }
   };
@@ -69,7 +80,7 @@ export function ModulesProvider({ children }: { children: ReactNode }) {
   const updateModuleHandler = async (id: string, updates: Partial<CreateModuleData>): Promise<Module> => {
     try {
       const updatedModule = await updateModule(id, updates);
-      setModules(prev => prev.map(module => 
+    setModules(prev => prev.map(module => 
         module.id === id ? updatedModule : module
       ));
       return updatedModule;

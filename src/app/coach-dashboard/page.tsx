@@ -46,7 +46,7 @@ import CompanyList from '@/components/dashboard-coach/CompanyList';
 import StudentList from '@/components/dashboard-coach/StudentList';
 import { useModules } from '@/contexts/ModulesContext';
 import { useStudents } from '@/contexts/StudentsContext';
-import { Module } from '@/components/dashboard/ModuleCard';
+import { Module } from '@/lib/moduleService';
 import { StudentData } from '@/lib/studentService';
 import { getCompaniesCount } from '@/lib/companyService';
 import RecordingStudioView from '@/components/dashboard/RecordingStudioView';
@@ -426,17 +426,33 @@ const CoachDashboard = () => {
 
   const handleModuleSubmit = async (moduleData: CreateModuleData) => {
     try {
+      console.log('=== DÉBUT handleModuleSubmit ===');
+      console.log('Utilisateur connecté:', user);
+      console.log('Données du module à créer:', moduleData);
+      
+      // Vérifier si l'utilisateur est connecté
+      if (!user) {
+        throw new Error('Utilisateur non connecté. Veuillez vous reconnecter.');
+      }
+      
       if (editingModule) {
+        console.log('Mode édition - Module existant:', editingModule);
         await updateModule(editingModule.id, moduleData);
       } else {
+        console.log('Mode création - Appel de createModule');
         await createModule(moduleData);
       }
+      
       // Fermer le formulaire et rafraîchir les modules
       setIsModuleFormOpen(false);
       setEditingModule(null);
       console.log('Module créé/modifié avec succès');
+      console.log('=== FIN handleModuleSubmit ===');
     } catch (error) {
-      console.error('Erreur lors de la création/modification du module:', error);
+      console.error('=== ERREUR dans handleModuleSubmit ===');
+      console.error('Erreur complète:', error);
+      console.error('Type d\'erreur:', typeof error);
+      console.error('Message d\'erreur:', error instanceof Error ? error.message : 'Erreur inconnue');
       throw error;
     }
   };
@@ -466,22 +482,22 @@ const CoachDashboard = () => {
       if (selectedDomain && selectedDomain.name) {
         return (
                      <DynamicModulesList
-             domain={selectedDomain}
-             onBack={handleBackToDomains}
-             onCreateModule={handleCreateModule}
+            domain={selectedDomain}
+            onBack={handleBackToDomains}
+            onCreateModule={handleCreateModule}
              onEditModule={handleEditModule}
              onDeleteModule={handleDeleteModule}
              onViewModule={handleViewModule}
-           />
+          />
         );
       } else {
-                 return (
+        return (
            <DynamicDomainsList
-             moduleType={activeModuleType}
-             onDomainSelect={handleDomainSelect}
-             onCreateModule={handleCreateModule}
-           />
-         );
+            moduleType={activeModuleType}
+            onDomainSelect={handleDomainSelect}
+            onCreateModule={handleCreateModule}
+          />
+        );
       }
     }
 
@@ -973,12 +989,12 @@ const CoachDashboard = () => {
 
       {/* Module Form Modal */}
              <DynamicModuleForm
-         isOpen={isModuleFormOpen}
-         onClose={() => setIsModuleFormOpen(false)}
-         onSubmit={handleModuleSubmit}
-         moduleType={activeModuleType || 'b2b'}
-         editingModule={editingModule}
-       />
+        isOpen={isModuleFormOpen}
+        onClose={() => setIsModuleFormOpen(false)}
+        onSubmit={handleModuleSubmit}
+        moduleType={activeModuleType || 'b2b'}
+        editingModule={editingModule}
+      />
 
 
     </div>
