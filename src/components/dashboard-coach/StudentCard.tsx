@@ -20,7 +20,7 @@ export default function StudentCard({ student, onView }: StudentCardProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4, scale: 1.02 }}
-      className="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 hover:border-yellow-400/30 transition-all group overflow-hidden"
+      className="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 hover:border-yellow-400/30 transition-all group overflow-hidden min-h-[400px]"
     >
       {/* Header with Photo and Actions */}
       <div className="p-6 border-b border-gray-700/50">
@@ -42,25 +42,24 @@ export default function StudentCard({ student, onView }: StudentCardProps) {
               </div>
               <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-gray-800"></div>
             </div>
-            <div>
-              <h3 className="text-xl font-semibold text-white group-hover:text-yellow-400 transition-colors">
+            <div className="flex-1 min-w-0">
+              <h3 className="text-xl font-semibold text-white group-hover:text-yellow-400 transition-colors mb-2">
                 {student.name}
               </h3>
-              <div className="flex items-center space-x-4 text-sm text-gray-400">
-                <div className="flex items-center space-x-1">
-                  <Briefcase className="w-4 h-4" />
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    isB2B 
-                      ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' 
-                      : 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
-                  }`}>
-                    {isB2B ? 'B2B - Employé' : 'B2C - Individuel'}
-                  </span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Star className="w-4 h-4 text-yellow-400" />
-                  <span>Niveau {student.level}</span>
-                </div>
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  isB2B 
+                    ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' 
+                    : 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+                }`}>
+                  {isB2B ? 'B2B - Employé' : 'B2C - Individuel'}
+                </span>
+                <span className="px-2 py-1 bg-gray-700/50 text-gray-300 text-xs rounded-full">
+                  Niveau {student.level}
+                </span>
+                <span className="px-2 py-1 bg-gray-700/50 text-gray-300 text-xs rounded-full">
+                  XP: {student.xp}
+                </span>
               </div>
             </div>
           </div>
@@ -69,7 +68,7 @@ export default function StudentCard({ student, onView }: StudentCardProps) {
           {onView && (
             <button
               onClick={() => onView(student)}
-              className="w-8 h-8 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-yellow-500 transition-colors opacity-0 group-hover:opacity-100"
+              className="w-8 h-8 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-yellow-500 transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0"
             >
               <Eye className="w-4 h-4" />
             </button>
@@ -92,6 +91,13 @@ export default function StudentCard({ student, onView }: StudentCardProps) {
           </div>
         )}
 
+        {/* Email */}
+        <div className="mb-3">
+          <p className="text-sm text-gray-400">
+            <span className="font-medium">Email:</span> {student.email}
+          </p>
+        </div>
+
         {/* Stats */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
@@ -104,56 +110,54 @@ export default function StudentCard({ student, onView }: StudentCardProps) {
               <span className="text-sm text-gray-300">{student.vr_sessions} sessions VR</span>
             </div>
           </div>
-          <div className="text-xs text-gray-500">
-            Dernière activité: {new Date(lastActivity).toLocaleDateString('fr-FR')}
-          </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-6">
+      <div className="p-6 flex-1">
         {/* Progress */}
-        <div className="mb-4">
+        <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
             <h4 className="text-sm font-medium text-gray-300">Progression globale</h4>
             <span className="text-sm text-yellow-400 font-medium">{progress}%</span>
           </div>
-          <div className="w-full bg-gray-700 rounded-full h-2">
+          <div className="w-full bg-gray-700 rounded-full h-3">
             <div 
-              className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-2 rounded-full transition-all duration-300" 
+              className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-3 rounded-full transition-all duration-300" 
               style={{ width: `${progress}%` }}
             ></div>
           </div>
         </div>
 
         {/* Modules */}
-        <div>
+        <div className="mb-6">
           <h4 className="text-sm font-medium text-gray-300 mb-3">Modules suivis</h4>
           <div className="flex flex-wrap gap-2">
-            {student.modules.slice(0, 3).map((module, index) => (
-              <span
-                key={module.id}
-                className="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded-full border border-purple-500/30"
-                title={module.description}
-              >
-                {module.title}
-              </span>
-            ))}
-            {student.modules.length > 3 && (
-              <span className="px-2 py-1 bg-gray-700/50 text-gray-400 text-xs rounded-full border border-gray-600/50">
-                +{student.modules.length - 3}
+            {student.modules.length > 0 ? (
+              student.modules.slice(0, 4).map((module) => (
+                <span
+                  key={module.id}
+                  className="px-3 py-2 bg-purple-500/20 text-purple-400 text-xs rounded-lg border border-purple-500/30"
+                  title={module.description}
+                >
+                  {module.title}
+                </span>
+              ))
+            ) : (
+              <span className="px-3 py-2 bg-gray-700/50 text-gray-400 text-sm rounded-lg border border-gray-600/50">
+                Aucun module assigné
               </span>
             )}
-            {student.modules.length === 0 && (
-              <span className="px-2 py-1 bg-gray-700/50 text-gray-400 text-xs rounded-full border border-gray-600/50">
-                Aucun module assigné
+            {student.modules.length > 4 && (
+              <span className="px-3 py-2 bg-gray-700/50 text-gray-400 text-sm rounded-lg border border-gray-600/50">
+                +{student.modules.length - 4} autres
               </span>
             )}
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-4 mt-4 border-t border-gray-700/50">
+        <div className="flex items-center justify-between pt-4 mt-auto border-t border-gray-700/50">
           <div className="text-xs text-gray-500">
             Inscrit le {new Date(student.created_at).toLocaleDateString('fr-FR')}
           </div>

@@ -226,3 +226,28 @@ export class CompanyService {
     }
   }
 }
+
+export async function getCompaniesCount(): Promise<number> {
+  try {
+    const supabase = getSupabase();
+    
+    if (!supabase) {
+      return 0;
+    }
+
+    const { count, error } = await supabase
+      .from('companies')
+      .select('*', { count: 'exact', head: true });
+
+    if (error) {
+      console.error('Erreur lors du comptage des entreprises:', error);
+      return 0;
+    }
+
+    return count || 0;
+
+  } catch (error) {
+    console.error('Erreur dans getCompaniesCount:', error);
+    return 0;
+  }
+}

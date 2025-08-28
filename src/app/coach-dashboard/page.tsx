@@ -48,6 +48,7 @@ import { useModules } from '@/contexts/ModulesContext';
 import { useStudents } from '@/contexts/StudentsContext';
 import { Module } from '@/components/dashboard/ModuleCard';
 import { StudentData } from '@/lib/studentService';
+import { getCompaniesCount } from '@/lib/companyService';
 import RecordingStudioView from '@/components/dashboard/RecordingStudioView';
 import AnalyticsView from '@/components/dashboard-coach/analytics/AnalyticsView';
 import MessagesView from '@/components/dashboard-coach/messages/MessagesView';
@@ -247,9 +248,24 @@ const CoachDashboard = () => {
   
   const { modules, addModule, updateModule, deleteModule, getModulesByDomain } = useModules();
   const { students, loading, error, refreshStudents } = useStudents();
+  const [companiesCount, setCompaniesCount] = useState(0);
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  // Charger le nombre d'entreprises
+  useEffect(() => {
+    const loadCompaniesCount = async () => {
+      try {
+        const count = await getCompaniesCount();
+        setCompaniesCount(count);
+      } catch (error) {
+        console.error('Erreur lors du chargement du nombre d\'entreprises:', error);
+      }
+    };
+
+    loadCompaniesCount();
   }, []);
 
   // Recording Studio (header-controlled) state
@@ -330,9 +346,7 @@ const CoachDashboard = () => {
     // Ici, vous pouvez ajouter la logique pour créer une nouvelle session
   };
 
-  // Notification counts for B2B and B2C sections
-  const b2bNotificationCount = 8; // Example count for Entreprises
-  const b2cNotificationCount = 5; // Example count for Étudiants
+
 
   // Sample data
   const recentActivities: StudentActivity[] = [
@@ -795,7 +809,7 @@ const CoachDashboard = () => {
               <SidebarB2BMenu
                 isActive={activeTab === 'companies'}
                 onClick={handleB2BNavigation}
-                count={b2bNotificationCount}
+                count={companiesCount}
               />
             </li>
 
@@ -804,7 +818,7 @@ const CoachDashboard = () => {
               <SidebarB2CMenu
                 isActive={activeTab === 'students'}
                 onClick={handleB2CNavigation}
-                count={b2cNotificationCount}
+                count={students.length}
               />
             </li>
             
