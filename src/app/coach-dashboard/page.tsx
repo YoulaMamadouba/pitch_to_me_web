@@ -57,6 +57,8 @@ import SettingsView from '@/components/dashboard-coach/settings/SettingsView';
 import dynamic from 'next/dynamic';
 import { useActivityDomains } from '@/contexts/ActivityDomainsContext';
 import { CreateModuleData } from '@/lib/moduleService';
+import { useLessons } from '@/contexts/LessonsContext';
+import DynamicLessonsList from '@/components/dashboard-coach/DynamicLessonsList';
 
 // Chargement dynamique pour éviter les problèmes de SSR
 const SessionsList = dynamic(() => import('@/components/dashboard-coach/SessionsList'), {
@@ -245,12 +247,14 @@ const CoachDashboard = () => {
   // Modules state
   const [activeModuleType, setActiveModuleType] = useState<'b2b' | 'b2c' | null>(null);
   const [selectedDomain, setSelectedDomain] = useState<any>(null);
+  const [selectedModule, setSelectedModule] = useState<Module | null>(null);
   const [isModuleFormOpen, setIsModuleFormOpen] = useState(false);
   const [editingModule, setEditingModule] = useState<Module | null>(null);
   
-  const { modules, createModule, updateModule, deleteModule } = useModules();
-  const { domains } = useActivityDomains();
+  const { modules, createModule, updateModule, deleteModule, refreshModules } = useModules();
+  const { domains, refreshDomains } = useActivityDomains();
   const { students, loading, error, refreshStudents } = useStudents();
+  const { createLesson, updateLesson, deleteLesson } = useLessons();
   const [companiesCount, setCompaniesCount] = useState(0);
 
   useEffect(() => {
@@ -421,7 +425,28 @@ const CoachDashboard = () => {
   };
 
   const handleViewModule = (module: Module) => {
-    console.log('View module:', module);
+    setSelectedModule(module);
+  };
+
+  // Lesson handlers
+  const handleCreateLesson = () => {
+    console.log('Create lesson for module:', selectedModule);
+  };
+
+  const handleEditLesson = (lesson: any) => {
+    console.log('Edit lesson:', lesson);
+  };
+
+  const handleDeleteLesson = (lessonId: string) => {
+    console.log('Delete lesson:', lessonId);
+  };
+
+  const handleViewLesson = (lesson: any) => {
+    console.log('View lesson:', lesson);
+  };
+
+  const handleBackToModules = () => {
+    setSelectedModule(null);
   };
 
   const handleModuleSubmit = async (moduleData: CreateModuleData) => {
@@ -443,9 +468,17 @@ const CoachDashboard = () => {
         await createModule(moduleData);
       }
       
-      // Fermer le formulaire et rafraîchir les modules
+      // Fermer le formulaire et rafraîchir les données
       setIsModuleFormOpen(false);
       setEditingModule(null);
+      
+      // Recharger automatiquement les modules et domaines
+      console.log('Rechargement automatique des données...');
+      await Promise.all([
+        refreshModules(),
+        refreshDomains()
+      ]);
+      
       console.log('Module créé/modifié avec succès');
       console.log('=== FIN handleModuleSubmit ===');
     } catch (error) {
@@ -477,22 +510,34 @@ const CoachDashboard = () => {
     setSelectedDomain(null);
   };
 
-  const getCurrentView = () => {
+    const getCurrentView = () => {
     if (activeTab === 'modules' && activeModuleType) {
-      if (selectedDomain && selectedDomain.name) {
+      if (selectedModule) {
+        // Afficher les leçons du module sélectionné
         return (
-                     <DynamicModulesList
+          <DynamicLessonsList
+            module={selectedModule}
+            onBack={handleBackToModules}
+            onCreateLesson={handleCreateLesson}
+            onEditLesson={handleEditLesson}
+            onDeleteLesson={handleDeleteLesson}
+            onViewLesson={handleViewLesson}
+          />
+        );
+      } else if (selectedDomain && selectedDomain.name) {
+        return (
+          <DynamicModulesList
             domain={selectedDomain}
             onBack={handleBackToDomains}
             onCreateModule={handleCreateModule}
-             onEditModule={handleEditModule}
-             onDeleteModule={handleDeleteModule}
-             onViewModule={handleViewModule}
+            onEditModule={handleEditModule}
+            onDeleteModule={handleDeleteModule}
+            onViewModule={handleViewModule}
           />
         );
       } else {
         return (
-           <DynamicDomainsList
+          <DynamicDomainsList
             moduleType={activeModuleType}
             onDomainSelect={handleDomainSelect}
             onCreateModule={handleCreateModule}

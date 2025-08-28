@@ -26,6 +26,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useActivityDomains } from '@/contexts/ActivityDomainsContext';
+import { useModules } from '@/contexts/ModulesContext';
 import { ActivityDomain } from '@/lib/activityDomainService';
 import DomainCard from '../dashboard/DomainCard';
 
@@ -58,6 +59,7 @@ interface DynamicDomainsListProps {
 
 export default function DynamicDomainsList({ moduleType, onDomainSelect, onCreateModule }: DynamicDomainsListProps) {
   const { domains, loading, error, refreshDomains, createDomain } = useActivityDomains();
+  const { modules } = useModules();
   const [showDomainForm, setShowDomainForm] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -72,9 +74,18 @@ export default function DynamicDomainsList({ moduleType, onDomainSelect, onCreat
     [domains, moduleType]
   );
   
+  // Calculer dynamiquement le nombre de modules par domaine
+  const domainsWithModuleCount = useMemo(() => 
+    filteredDomains.map(domain => ({
+      ...domain,
+      moduleCount: modules.filter(module => module.activity_domain_id === domain.id).length
+    })),
+    [filteredDomains, modules]
+  );
+  
   const totalModules = useMemo(() => 
-    filteredDomains.reduce((total, domain) => total + (domain.moduleCount || 0), 0),
-    [filteredDomains]
+    domainsWithModuleCount.reduce((total, domain) => total + domain.moduleCount, 0),
+    [domainsWithModuleCount]
   );
 
   const handleCreateDomain = async (e: React.FormEvent) => {
@@ -200,9 +211,9 @@ export default function DynamicDomainsList({ moduleType, onDomainSelect, onCreat
       </div>
 
       {/* Domains Grid */}
-      {filteredDomains.length > 0 ? (
+      {domainsWithModuleCount.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredDomains.map((domain, index) => {
+          {domainsWithModuleCount.map((domain, index) => {
             const IconComponent = iconMap[domain.icon_name] || Building;
             
             return (
@@ -218,7 +229,7 @@ export default function DynamicDomainsList({ moduleType, onDomainSelect, onCreat
                     name: domain.name,
                     description: domain.description,
                     icon: IconComponent,
-                    moduleCount: domain.moduleCount || 0,
+                    moduleCount: domain.moduleCount,
                     totalLessons: domain.totalLessons || 0,
                     totalDuration: domain.totalDuration || 0,
                     studentsCount: domain.studentsCount || 0,

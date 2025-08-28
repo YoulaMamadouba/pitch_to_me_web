@@ -11,6 +11,7 @@ import { SignupProvider } from '@/contexts/SignupContext';
 import PitchLoader from '@/components/ui/PitchLoader';
 import PasswordChangeGuard from '@/components/PasswordChangeGuard';
 import { Mic } from 'lucide-react';
+import { LessonsProvider } from '@/contexts/LessonsContext';
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
@@ -31,23 +32,25 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
       <LanguageProvider>
         <ModulesProvider>
           <ActivityDomainsProvider>
-            <CompaniesProvider>
-              <StudentsProvider>
-              <SignupProvider>
-                {/* Global loader uses the same icon and brand color as the header */}
-                <PitchLoader
-                  loading={!mounted || !minDelayDone}
-                  icon={<Mic className="w-12 h-12" />}
-                  siteName="Pitch to Me"
-                  brandColorClass="text-yellow-400"
-                />
-                <PasswordChangeGuard>
-                  {children}
-                </PasswordChangeGuard>
-              </SignupProvider>
-            </StudentsProvider>
-          </CompaniesProvider>
-        </ActivityDomainsProvider>
+            <LessonsProvider>
+              <CompaniesProvider>
+                <StudentsProvider>
+                <SignupProvider>
+                  {/* Global loader uses the same icon and brand color as the header */}
+                  <PitchLoader
+                    loading={!mounted || !minDelayDone}
+                    icon={<Mic className="w-12 h-12" />}
+                    siteName="Pitch to Me"
+                    brandColorClass="text-yellow-400"
+                  />
+                  <PasswordChangeGuard>
+                    {children}
+                  </PasswordChangeGuard>
+                </SignupProvider>
+              </StudentsProvider>
+            </CompaniesProvider>
+            </LessonsProvider>
+          </ActivityDomainsProvider>
         </ModulesProvider>
       </LanguageProvider>
     </AuthProvider>

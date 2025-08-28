@@ -245,6 +245,22 @@ export default function DynamicModulesList({
                 </div>
               </div>
 
+              {/* Video Preview */}
+              {module.video_url && (
+                <div className="px-6 pb-4">
+                  <div className="relative w-full h-32 bg-gray-900 rounded-lg overflow-hidden">
+                    <iframe
+                      src={module.video_url.replace('watch?v=', 'embed/')}
+                      className="w-full h-full"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      title={module.title}
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Module Actions */}
               <div className="p-6">
                 <div className="flex items-center justify-between">
