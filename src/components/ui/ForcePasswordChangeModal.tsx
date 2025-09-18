@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, Lock, AlertTriangle } from 'lucide-react';
 import { apiCall } from '@/lib/apiUtils';
 import { getSupabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ForcePasswordChangeModalProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ export default function ForcePasswordChangeModal({
   isOpen, 
   onPasswordChanged 
 }: ForcePasswordChangeModalProps) {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     currentPassword: '',
     newPassword: '',
@@ -120,6 +122,12 @@ export default function ForcePasswordChangeModal({
             console.log('🔧 Reconnexion avec le nouveau mot de passe...');
             
             // Se reconnecter avec le nouveau mot de passe
+            if (!user?.email) {
+              console.error('❌ Email utilisateur non disponible');
+              window.location.href = '/login';
+              return;
+            }
+
             const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
               email: user.email,
               password: formData.newPassword

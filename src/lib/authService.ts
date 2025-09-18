@@ -224,7 +224,7 @@ export class AuthService {
       .eq('id', userId)
       .single();
 
-    return { profile: data, error };
+    return { profile: data as unknown as UserProfile, error };
   }
 
   static async updateUserProfile(userId: string, updates: Partial<UserProfile>) {

@@ -41,7 +41,7 @@ export async function getAllActivityDomains(): Promise<ActivityDomain[]> {
       throw error;
     }
 
-    return data || [];
+    return (data as unknown as ActivityDomain[]) || [];
   } catch (error) {
     console.error('Erreur dans getAllActivityDomains:', error);
     throw error;
@@ -67,7 +67,7 @@ export async function getActivityDomainsByType(type: 'b2b' | 'b2c'): Promise<Act
       throw error;
     }
 
-    return data || [];
+    return (data as unknown as ActivityDomain[]) || [];
   } catch (error) {
     console.error('Erreur dans getActivityDomainsByType:', error);
     throw error;
@@ -93,7 +93,7 @@ export async function getActivityDomainById(id: string): Promise<ActivityDomain 
       throw error;
     }
 
-    return data;
+    return data as unknown as ActivityDomain;
   } catch (error) {
     console.error('Erreur dans getActivityDomainById:', error);
     throw error;
@@ -110,7 +110,7 @@ export async function createActivityDomain(domainData: CreateActivityDomainData)
 
     const { data, error } = await supabase
       .from('activity_domains')
-      .insert([domainData])
+      .insert([domainData as any])
       .select()
       .single();
 
@@ -119,7 +119,7 @@ export async function createActivityDomain(domainData: CreateActivityDomainData)
       throw error;
     }
 
-    return data;
+    return data as unknown as ActivityDomain;
   } catch (error) {
     console.error('Erreur dans createActivityDomain:', error);
     throw error;
@@ -146,7 +146,7 @@ export async function updateActivityDomain(id: string, updates: Partial<CreateAc
       throw error;
     }
 
-    return data;
+    return data as unknown as ActivityDomain;
   } catch (error) {
     console.error('Erreur dans updateActivityDomain:', error);
     throw error;
@@ -200,16 +200,24 @@ export async function getActivityDomainStats(domainId: string): Promise<{
       throw moduleError;
     }
 
+    // D'abord récupérer les IDs des modules
+    const { data: moduleIds, error: moduleIdsError } = await supabase
+      .from('modules')
+      .select('id')
+      .eq('activity_domain_id', domainId);
+
+    if (moduleIdsError) {
+      console.error('Erreur lors de la récupération des modules:', moduleIdsError);
+      throw moduleIdsError;
+    }
+
+    const moduleIdList = moduleIds?.map(m => m.id) || [];
+
     // Compter les leçons et durée totale
     const { data: lessons, error: lessonsError } = await supabase
       .from('lessons')
       .select('duration_minutes')
-      .in('module_id', 
-        supabase
-          .from('modules')
-          .select('id')
-          .eq('activity_domain_id', domainId)
-      );
+      .in('module_id', moduleIdList);
 
     if (lessonsError) {
       console.error('Erreur lors de la récupération des leçons:', lessonsError);
@@ -217,7 +225,7 @@ export async function getActivityDomainStats(domainId: string): Promise<{
     }
 
     const totalLessons = lessons?.length || 0;
-    const totalDuration = lessons?.reduce((sum, lesson) => sum + (lesson.duration_minutes || 0), 0) || 0;
+    const totalDuration = lessons?.reduce((sum, lesson) => sum + ((lesson as any).duration_minutes || 0), 0) || 0;
 
     // Compter les étudiants (inscriptions aux domaines pour B2C, employés des entreprises pour B2B)
     const { count: studentsCount, error: studentsError } = await supabase

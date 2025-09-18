@@ -63,7 +63,7 @@ export async function getAllModules(): Promise<Module[]> {
       throw error;
     }
 
-    return data || [];
+    return (data as unknown as Module[]) || [];
   } catch (error) {
     console.error('Erreur dans getAllModules:', error);
     throw error;
@@ -96,7 +96,7 @@ export async function getModulesByType(type: 'b2b' | 'b2c'): Promise<Module[]> {
       throw error;
     }
 
-    return data || [];
+    return (data as unknown as Module[]) || [];
   } catch (error) {
     console.error('Erreur dans getModulesByType:', error);
     throw error;
@@ -129,7 +129,7 @@ export async function getModulesByActivityDomain(activityDomainId: string): Prom
       throw error;
     }
 
-    return data || [];
+    return (data as unknown as Module[]) || [];
   } catch (error) {
     console.error('Erreur dans getModulesByActivityDomain:', error);
     throw error;
@@ -162,7 +162,7 @@ export async function getModuleById(id: string): Promise<Module | null> {
       throw error;
     }
 
-    return data;
+    return data as unknown as Module;
   } catch (error) {
     console.error('Erreur dans getModuleById:', error);
     throw error;
@@ -254,7 +254,7 @@ export async function createModule(moduleData: CreateModuleData): Promise<Module
 
     console.log('Module créé avec succès:', data);
     console.log('=== FIN createModule SERVICE ===');
-    return data;
+    return data as unknown as Module;
   } catch (error) {
     console.error('=== ERREUR dans createModule SERVICE ===');
     console.error('Erreur complète:', error);
@@ -292,7 +292,7 @@ export async function updateModule(id: string, updates: Partial<CreateModuleData
       throw error;
     }
 
-    return data;
+    return data as unknown as Module;
   } catch (error) {
     console.error('Erreur dans updateModule:', error);
     throw error;
@@ -416,7 +416,7 @@ export async function getModulesForStudent(studentId: string, studentType: 'b2b'
         throw error;
       }
 
-      return data || [];
+      return (data as unknown as Module[]) || [];
     } else {
       // Pour les employés B2B, récupérer les modules de l'entreprise
       const { data: user, error: userError } = await supabase
@@ -468,7 +468,7 @@ export async function getModulesForStudent(studentId: string, studentType: 'b2b'
         throw error;
       }
 
-      return data || [];
+      return (data as unknown as Module[]) || [];
     }
   } catch (error) {
     console.error('Erreur dans getModulesForStudent:', error);

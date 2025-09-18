@@ -126,7 +126,7 @@ export async function getAllStudents(): Promise<StudentData[]> {
     }
 
     // Formater les données des étudiants
-    const formattedStudents: StudentData[] = users.map(user => {
+    const formattedStudents: StudentData[] = (users as any[]).map(user => {
       // Trouver les informations d'entreprise
       const company = companiesData.find(c => c.id === user.company_id);
       const rhUser = rhUsersData.find(rh => rh.id === company?.rh_user_id);
