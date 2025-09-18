@@ -14,51 +14,160 @@ import {
   Brain,
   Target,
   TrendingUp,
-  Zap
+  Zap,
+  Briefcase,
+  Presentation,
+  MessageCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import AuthPageHeader from '@/components/ui/AuthPageHeader';
 import { useSignup } from '@/contexts/SignupContext';
 import { getAmountInCents } from '@/types/payment';
+import { getActivityDomainsByType, ActivityDomain } from '@/lib/activityDomainService';
+import { getModulesByType, Module } from '@/lib/moduleService';
 
-// Types pour les formations
-interface Formation {
-  id: string;
-  title: string;
-  description: string;
+// Types pour les formations avec prix statiques
+interface FormationWithPrice extends Module {
   price: {
     USD: number;
     EUR: number;
     XOF: number;
   };
-  duration: number; // en heures
-  lessons: number;
-  students: number;
-  rating: number;
-  difficulty: 'débutant' | 'intermédiaire' | 'avancé';
-  features: string[];
   color: string;
   icon: React.ComponentType<{ className?: string }>;
   isPopular?: boolean;
   isNew?: boolean;
 }
 
-interface Domain {
-  id: string;
-  name: string;
-  description: string;
+interface DomainWithFormations extends ActivityDomain {
   icon: React.ComponentType<{ className?: string }>;
   color: string;
-  formations: Formation[];
+  formations: FormationWithPrice[];
 }
+
+// Mapping des icônes par nom
+const iconMapping: { [key: string]: React.ComponentType<{ className?: string }> } = {
+  'TrendingUp': TrendingUp,
+  'Video': Video,
+  'Users': Users,
+  'Zap': Zap,
+  'Target': Target,
+  'Brain': Brain,
+  'Briefcase': Briefcase,
+  'Presentation': Presentation,
+  'MessageCircle': MessageCircle
+};
+
+// Mapping des couleurs par nom
+const colorMapping: { [key: string]: string } = {
+  'from-green-500 to-emerald-600': 'from-green-500 to-emerald-600',
+  'from-blue-500 to-purple-600': 'from-blue-500 to-purple-600',
+  'from-yellow-500 to-orange-600': 'from-yellow-500 to-orange-600',
+  'from-red-500 to-pink-600': 'from-red-500 to-pink-600',
+  'from-purple-500 to-pink-600': 'from-purple-500 to-pink-600',
+  'from-emerald-600 to-teal-700': 'from-emerald-600 to-teal-700',
+  'from-indigo-500 to-blue-600': 'from-indigo-500 to-blue-600',
+  'from-orange-500 to-red-600': 'from-orange-500 to-red-600'
+};
+
+// Prix statiques par type de module (en fonction de la difficulté et de la durée)
+const getStaticPrice = (module: Module) => {
+  const basePrice = {
+    'debutant': { USD: 149, EUR: 129, XOF: 85000 },
+    'intermediaire': { USD: 199, EUR: 179, XOF: 115000 },
+    'avance': { USD: 299, EUR: 269, XOF: 175000 }
+  };
+  
+  const difficulty = module.niveau_difficulte || 'debutant';
+  const durationMultiplier = Math.max(1, module.duree_estimee / 8); // Prix de base pour 8h
+  
+  const base = basePrice[difficulty];
+  return {
+    USD: Math.round(base.USD * durationMultiplier),
+    EUR: Math.round(base.EUR * durationMultiplier),
+    XOF: Math.round(base.XOF * durationMultiplier)
+  };
+};
+
+// Couleurs et icônes par domaine
+const getDomainStyling = (domainName: string) => {
+  const stylingMap: { [key: string]: { color: string; icon: React.ComponentType<{ className?: string }> } } = {
+    'Commercial & Vente': { color: 'from-green-500 to-emerald-600', icon: TrendingUp },
+    'Présentation & Pitch': { color: 'from-blue-500 to-purple-600', icon: Video },
+    'Leadership & Management': { color: 'from-yellow-500 to-orange-600', icon: Users },
+    'Communication & Influence': { color: 'from-red-500 to-pink-600', icon: Zap },
+    'default': { color: 'from-indigo-500 to-blue-600', icon: Briefcase }
+  };
+  
+  return stylingMap[domainName] || stylingMap.default;
+};
 
 export default function PaymentPage() {
   const { formData } = useSignup();
   const [selectedCurrency, setSelectedCurrency] = useState('USD');
-  const [selectedFormation, setSelectedFormation] = useState<Formation | null>(null);
+  const [selectedFormation, setSelectedFormation] = useState<FormationWithPrice | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
+  const [domains, setDomains] = useState<DomainWithFormations[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Récupérer les domaines et modules depuis la base de données
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        
+        // Récupérer les domaines d'activité B2C
+        const activityDomains = await getActivityDomainsByType('b2c');
+        
+        // Récupérer tous les modules B2C
+        const modules = await getModulesByType('b2c');
+        
+        // Organiser les modules par domaine d'activité
+        const domainsWithFormations: DomainWithFormations[] = activityDomains.map(domain => {
+          const domainModules = modules.filter(module => 
+            module.activity_domain_id === domain.id
+          );
+          
+          // Convertir les modules en formations avec prix statiques
+          const formations: FormationWithPrice[] = domainModules.map(module => {
+            const styling = getDomainStyling(domain.name);
+            const price = getStaticPrice(module);
+            
+            return {
+              ...module,
+              price,
+              color: styling.color,
+              icon: styling.icon,
+              isPopular: Math.random() > 0.7, // 30% de chance d'être populaire
+              isNew: Math.random() > 0.8 // 20% de chance d'être nouveau
+            };
+          });
+          
+          const styling = getDomainStyling(domain.name);
+          
+          return {
+            ...domain,
+            icon: styling.icon,
+            color: styling.color,
+            formations
+          };
+        });
+        
+        setDomains(domainsWithFormations);
+      } catch (err) {
+        console.error('Erreur lors de la récupération des données:', err);
+        setError('Erreur lors du chargement des formations. Veuillez réessayer.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Vérifier que nous avons les données du formulaire d'inscription
   useEffect(() => {
@@ -69,139 +178,11 @@ export default function PaymentPage() {
     }
   }, [formData]);
 
-  // Données des domaines et formations
-  const domains: Domain[] = [
-    {
-      id: 'commercial',
-      name: 'Commercial & Vente',
-      description: 'Maîtrisez l\'art de la vente et de la négociation',
-      icon: TrendingUp,
-      color: 'from-green-500 to-emerald-600',
-      formations: [
-        {
-          id: 'commercial-basics',
-          title: 'Fondamentaux de la Vente',
-          description: 'Apprenez les bases essentielles de la vente et de la négociation commerciale',
-          price: { USD: 199, EUR: 179, XOF: 115000 },
-          duration: 8,
-          lessons: 12,
-          students: 234,
-          rating: 4.8,
-          difficulty: 'débutant',
-          features: ['Techniques de prospection', 'Gestion des objections', 'Clôture de vente', 'Suivi client'],
-          color: 'from-green-500 to-emerald-600',
-          icon: Target,
-          isPopular: true
-        },
-        {
-          id: 'commercial-advanced',
-          title: 'Vente Avancée & Négociation',
-          description: 'Techniques avancées pour les vendeurs expérimentés',
-          price: { USD: 299, EUR: 269, XOF: 175000 },
-          duration: 12,
-          lessons: 18,
-          students: 156,
-          rating: 4.9,
-          difficulty: 'avancé',
-          features: ['Négociation complexe', 'Gestion des gros comptes', 'Stratégies de pricing', 'Leadership commercial'],
-          color: 'from-emerald-600 to-teal-700',
-          icon: TrendingUp,
-          isNew: true
-        }
-      ]
-    },
-    {
-      id: 'presentation',
-      name: 'Présentation & Pitch',
-      description: 'Développez votre impact et votre charisme',
-      icon: Video,
-      color: 'from-blue-500 to-purple-600',
-      formations: [
-        {
-          id: 'pitch-mastery',
-          title: 'Maîtrise du Pitch',
-          description: 'Créez des présentations percutantes qui convertissent',
-          price: { USD: 249, EUR: 229, XOF: 145000 },
-          duration: 10,
-          lessons: 15,
-          students: 189,
-          rating: 4.7,
-          difficulty: 'intermédiaire',
-          features: ['Storytelling', 'Structure narrative', 'Techniques de présentation', 'Gestion du stress'],
-          color: 'from-blue-500 to-purple-600',
-          icon: Video,
-          isPopular: true
-        },
-        {
-          id: 'public-speaking',
-          title: 'Prise de Parole en Public',
-          description: 'Développez votre confiance et votre impact scénique',
-          price: { USD: 179, EUR: 159, XOF: 95000 },
-          duration: 6,
-          lessons: 10,
-          students: 312,
-          rating: 4.6,
-          difficulty: 'débutant',
-          features: ['Confiance en soi', 'Techniques vocales', 'Langage corporel', 'Gestion de l\'audience'],
-          color: 'from-purple-500 to-pink-600',
-          icon: Brain
-        }
-      ]
-    },
-    {
-      id: 'leadership',
-      name: 'Leadership & Management',
-      description: 'Devenez un leader inspirant et efficace',
-      icon: Users,
-      color: 'from-yellow-500 to-orange-600',
-      formations: [
-        {
-          id: 'team-leadership',
-          title: 'Leadership d\'Équipe',
-          description: 'Motivez et dirigez vos équipes vers l\'excellence',
-          price: { USD: 329, EUR: 299, XOF: 195000 },
-          duration: 14,
-          lessons: 20,
-          students: 98,
-          rating: 4.9,
-          difficulty: 'avancé',
-          features: ['Motivation d\'équipe', 'Gestion des conflits', 'Délégation efficace', 'Communication managériale'],
-          color: 'from-yellow-500 to-orange-600',
-          icon: Users,
-          isNew: true
-        }
-      ]
-    },
-    {
-      id: 'communication',
-      name: 'Communication & Influence',
-      description: 'Maîtrisez l\'art de la communication persuasive',
-      icon: Zap,
-      color: 'from-red-500 to-pink-600',
-      formations: [
-        {
-          id: 'persuasion-techniques',
-          title: 'Techniques de Persuasion',
-          description: 'Influencez positivement vos interlocuteurs',
-          price: { USD: 199, EUR: 179, XOF: 115000 },
-          duration: 8,
-          lessons: 12,
-          students: 167,
-          rating: 4.8,
-          difficulty: 'intermédiaire',
-          features: ['Psychologie de l\'influence', 'Techniques de persuasion', 'Éthique de la communication', 'Résistance aux manipulations'],
-          color: 'from-red-500 to-pink-600',
-          icon: Zap
-        }
-      ]
-    }
-  ];
-
-  const handleFormationSelect = (formation: Formation) => {
+  const handleFormationSelect = (formation: FormationWithPrice) => {
     setSelectedFormation(formation);
   };
 
-  const handlePayment = async (formation: Formation) => {
+  const handlePayment = async (formation: FormationWithPrice) => {
     setIsProcessing(true);
     
     try {
@@ -256,12 +237,40 @@ export default function PaymentPage() {
 
   const getDifficultyColor = (difficulty: string) => {
     const colors = {
-      'débutant': 'text-green-400',
-      'intermédiaire': 'text-yellow-400',
-      'avancé': 'text-red-400'
+      'debutant': 'text-green-400',
+      'intermediaire': 'text-yellow-400',
+      'avance': 'text-red-400'
     };
     return colors[difficulty as keyof typeof colors] || 'text-gray-400';
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-yellow-500 animate-spin mx-auto mb-4" />
+          <p className="text-white text-lg">Chargement des formations...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-500 text-6xl mb-4">⚠️</div>
+          <p className="text-white text-lg mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-yellow-500 text-black px-6 py-3 rounded-lg font-bold hover:bg-yellow-400 transition-colors"
+          >
+            Réessayer
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
@@ -412,21 +421,21 @@ export default function PaymentPage() {
                               <div className="flex items-center justify-center text-yellow-400 mb-1">
                                 <Clock className="w-4 h-4 mr-1" />
                               </div>
-                              <div className="text-sm font-medium text-white">{formation.duration}h</div>
+                              <div className="text-sm font-medium text-white">{formation.duree_estimee}h</div>
                               <div className="text-xs text-gray-400">Durée</div>
                             </div>
                             <div className="text-center">
                               <div className="flex items-center justify-center text-blue-400 mb-1">
                                 <BookOpen className="w-4 h-4 mr-1" />
                               </div>
-                              <div className="text-sm font-medium text-white">{formation.lessons}</div>
+                              <div className="text-sm font-medium text-white">-</div>
                               <div className="text-xs text-gray-400">Leçons</div>
                             </div>
                             <div className="text-center">
                               <div className="flex items-center justify-center text-green-400 mb-1">
                                 <Users className="w-4 h-4 mr-1" />
                               </div>
-                              <div className="text-sm font-medium text-white">{formation.students}</div>
+                              <div className="text-sm font-medium text-white">-</div>
                               <div className="text-xs text-gray-400">Étudiants</div>
                             </div>
                           </div>
@@ -439,17 +448,17 @@ export default function PaymentPage() {
                                   <Star
                                     key={i}
                                     className={`w-4 h-4 ${
-                                      i < Math.floor(formation.rating)
+                                      i < 4
                                         ? 'text-yellow-400 fill-current'
                                         : 'text-gray-600'
                                     }`}
                                   />
                                 ))}
                               </div>
-                              <span className="text-sm text-gray-300">{formation.rating}</span>
+                              <span className="text-sm text-gray-300">4.0</span>
                             </div>
-                            <span className={`text-sm font-medium ${getDifficultyColor(formation.difficulty)}`}>
-                              {formation.difficulty}
+                            <span className={`text-sm font-medium ${getDifficultyColor(formation.niveau_difficulte || 'debutant')}`}>
+                              {formation.niveau_difficulte || 'débutant'}
                             </span>
                           </div>
 
@@ -457,17 +466,18 @@ export default function PaymentPage() {
                           <div className="mb-6">
                             <h4 className="text-white font-medium mb-3">Ce que vous apprendrez :</h4>
                             <ul className="space-y-2">
-                              {formation.features.slice(0, 3).map((feature, index) => (
-                                <li key={index} className="flex items-center text-sm text-gray-300">
+                              <li className="flex items-center text-sm text-gray-300">
+                                <Check className="w-4 h-4 text-green-400 mr-2 flex-shrink-0" />
+                                {formation.theme || 'Formation spécialisée'}
+                              </li>
+                              <li className="flex items-center text-sm text-gray-300">
                                   <Check className="w-4 h-4 text-green-400 mr-2 flex-shrink-0" />
-                                  {feature}
+                                {formation.duree_estimee} heures de contenu
                                 </li>
-                              ))}
-                              {formation.features.length > 3 && (
-                                <li className="text-sm text-gray-400 ml-6">
-                                  +{formation.features.length - 3} autres compétences
+                              <li className="flex items-center text-sm text-gray-300">
+                                <Check className="w-4 h-4 text-green-400 mr-2 flex-shrink-0" />
+                                Accès illimité
                                 </li>
-                              )}
                             </ul>
                           </div>
 
