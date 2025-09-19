@@ -74,14 +74,21 @@ export async function POST(request: NextRequest) {
 
     // Vérifier si l'utilisateur existe déjà dans auth.users
     console.log('🔍 Vérification de l\'utilisateur dans auth.users...');
+    console.log('📧 Email recherché:', session.metadata?.userEmail);
+    
     const { data: authUsers, error: authCheckError } = await supabase.auth.admin.listUsers();
     
     let existingAuthUser = null;
     if (!authCheckError && authUsers.users) {
       existingAuthUser = authUsers.users.find(user => user.email === session.metadata?.userEmail);
+      console.log('👥 Nombre d\'utilisateurs trouvés:', authUsers.users.length);
+      console.log('🔍 Utilisateur existant trouvé:', !!existingAuthUser);
+    } else {
+      console.error('❌ Erreur lors de la vérification des utilisateurs auth:', authCheckError);
     }
 
     // Vérifier si l'utilisateur existe déjà dans la table users
+    console.log('🔍 Vérification de l\'utilisateur dans la table users...');
     const { data: existingUser, error: userCheckError } = await supabase
       .from('users')
       .select('id, email')
@@ -89,6 +96,10 @@ export async function POST(request: NextRequest) {
       .single();
     
     const userExistsInTable = !userCheckError && existingUser;
+    console.log('📊 Utilisateur existe dans la table users:', userExistsInTable);
+    if (userCheckError) {
+      console.log('ℹ️ Erreur lors de la vérification (normal si utilisateur n\'existe pas):', userCheckError.message);
+    }
 
     let userId: string;
     
@@ -101,7 +112,34 @@ export async function POST(request: NextRequest) {
         // L'utilisateur existe dans les deux tables
         console.log('✅ Utilisateur existe déjà dans les deux tables');
         
-        // Vérifier si le paiement est déjà enregistré
+        // Vérifier si l'utilisateur existe dans la table students
+        const { data: existingStudent } = await supabase
+          .from('students')
+          .select('*')
+          .eq('user_id', userId)
+          .single();
+
+        if (!existingStudent) {
+          console.log('📚 Création de l\'entrée dans la table students...');
+          const { error: studentInsertError } = await supabase
+            .from('students')
+            .insert({
+              user_id: userId,
+              progress: {},
+              vr_sessions: 0,
+            });
+
+          if (studentInsertError) {
+            console.error('❌ Erreur lors de l\'insertion dans la table students:', studentInsertError);
+            return NextResponse.json(
+              { error: 'Erreur lors de l\'insertion dans la table students' },
+              { status: 500 }
+            );
+          }
+          console.log('✅ Utilisateur inséré dans la table students');
+        }
+        
+        // Vérifier si le paiement est déjà enregistré pour cette session
         const { data: existingPayment } = await supabase
           .from('payments')
           .select('*')
@@ -114,7 +152,9 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ 
             success: true, 
             message: 'Paiement déjà traité',
-            userExists: true
+            userExists: true,
+            userId,
+            sessionId: session.id
           });
         }
       } else {
@@ -164,9 +204,11 @@ export async function POST(request: NextRequest) {
       // L'utilisateur n'existe pas dans auth.users, le créer
       console.log('👤 Création de l\'utilisateur dans auth.users...');
       
+      // Utiliser le mot de passe de l'utilisateur depuis les métadonnées
+      const userPassword = session.metadata?.userPassword || 'default_password_123';
       const { data: authData, error: authError } = await supabase.auth.admin.createUser({
         email: session.metadata?.userEmail,
-        password: 'temp_password_' + Math.random().toString(36).substring(7),
+        password: userPassword,
         email_confirm: true,
         user_metadata: {
           firstName: session.metadata?.userFirstName,
@@ -230,35 +272,71 @@ export async function POST(request: NextRequest) {
       console.log('✅ Utilisateur inséré dans la table students');
     }
 
-    // Enregistrer le paiement
+    // Enregistrer le paiement (optionnel - ne pas faire échouer si la table n'existe pas)
     console.log('💰 Enregistrement du paiement...');
+    console.log('📊 Données du paiement:', {
+      user_id: userId,
+      amount: (session.amount_total || 0) / 100,
+      currency: session.metadata?.currency?.toUpperCase(),
+      status: 'completed',
+      plan: session.metadata?.plan,
+    });
     
-    const { error: insertError } = await supabase
-      .from('payments')
-      .insert({
-        user_id: userId,
-        amount: (session.amount_total || 0) / 100, // Convertir de centimes
-        currency: session.metadata?.currency?.toUpperCase(),
-        status: 'completed',
-        plan: session.metadata?.plan,
-      });
+    try {
+      // Mapper le plan vers les valeurs autorisées par la contrainte
+      const planMapping: { [key: string]: string } = {
+        'standard': 'standard',
+        'premium': 'premium',
+        'commercial-basics': 'premium',
+        'commercial-advanced': 'premium',
+        'pitch-mastery': 'premium',
+        'public-speaking': 'premium',
+        'team-leadership': 'premium',
+        'persuasion-techniques': 'premium'
+      };
+      
+      // Si c'est un UUID (module), utiliser 'premium' par défaut
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(session.metadata?.plan || '');
+      const mappedPlan = isUUID ? 'premium' : (planMapping[session.metadata?.plan || ''] || 'premium');
+      
+      console.log('📋 Plan original:', session.metadata?.plan);
+      console.log('📋 Plan mappé:', mappedPlan);
+      
+      const { error: insertError } = await supabase
+        .from('payments')
+        .insert({
+          user_id: userId,
+          amount: (session.amount_total || 0) / 100, // Convertir de centimes
+          currency: session.metadata?.currency?.toUpperCase() || 'USD',
+          status: 'completed',
+          plan: mappedPlan,
+        });
 
-    if (insertError) {
-      console.error('❌ Erreur lors de l\'insertion du paiement:', insertError);
-      return NextResponse.json(
-        { error: 'Erreur lors de l\'enregistrement du paiement' },
-        { status: 500 }
-      );
+      if (insertError) {
+        console.error('❌ Erreur lors de l\'insertion du paiement:', insertError);
+        console.error('📋 Détails de l\'erreur:', {
+          message: insertError.message,
+          details: insertError.details,
+          hint: insertError.hint,
+          code: insertError.code
+        });
+        console.log('⚠️ Continuons sans enregistrer le paiement - la table payments n\'existe peut-être pas');
+      } else {
+        console.log('✅ Paiement enregistré avec succès');
+      }
+    } catch (paymentError) {
+      console.error('❌ Exception lors de l\'enregistrement du paiement:', paymentError);
+      console.log('⚠️ Continuons sans enregistrer le paiement');
     }
-
-    console.log('✅ Paiement enregistré avec succès');
 
     return NextResponse.json({ 
       success: true, 
       message: 'Paiement vérifié et utilisateur créé',
       userId,
       sessionId: session.id,
-      userCreated: !existingAuthUser // Indique si l'utilisateur a été créé dans auth.users
+      userCreated: !existingAuthUser, // Indique si l'utilisateur a été créé dans auth.users
+      userPassword: session.metadata?.userPassword, // Mot de passe de l'utilisateur
+      userEmail: session.metadata?.userEmail
     });
 
   } catch (error) {

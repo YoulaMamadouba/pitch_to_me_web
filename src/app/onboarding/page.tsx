@@ -5,12 +5,14 @@ import { Check, Play, Volume2, BookOpen, Award } from 'lucide-react';
 import AuthPageHeader from '@/components/ui/AuthPageHeader';
 import { useRouter } from 'next/navigation';
 import { VideoMotivationRecorder } from '@/components/analyse_post_face/VideoMotivationRecorder';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function OnboardingPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showVideoRecorder, setShowVideoRecorder] = useState(false);
   const router = useRouter();
+  const { signIn } = useAuth();
 
   useEffect(() => {
     setIsMounted(true);
@@ -25,6 +27,66 @@ export default function OnboardingPage() {
       const sessionId = searchParams.get('session_id');
       if (sessionId) {
         localStorage.setItem('stripe_session_id', sessionId);
+        
+        // Vérifier le paiement et créer l'utilisateur
+        const verifyPayment = async () => {
+          try {
+            console.log('🔍 Vérification du paiement...');
+            
+            const response = await fetch('/api/verify-payment', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ sessionId }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+              console.log('✅ Paiement vérifié:', data);
+              console.log('👤 Utilisateur créé:', data.userCreated);
+              console.log('🆔 User ID:', data.userId);
+              
+              // Connecter l'utilisateur automatiquement après la création
+              if (data.userId) {
+                try {
+                  console.log('🔐 Connexion automatique de l\'utilisateur...');
+                  // Utiliser l'email retourné par l'API ou celui des paramètres URL
+                  const userEmail = data.userEmail || new URLSearchParams(window.location.search).get('email');
+                  
+                  if (userEmail && data.userPassword) {
+                    console.log('📧 Email pour connexion:', userEmail);
+                    console.log('🔑 Mot de passe utilisateur:', data.userPassword);
+                    
+                    try {
+                      await signIn(userEmail, data.userPassword);
+                      console.log('✅ Utilisateur connecté automatiquement');
+                    } catch (err) {
+                      console.error('❌ Connexion automatique échouée:', err);
+                      console.log('⚠️ L\'utilisateur devra se connecter manuellement');
+                    }
+                  } else if (userEmail && !data.userPassword) {
+                    console.log('⚠️ Utilisateur existant - pas de mot de passe disponible');
+                    console.log('⚠️ L\'utilisateur devra se connecter avec son mot de passe existant');
+                  } else {
+                    console.log('⚠️ Email manquant pour la connexion automatique');
+                  }
+                } catch (authError) {
+                  console.error('❌ Erreur lors de la connexion automatique:', authError);
+                  // Continuer même si la connexion automatique échoue
+                }
+              }
+            } else {
+              console.error('❌ Erreur lors de la vérification:', data.error);
+              console.error('📋 Détails de l\'erreur:', data);
+            }
+          } catch (error) {
+            console.error('❌ Erreur lors de la vérification du paiement:', error);
+          }
+        };
+
+        verifyPayment();
       }
     }
   }, [router]);

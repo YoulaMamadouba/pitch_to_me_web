@@ -90,14 +90,15 @@ const getStaticPrice = (module: Module) => {
   };
 };
 
-// Couleurs et icônes par domaine
+// Couleurs et icônes par domaine - Soft et transparentes
 const getDomainStyling = (domainName: string) => {
   const stylingMap: { [key: string]: { color: string; icon: React.ComponentType<{ className?: string }> } } = {
-    'Commercial & Vente': { color: 'from-green-500 to-emerald-600', icon: TrendingUp },
-    'Présentation & Pitch': { color: 'from-blue-500 to-purple-600', icon: Video },
-    'Leadership & Management': { color: 'from-yellow-500 to-orange-600', icon: Users },
-    'Communication & Influence': { color: 'from-red-500 to-pink-600', icon: Zap },
-    'default': { color: 'from-indigo-500 to-blue-600', icon: Briefcase }
+    'Développement Personnel': { color: 'from-purple-300/30 to-pink-400/40', icon: Users },
+    'Carrière & Emploi': { color: 'from-blue-300/30 to-cyan-400/40', icon: Target },
+    'Prise de Parole': { color: 'from-emerald-300/30 to-teal-400/40', icon: TrendingUp },
+    'Networking & Relations': { color: 'from-orange-300/30 to-amber-400/40', icon: MessageCircle },
+    'Entrepreneuriat': { color: 'from-rose-300/30 to-red-400/40', icon: Briefcase },
+    'default': { color: 'from-slate-300/30 to-gray-400/40', icon: Briefcase }
   };
   
   return stylingMap[domainName] || stylingMap.default;
@@ -389,25 +390,25 @@ export default function PaymentPage() {
                         </div>
 
                         {/* Header */}
-                        <div className={`p-6 bg-gradient-to-r ${formation.color}`}>
+                        <div className={`p-6 bg-gradient-to-br ${formation.color} backdrop-blur-md border border-white/10 rounded-t-xl`}>
                           <div className="flex items-start justify-between mb-4">
                             <div className="flex-1">
-                              <h3 className="text-xl font-bold text-white mb-2">{formation.title}</h3>
-                              <p className="text-white/90 text-sm">{formation.description}</p>
+                              <h3 className="text-xl font-bold text-white mb-2 drop-shadow-xl">{formation.title}</h3>
+                              <p className="text-white/90 text-sm drop-shadow-lg leading-relaxed">{formation.description}</p>
                             </div>
-                            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-                              <Icon className="w-6 h-6 text-white" />
+                            <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/30 shadow-lg">
+                              <Icon className="w-7 h-7 text-white drop-shadow-xl" />
                             </div>
                           </div>
                           
                           {/* Prix */}
-                          <div className="text-center">
-                            <div className="text-3xl font-bold text-white">
+                          <div className="text-center bg-white/10 rounded-xl p-4 backdrop-blur-sm border border-white/20">
+                            <div className="text-3xl font-bold text-white drop-shadow-xl">
                               {getCurrencySymbol(selectedCurrency)}
-                              {formation.price[selectedCurrency as keyof typeof formation.price]}
+                              {formation.price[selectedCurrency as keyof typeof formation.price].toLocaleString('fr-FR')}
                               {selectedCurrency === 'XOF' ? ' FCFA' : ''}
                             </div>
-                            <div className="text-white/80 text-sm">
+                            <div className="text-white/80 text-sm drop-shadow-lg mt-1">
                               {selectedCurrency !== 'XOF' && 'TVA incluse'}
                             </div>
                           </div>
@@ -502,7 +503,7 @@ export default function PaymentPage() {
                               <div className="flex items-center justify-center">
                                 <Lock className="w-4 h-4 mr-2" />
                                 Payer {getCurrencySymbol(selectedCurrency)}
-                                {formation.price[selectedCurrency as keyof typeof formation.price]}
+                                {formation.price[selectedCurrency as keyof typeof formation.price].toLocaleString('fr-FR')}
                                 {selectedCurrency === 'XOF' ? ' FCFA' : ''}
                               </div>
                             )}

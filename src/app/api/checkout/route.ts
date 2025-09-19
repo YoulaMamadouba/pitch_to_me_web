@@ -34,9 +34,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validation du plan (maintenant peut être un ID de formation)
+    // Validation du plan - accepter les IDs de modules ou les plans prédéfinis
     const validPlans = ['standard', 'premium', 'commercial-basics', 'commercial-advanced', 'pitch-mastery', 'public-speaking', 'team-leadership', 'persuasion-techniques'];
-    if (!validPlans.includes(plan)) {
+    
+    // Si c'est un UUID (ID de module), on l'accepte
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(plan);
+    
+    if (!validPlans.includes(plan) && !isUUID) {
       return NextResponse.json(
         { error: 'Plan/Formation non supporté' },
         { status: 400 }
@@ -72,7 +76,7 @@ export async function POST(request: NextRequest) {
         },
       ],
       mode: 'payment',
-      success_url: `${request.nextUrl.origin}/onboarding?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${request.nextUrl.origin}/onboarding?payment=success&session_id={CHECKOUT_SESSION_ID}&email=${encodeURIComponent(userData.email)}`,
       cancel_url: `${request.nextUrl.origin}/cancel`,
       metadata: {
         userEmail: userData.email,
@@ -80,6 +84,7 @@ export async function POST(request: NextRequest) {
         userLastName: userData.lastName,
         userPhone: userData.phone || '',
         userCountry: userData.country || '',
+        userPassword: userData.password || '',
         currency,
         plan,
         formationId: formationData?.id || '',
